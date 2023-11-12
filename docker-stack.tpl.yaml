@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  dashboard:
+    image: your/img:tag
+    restart: unless-stopped
+    ports:
+      - target: 80
+        published: 30080
+        protocol: tcp
+        #mode: ingress
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: vip
+      healthcheck:
+        test: ["CMD-SHELL", 'curl -s -I 127.0.0.1 | grep -q "HTTP/1.1 200 OK"']
+        start_period: 10s
+        interval: 1s
+        timeout: 1s
+        retries: 3
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.role != master

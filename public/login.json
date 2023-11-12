@@ -1,0 +1,14 @@
+{
+  "errCode": 0,
+  "data": {
+    "uid": 1,
+    "username": "admin",
+    "avatar": "",
+    "phone": "13888888888",
+    "email": "admin@apzda.com",
+    "accessToken": "121212",
+    "refreshToken": "121212",
+    "roles": ["sa"],
+    "authorities": ["*"]
+  }
+}
