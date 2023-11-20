@@ -365,6 +365,6 @@ export type Response<T> = {
   errCode: number
   errMsg?: string
   message?: string
-  type: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
+  type?: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
   data?: T
 }
