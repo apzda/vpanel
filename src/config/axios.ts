@@ -360,3 +360,11 @@ class AxiosProxy {
 export default function useAxios(gtw?: string): AxiosProxy {
   return new AxiosProxy(instances[gtw || 'default'])
 }
+
+export type Response<T> = {
+  errCode: number
+  errMsg?: string
+  message?: string
+  type: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
+  data?: T
+}
