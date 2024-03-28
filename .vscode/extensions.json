@@ -1,8 +1,12 @@
 {
   "recommendations": [
-    "Vue.volar",
-    "Vue.vscode-typescript-vue-plugin",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "formulahendry.auto-rename-tag",
+    "editorconfig.editorconfig",
+    "sibiraj-s.vscode-scss-formatter",
+    "bradlc.vscode-tailwindcss",
+    "vitest.explorer",
+    "misterj.vue-volar-extention-pack"
   ]
 }
