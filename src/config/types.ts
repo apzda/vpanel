@@ -4,14 +4,19 @@ export type MenuArg = {
 }
 
 export interface MenuItem {
-  [index: string]: any
   id: string
-  name: string | ((ctx: MenuArg) => string)
-  path: string
+  name?: string | ((ctx: MenuArg) => string)
+  path?: string
   title?: string | ((ctx: MenuArg) => string)
   icon?: any
-  bage?: number | (() => number)
+  badge?: number | (() => number)
   color?: any
+  sort?: number | ((ctx: MenuArg) => number)
+  hidden?: boolean | ((ctx: MenuArg) => number)
+  level?: number
   authority?: string[] | string
   children?: MenuItem[]
+  meta?: {
+    [index: string]: any
+  }
 }

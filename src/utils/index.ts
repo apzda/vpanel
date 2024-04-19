@@ -9,25 +9,30 @@ const mergenode = (dest: any, source: any): void => {
 export type IdFieldName = 'id' | 'path'
 
 export interface ITreeMgr<T> {
-  readonly nodes: T[]
-  add(routes: T[], currentNode?: T[]): void
+  readonly nodes: Array<T>
+  add(routes: Array<T>, currentNode?: Array<T>): void
   get(id: string): T | null
 }
 
 export class TreeMgr<T extends { path?: string; id?: string; children?: T[] }> implements ITreeMgr<T> {
-  readonly nodes: T[] = []
+  readonly nodes: Array<T> = []
   readonly idf: IdFieldName
+  readonly seperator: string
 
-  constructor(idf: IdFieldName = 'id') {
+  constructor(idf: IdFieldName = 'id', seperator: string = '.') {
     this.idf = idf
+    this.seperator = seperator
   }
 
-  add(nodes: T[], current?: T[]) {
+  add(nodes: Array<T>, current?: Array<T>) {
+    const idf = this.idf
+
     if (!current) {
       current = this.nodes
     }
-    for (const node of nodes) {
-      const cr = current.find((r) => r[this.idf] === node[this.idf])
+    for (let i = 0; i < nodes.length; i++) {
+      let node = nodes[i]
+      const cr = current.find((r) => r[idf] === node[idf])
       // console.debug('添加Node', JSON.stringify(node))
       if (!cr) {
         // console.debug('    直接新增', node)
@@ -48,7 +53,7 @@ export class TreeMgr<T extends { path?: string; id?: string; children?: T[] }> i
   }
 
   get(id: string): T | null {
-    const ids = id.split('.')
+    const ids = id.split(this.seperator)
     const lastIdx = ids.length - 1
     const idf = this.idf
     let cnodes = this.nodes
