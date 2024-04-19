@@ -10,7 +10,7 @@ import { hasAuthority, hasRole, user } from './../stores/user'
 // all routers
 const routers = import.meta.glob('@/modules/**/router.ts', { eager: true, import: 'default' })
 
-const routerMgr = new TreeMgr<RouteRecordRaw>('path')
+const routerMgr = new TreeMgr<RouteRecordRaw>('path', '/')
 
 for (const m in routers) {
   routerMgr.add(routers[m] as RouteRecordRaw[])
@@ -46,7 +46,7 @@ export const gotoLoginPage = (url?: string, next?: NavigationGuardNext): boolean
       })
     }
   } else if (settings.loginUrl == location.pathname) {
-    console.debug('已经在登录页了')
+    // console.debug('已经在登录页了')
     isLoading.value = false
   }
 }

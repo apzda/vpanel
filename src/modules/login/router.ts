@@ -14,6 +14,7 @@ export default [
   },
   {
     path: '/reset',
-    component: () => import('~/login/views/ResetPwd.vue')
+    component: () => import('~/login/views/ResetPwd.vue'),
+    children: []
   }
 ] satisfies RouteRecordRaw[]

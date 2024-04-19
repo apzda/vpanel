@@ -61,6 +61,7 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
     let cnode: T | undefined
 
     for (let i = 0; i <= lastIdx; i++) {
+      if (!ids[i].trim()) continue
       cnode = cnodes.find((n) => n[idf] == ids[i])
       if (!cnode) {
         return null
