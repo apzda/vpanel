@@ -15,6 +15,7 @@ export interface MenuItem {
   hidden?: boolean | ((ctx: MenuArg) => number)
   level?: number
   authorities?: string[] | string
+  roles?: string[] | string
   children?: MenuItem[]
   meta?: {
     [index: string]: any

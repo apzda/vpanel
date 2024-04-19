@@ -49,14 +49,16 @@ describe('树型数据管理器测试', () => {
     expect(profile).not.toBeNull()
     expect(profile).toStrictEqual({
       id: 'profile',
-      name: 'Profile'
+      name: 'Profile',
+      level: 2
     })
 
     const test = menuMgr.get('home.test')
     expect(test).not.toBeNull()
     expect(test).toStrictEqual({
       id: 'test',
-      name: 'Test'
+      name: 'Test',
+      level: 2
     })
   })
 
@@ -107,14 +109,16 @@ describe('树型数据管理器测试', () => {
     expect(profile).not.toBeNull()
     expect(profile).toStrictEqual({
       id: 'profile',
-      name: 'Profile'
+      name: 'Profile',
+      level: 2
     })
 
     const test = menuMgr.get('home.test')
     expect(test).not.toBeNull()
     expect(test).toStrictEqual({
       id: 'test',
-      name: 'Test'
+      name: 'Test',
+      level: 2
     })
   })
 })

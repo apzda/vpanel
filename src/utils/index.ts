@@ -10,32 +10,33 @@ export type IdFieldName = 'id' | 'path'
 
 export interface ITreeMgr<T> {
   readonly nodes: Array<T>
-  add(routes: Array<T>, currentNode?: Array<T>): void
+  add(routes: Array<T>): void
   get(id: string): T | null
 }
 
-export class TreeMgr<T extends { path?: string; id?: string; children?: T[] }> implements ITreeMgr<T> {
+export class TreeMgr<T extends { path?: string; id?: string; level?: number; children?: T[] }> implements ITreeMgr<T> {
   readonly nodes: Array<T> = []
   readonly idf: IdFieldName
-  readonly seperator: string
+  readonly separator: string
 
-  constructor(idf: IdFieldName = 'id', seperator: string = '.') {
+  constructor(idf: IdFieldName = 'id', separator: string = '.') {
     this.idf = idf
-    this.seperator = seperator
+    this.separator = separator
+  }
+  add(nodes: Array<T>) {
+    this._add(nodes, this.nodes, 1)
   }
 
-  add(nodes: Array<T>, current?: Array<T>) {
+  _add(nodes: Array<T>, current: Array<T>, level: number) {
     const idf = this.idf
-
-    if (!current) {
-      current = this.nodes
-    }
     for (let i = 0; i < nodes.length; i++) {
       let node = nodes[i]
+      node.level = level
       const cr = current.find((r) => r[idf] === node[idf])
       // console.debug('添加Node', JSON.stringify(node))
       if (!cr) {
         // console.debug('    直接新增', node)
+        this._fill(level + 1, node.children)
         current.push(node)
       } else {
         // 合并节点(不合并子节点)
@@ -46,14 +47,14 @@ export class TreeMgr<T extends { path?: string; id?: string; children?: T[] }> i
           if (!cr.children) {
             cr.children = []
           }
-          this.add(node.children, cr.children)
+          this._add(node.children, cr.children, level + 1)
         }
       }
     }
   }
 
   get(id: string): T | null {
-    const ids = id.split(this.seperator)
+    const ids = id.split(this.separator)
     const lastIdx = ids.length - 1
     const idf = this.idf
     let cnodes = this.nodes
@@ -72,5 +73,16 @@ export class TreeMgr<T extends { path?: string; id?: string; children?: T[] }> i
       }
     }
     return cnode ? cnode : null
+  }
+
+  _fill(level: number, children?: T[]) {
+    if (children) {
+      for (let i = 0; i < children.length; i++) {
+        children[i].level = level
+        if (children[i].children) {
+          this._fill(level + 1, children[i].children)
+        }
+      }
+    }
   }
 }
