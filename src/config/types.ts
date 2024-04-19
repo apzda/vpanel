@@ -14,7 +14,7 @@ export interface MenuItem {
   sort?: number | ((ctx: MenuArg) => number)
   hidden?: boolean | ((ctx: MenuArg) => number)
   level?: number
-  authority?: string[] | string
+  authorities?: string[] | string
   children?: MenuItem[]
   meta?: {
     [index: string]: any
