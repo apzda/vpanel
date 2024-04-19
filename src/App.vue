@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
+import { ElConfigProvider } from 'element-plus'
 import { watchEffect, ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { language } from './utils/lang'
-
 // @ts-ignore
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 // @ts-ignore

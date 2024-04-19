@@ -7,7 +7,7 @@ export default {
   gtw: {
     default: {
       timeout: 10000,
-      baseURL: import.meta.env.VITE_GTW_DEFULT_URL
+      baseURL: import.meta.env.VITE_GTW_DEFAULT_URL
     },
     demo: {
       timeout: 10000,
