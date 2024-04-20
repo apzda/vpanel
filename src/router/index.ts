@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type NavigationGuardNext, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type NavigationGuardNext } from 'vue-router'
 import { useNProgress } from '@vueuse/integrations/useNProgress'
 
 import { TreeMgr } from '@/utils'
@@ -11,7 +11,7 @@ import type { Route } from '@/@types'
 // all routers
 const routers = import.meta.glob('@/modules/**/router.ts', { eager: true, import: 'default' })
 
-const routerMgr = new TreeMgr<Route>('path', '/')
+export const routerMgr = new TreeMgr<Route>('path', '/')
 
 for (const m in routers) {
   routerMgr.add(routers[m] as Route[])

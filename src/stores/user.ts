@@ -45,10 +45,10 @@ export const isSuperAdmin = (): boolean => {
 
 export const hasRole = (roles: string | string[], modifiers: Record<string, boolean> = {}): boolean => {
   console.debug('hasRole', roles, modifiers)
-  if (!user.value.login) {
+  if (!user.value.login || !user.value.roles) {
     return false
   }
-  return false
+  return user.value.roles.filter((r) => roles.indexOf(r) >= 0).length > 0
 }
 
 export const hasAuthority = (authorities: string | string[], modifiers: Record<string, boolean> = {}): boolean => {

@@ -22,6 +22,8 @@ const doLogin = () => {
         user.value.username = data.data.username
         user.value.token = data.data.accessToken
         user.value.refreshToken = data.data.refreshToken
+        user.value.authorities = data.data.authorities
+        user.value.roles = data.data.roles
         const from = (route.query[fromArg] || '/') as string
         console.log('登录成功，跳回:', from)
         if (/^https?:\/\/.+/.test(from)) {

@@ -9,7 +9,7 @@
     "email": "admin@apzda.com",
     "accessToken": "121212",
     "refreshToken": "121212",
-    "roles": ["sa"],
-    "authorities": ["*"]
+    "roles": ["sa", "user", "admin"],
+    "authorities": ["user:v,c,r,d", "order.pay:v", "book.*:*"]
   }
 }

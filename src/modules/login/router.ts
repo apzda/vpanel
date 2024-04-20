@@ -10,12 +10,14 @@ export default defineRouter([
       }
     },
     props: true,
-    component: () => import('~/login/views/Login.vue')
+    component: () => import('~/login/views/Login.vue'),
+    roles: 'user'
   },
   {
     path: '/reset',
+    name: 'Rest Password',
     component: () => import('~/login/views/ResetPwd.vue'),
     children: [],
-    level: 0
+    roles: ['ddd', 'bbb']
   }
 ])
