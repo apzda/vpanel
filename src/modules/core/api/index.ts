@@ -1,4 +1,4 @@
-import useAxios from '@/config/axios'
+import useAxios, { type Response } from '@/utils/axios'
 
 const axios = useAxios()
 
@@ -11,4 +11,8 @@ export const loadConfig = () => {
     .catch((err) => {
       console.error(err)
     })
+}
+
+export function getData(): Response<{ id: number }> {
+  return axios.get('/data', { login: true })
 }

@@ -26,7 +26,7 @@ watch(
 )
 
 // 配置axios
-import './config/axios'
+import './utils/axios'
 
 import App from './App.vue'
 import router from './router'

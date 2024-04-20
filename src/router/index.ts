@@ -2,18 +2,19 @@ import { createRouter, createWebHistory, type NavigationGuardNext, type RouteRec
 import { useNProgress } from '@vueuse/integrations/useNProgress'
 
 import { TreeMgr } from '@/utils'
-import settings from './../config/settings'
+import settings from '@/config/settings'
 
-import { useAppStore } from './../stores/app'
-import { hasAuthority, hasRole, user } from './../stores/user'
+import { useAppStore } from '@/stores/app'
+import { hasAuthority, hasRole, user } from '@/stores/user'
+import type { Route } from '@/@types'
 
 // all routers
 const routers = import.meta.glob('@/modules/**/router.ts', { eager: true, import: 'default' })
 
-const routerMgr = new TreeMgr<RouteRecordRaw>('path', '/')
+const routerMgr = new TreeMgr<Route>('path', '/')
 
 for (const m in routers) {
-  routerMgr.add(routers[m] as RouteRecordRaw[])
+  routerMgr.add(routers[m] as Route[])
 }
 
 const router = createRouter({
@@ -25,7 +26,7 @@ const { isLoading } = useNProgress(0.3, {
   showSpinner: false
 })
 
-export const gotoLoginPage = (url?: string, next?: NavigationGuardNext): boolean | void => {
+export function gotoLoginPage(url?: string, next?: NavigationGuardNext): boolean | void {
   const fromArg = settings.fromArg || 'from'
 
   if (settings.loginUrl.match(/^https?:\/\/.+/)) {

@@ -5,7 +5,7 @@ import { user } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import { nextTick } from 'vue'
 
-const fromArg = settings.fromArg
+const fromArg = settings.fromArg || ''
 
 const route = useRoute()
 const router = useRouter()
@@ -17,7 +17,7 @@ const doLogin = () => {
   })
     .then(({ data }) => {
       console.log(data)
-      if (data.errCode == 0) {
+      if (data.errCode == 0 && data.data) {
         user.value.login = true
         user.value.username = data.data.username
         user.value.token = data.data.accessToken

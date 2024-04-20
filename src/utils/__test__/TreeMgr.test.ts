@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { TreeMgr } from '../index'
-import type { MenuItem } from '@/config/types'
+import type { MenuItem } from '@/@types'
 
 describe('树型数据管理器测试', () => {
   it('TreeMgr should work ok - 1', () => {

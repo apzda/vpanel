@@ -1,4 +1,6 @@
-export default {
+import { defineSetting } from '.'
+
+export default defineSetting({
   languages: {
     'zh-CN': { name: '中文' },
     en: { name: 'English' }
@@ -14,9 +16,10 @@ export default {
       baseURL: import.meta.env.VITE_GTW_DEMO_URL
     }
   },
+  debounce: true,
   loginUrl: '/login', // 登录页地址
   refreshTokenApi: '/refresh.json', // 刷新AccessToken api
   fromArg: 'from',
   tokenHeaderName: 'Authorization', // accessToken字段
   tokenBearer: 'Bearer'
-} satisfies Settings
+})

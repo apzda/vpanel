@@ -1,6 +1,6 @@
-import type { RouteRecordRaw } from 'vue-router'
+import { defineRouter } from '@/config'
 
-export default [
+export default defineRouter([
   {
     path: '/login',
     name: 'login',
@@ -15,6 +15,7 @@ export default [
   {
     path: '/reset',
     component: () => import('~/login/views/ResetPwd.vue'),
-    children: []
+    children: [],
+    level: 0
   }
-] satisfies RouteRecordRaw[]
+])

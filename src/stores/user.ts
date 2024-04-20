@@ -1,5 +1,4 @@
-import { ref, type Ref } from 'vue'
-import { defineStore } from 'pinia'
+import { type Ref } from 'vue'
 import { useStorage } from '@vueuse/core'
 
 export interface UserInfo {

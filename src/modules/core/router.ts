@@ -1,9 +1,17 @@
-import type { RouteRecordRaw } from 'vue-router'
+import { defineRouter } from '@/config'
 
-export default [
+export default defineRouter([
   {
     path: '/',
     name: 'index',
-    component: () => import('~/core/views/Index.vue')
+    component: () => import('~/core/views/Index.vue'),
+    children: [],
+    level: 1,
+    meta: {},
+    authorities: [],
+    roles: [],
+    title: ({ t }): string => {
+      return 'Home' + t('aaa')
+    }
   }
-] satisfies RouteRecordRaw[]
+])

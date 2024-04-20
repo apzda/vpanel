@@ -1,4 +1,4 @@
-const mergenode = (dest: any, source: any): void => {
+const merge = (dest: any, source: any): void => {
   for (const key in source) {
     if (key != 'children') {
       dest[key] = source[key]
@@ -41,7 +41,7 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
       } else {
         // 合并节点(不合并子节点)
         // console.debug('    Node已存在', JSON.stringify(cr))
-        mergenode(cr, node)
+        merge(cr, node)
         // console.debug('    合并后的Node', cr)
         if (node.children) {
           if (!cr.children) {

@@ -1,6 +1,5 @@
 import type { Plugin, DirectiveBinding } from 'vue'
-import { storeToRefs } from 'pinia'
-import { user, isSuperAdmin, hasPermission, hasAuthority, hasRole } from './../stores/user'
+import { user, isSuperAdmin, hasPermission, hasAuthority, hasRole } from '@/stores/user'
 
 export default {
   install(app) {
