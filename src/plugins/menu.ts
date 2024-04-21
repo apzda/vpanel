@@ -1,8 +1,7 @@
 import type { Plugin, DirectiveBinding } from 'vue'
 import { hasAuthority, hasRole } from '@/stores/user'
-import { tr } from 'element-plus/es/locales.mjs'
 
-const injectMenuName = (el: HTMLElement, binding: DirectiveBinding, field?: string) => {
+const injectMenuName = (el: HTMLElement, binding: DirectiveBinding) => {
   const f = binding.arg || 'name'
   console.log(binding, f)
   if (binding.value && binding.value[f]) {
