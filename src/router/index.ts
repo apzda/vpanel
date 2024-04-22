@@ -64,11 +64,15 @@ router.beforeEach((to, from, next) => {
     // console.debug('beforeEach - 1', [isLogin.value, to, from])
     let hasA = true
     let hasR = true
-    if (to.meta.authorities) {
-      hasA = hasAuthority(to.meta.authorities as string[])
+    //@ts-ignore
+    if (to.authorities) {
+      //@ts-ignore
+      hasA = hasAuthority(to.authorities as string[])
     }
-    if (to.meta.roles) {
-      hasR = hasRole(to.meta.roles as string[], { or: true })
+    //@ts-ignore
+    if (to.roles) {
+      //@ts-ignore
+      hasR = hasRole(to.roles as string[], { or: true })
     }
     if (hasR && hasA) {
       next()
@@ -87,7 +91,7 @@ router.afterEach((to, from, failure) => {
   if (!failure) {
     const { setAppTitle } = useAppStore()
     if (to.meta && to.meta.title) {
-      if (typeof to.meta.title === 'function') {
+      if (typeof to.meta.title == 'function') {
         // @ts-ignore
         setAppTitle(to.meta.title({ route: to, t: window.i18n.t }) as string)
       } else {
