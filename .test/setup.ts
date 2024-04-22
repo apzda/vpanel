@@ -1,5 +1,5 @@
 import { config } from '@vue/test-utils'
-import { setupI18n, loadLocaleMessages } from '@/i18n'
+import { setupI18n, loadLocaleMessages } from '@/utils/i18n'
 
 const i18n = setupI18n({
   legacy: false,
