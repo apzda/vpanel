@@ -6,7 +6,7 @@ import './styles/main.scss'
 import 'nprogress/nprogress.css'
 
 import { language as locale } from '@/utils/lang'
-import { setupI18n, loadLocaleMessages } from './i18n'
+import { setupI18n, loadLocaleMessages } from '@/utils/i18n'
 import { LANGUAGE_LOAD_KEY } from '@/@types'
 
 const i18n = setupI18n({
