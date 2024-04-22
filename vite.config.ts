@@ -60,7 +60,7 @@ export default defineConfig({
       '/refresh-token': {
         target: '/refresh',
         selfHandleResponse: true,
-        bypass(req, res, options) {
+        bypass(req, res) {
           res.writeHead(401)
           res.end()
         }

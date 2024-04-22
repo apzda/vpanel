@@ -15,5 +15,7 @@
   "parserOptions": {
     "ecmaVersion": "latest"
   },
-  "global": ["module"]
+  "globals": {
+    "module": "writable"
+  }
 }

@@ -1,5 +1,6 @@
 import type { Plugin, DirectiveBinding } from 'vue'
 import { hasAuthority, hasRole } from '@/stores/user'
+import type { MenuItem } from '@/@types'
 
 const injectMenuName = (el: HTMLElement, binding: DirectiveBinding) => {
   const f = binding.arg || 'name'
@@ -19,23 +20,25 @@ const injectMenuName = (el: HTMLElement, binding: DirectiveBinding) => {
     el.innerText = 'undefined'
   }
 }
+
 const createMenuItem = (el: HTMLElement, binding: DirectiveBinding, inject: boolean) => {
   if (binding.value) {
-    const menu = binding.value
-    const checkDisabled = !(menu.authorities || menu.roles)
+    const menu = binding.value as MenuItem
+    if (menu.hidden !== false) {
+      const checkDisabled = !(menu.authorities || menu.roles)
 
-    if (checkDisabled || (menu.authorities && hasAuthority(menu.authorities))) {
-      return inject && injectMenuName(el, binding)
+      if (checkDisabled || (menu.authorities && hasAuthority(menu.authorities))) {
+        return inject && injectMenuName(el, binding)
+      }
+
+      if (checkDisabled || (menu.roles && hasRole(menu.roles))) {
+        return inject && injectMenuName(el, binding)
+      }
     }
-    if (checkDisabled || (menu.roles && hasRole(menu.roles))) {
-      return inject && injectMenuName(el, binding)
-    }
-  } else {
-    el.innerText = 'undefined'
   }
-
   el.parentNode?.removeChild(el)
 }
+
 export default {
   install(app) {
     app.directive('menu-name', (el: HTMLElement, binding: DirectiveBinding) => {
