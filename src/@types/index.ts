@@ -59,6 +59,7 @@ export interface MenuItem {
   sort?: number | ((ctx: MenuOption) => number)
   hidden?: boolean | ((ctx: MenuOption) => number)
   level?: number
+  login?: false
   authorities?: string[] | string
   roles?: string[] | string
   children?: MenuItem[]

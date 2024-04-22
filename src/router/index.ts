@@ -57,7 +57,8 @@ router.beforeEach((to, from, next) => {
   // @ts-ignore
   const t = window.i18n.t as (str: string) => string
   // console.debug('beforeEach', [isLogin.value, to, from])
-  if (!settings.loginUrl || settings.whiteList.indexOf(to.path) !== -1) {
+  // @ts-ignore
+  if (to.login === false || !settings.loginUrl || settings.whiteList.indexOf(to.path) !== -1) {
     // console.debug('放行 -- ' + settings.whiteList.indexOf(to.path))
     next()
   } else if (user.value.login) {
