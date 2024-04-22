@@ -1,32 +1,34 @@
 import type { Plugin } from 'vue'
-import { createApp, watch, nextTick } from 'vue'
+import { createApp, watch, ref, readonly } from 'vue'
 import { createPinia } from 'pinia'
 
 import './styles/main.scss'
 import 'nprogress/nprogress.css'
 
-import { language as locale } from './utils/lang'
-import { setupI18n, loadLocaleMessages, setI18nLanguage } from './i18n'
+import { language as locale } from '@/utils/lang'
+import { setupI18n, loadLocaleMessages } from './i18n'
+import { LANGUAGE_LOAD_KEY } from '@/@types'
 
 const i18n = setupI18n({
   legacy: false,
   locale: locale.value,
   fallbackLocale: 'en'
 })
+const languageLoaded = ref(false)
 
 watch(
   locale,
   async (lang) => {
-    console.debug('current language: ', lang)
-    await loadLocaleMessages(i18n, lang)
-    nextTick()
-    setI18nLanguage(i18n, lang)
+    console.debug('Language switch to:', lang)
+    await loadLocaleMessages(i18n, lang, () => {
+      languageLoaded.value = true
+    })
   },
   { immediate: true }
 )
 
 // 配置axios
-import './utils/axios'
+import '@/utils/axios'
 
 import App from './App.vue'
 import router from './router'
@@ -35,6 +37,7 @@ import router from './router'
 const plugins = import.meta.glob('./**/plugins/*.ts', { import: 'default', eager: true })
 
 const app = createApp(App)
+app.provide(LANGUAGE_LOAD_KEY, readonly(languageLoaded))
 app.use(i18n)
 app.use(createPinia())
 

@@ -1,3 +1,4 @@
+import type { InjectionKey, Ref } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import type { AxiosResponse, AxiosRequestConfig } from 'axios'
 // 响应模板
@@ -70,3 +71,4 @@ export type Route = MenuItem &
   RouteRecordRaw & {
     children?: Route[]
   }
+export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>

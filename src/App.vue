@@ -1,20 +1,23 @@
 <template>
   <el-config-provider :locale="locale">
-    <RouterView />
+    <RouterView v-show="localeDetected" />
   </el-config-provider>
 </template>
 
 <script setup lang="ts">
+import { watchEffect, ref,inject } from 'vue'
 import { ElConfigProvider } from 'element-plus'
-import { watchEffect, ref } from 'vue'
 import { RouterView } from 'vue-router'
-import { language } from './utils/lang'
+import { language } from '@/utils/lang'
+import { LANGUAGE_LOAD_KEY } from '@/@types'
+
 // @ts-ignore
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 // @ts-ignore
 import en from 'element-plus/dist/locale/en.mjs'
 
 const locale = ref(zhCn)
+const localeDetected= inject(LANGUAGE_LOAD_KEY)
 
 watchEffect(() => {
   if (language.value == 'zh-CN') {
@@ -22,5 +25,6 @@ watchEffect(() => {
   } else {
     locale.value = en
   }
+  console.debug("Element Language switch to", locale.value)
 })
 </script>
