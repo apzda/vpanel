@@ -47,7 +47,7 @@ export default defineConfig({
         selfHandleResponse: true,
         configure(proxy) {
           proxy.on('start', (req, res) => {
-            if (req.headers.authorization == 'Bearer 121212') {
+            if (!req.headers.authorization || req.headers.authorization == 'Bearer 121212') {
               res.statusCode = 401
             } else {
               res.writeHead(200, 'OK', { 'content-type': 'application/json' })
