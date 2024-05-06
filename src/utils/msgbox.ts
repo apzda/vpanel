@@ -24,6 +24,6 @@ export function toast(options: string | NotifyCfg) {
   ElMessage(options)
 }
 
-export function alertx(options: MsgCfg) {
+export function alert(options: MsgCfg) {
   ElMessageBox(options)
 }

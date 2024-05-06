@@ -17,7 +17,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 
 const locale = ref(zhCn)
-const localeDetected= inject(LANGUAGE_LOAD_KEY)
+const localeDetected = inject(LANGUAGE_LOAD_KEY)
 
 watchEffect(() => {
   if (language.value == 'zh-CN') {
@@ -25,6 +25,6 @@ watchEffect(() => {
   } else {
     locale.value = en
   }
-  console.debug("Element Language switch to", locale.value)
+  console.debug('Element Language switch to', locale.value)
 })
 </script>

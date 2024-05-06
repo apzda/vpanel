@@ -7,7 +7,9 @@ import { useTitle, useDark } from '@vueuse/core'
 export const useAppStore = defineStore('application', () => {
   const title = ref('Dashboard')
 
-  const appTitle = computed(() => title.value + ' | ' + import.meta.env.VITE_APP_NAME + ' [' + version + ']')
+  const appTitle = computed(
+    () => title.value + ' | ' + import.meta.env.VITE_APP_NAME + ' [' + version + ']'
+  )
 
   function setAppTitle(titleStr: string) {
     title.value = titleStr

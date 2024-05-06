@@ -6,6 +6,7 @@ export type ApiResponse<T, D> = {
   errCode: number
   errMsg?: string
 } & AxiosResponse<T, D>
+
 // 网关选项
 export interface GtwOptions {
   baseURL?: string
@@ -19,10 +20,13 @@ export interface GtwOptions {
   xsrfCookieName?: string
   xsrfHeaderName?: string
 }
+
 // 配置选项
 export interface Settings {
   [index: string]: any
-  loginUrl: string
+
+  loginUrl?: string
+  rolePrefix?: string
   refreshTokenApi?: string
   fromArg?: string
   transformResponse?: (response: any) => any
@@ -42,11 +46,13 @@ export interface Settings {
     }
   }
 }
+
 // 菜单参数
 export interface MenuOption {
   data: any
   t: (str: string) => string
 }
+
 // 菜单选项
 export interface MenuItem {
   id?: string
@@ -64,6 +70,7 @@ export interface MenuItem {
   roles?: string[] | string
   children?: MenuItem[]
 }
+
 // 扩展选项
 export type RequestOptions = { login?: boolean; autoRefresh?: boolean }
 export type RequestConfig = AxiosRequestConfig & RequestOptions
@@ -72,4 +79,16 @@ export type Route = MenuItem &
   RouteRecordRaw & {
     children?: Route[]
   }
+// 普通响应
+export type CommonResponse = {
+  errCode: number
+  errMsg?: string
+  message?: string
+  type?: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
+}
+
+export type Response<T, D = any> = Promise<AxiosResponse<CommonResponse & { data?: T }, D>>
+
+export type FlatResponse<T extends CommonResponse, D = any> = Promise<AxiosResponse<T, D>>
+
 export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>

@@ -29,7 +29,7 @@ const { isLoading } = useNProgress(0.3, {
 export function gotoLoginPage(url?: string, next?: NavigationGuardNext): boolean | void {
   const fromArg = settings.fromArg || 'from'
 
-  if (settings.loginUrl.match(/^https?:\/\/.+/)) {
+  if (settings.loginUrl?.match(/^https?:\/\/.+/)) {
     window.location.href = settings.loginUrl + `?${fromArg}=` + encodeURI(location.href)
     return false
   } else if (settings.loginUrl && settings.loginUrl != location.pathname) {

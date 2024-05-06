@@ -1,15 +1,18 @@
+import type { NavigationGuardNext } from 'vue-router'
 import axios, { AxiosError } from 'axios'
 import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { v4 as uuid_v4 } from 'uuid'
 
-import type { RequestOptions, RequestConfig } from '@/@types'
+import type { RequestOptions, RequestConfig, CommonResponse } from '@/@types'
 import settings from '@/config/settings'
 import { language } from '@/utils/lang'
 import { user, logout } from '@/stores/user'
-import { gotoLoginPage } from '@/router'
-import { notify, toast, alertx } from '@/utils/msgbox'
+import handlers from '@/config/handler'
+import { notify, toast, alert } from '@/utils/msgbox'
 
-// 这里修改错误通知
+// ======================================================
+// 以下代码可以修改错误提示
+// ======================================================
 const notifyErr = (message: string, title?: string) => {
   notify({
     duration: 0,
@@ -30,7 +33,7 @@ const notifyMsg = (message: string, title?: string) => {
 }
 // 这里修改错误提示
 const alertErr = (message: string) => {
-  alertx({
+  alert({
     message: message,
     // @ts-ignore
     title: window.i18n.t('alert.error'),
@@ -39,7 +42,7 @@ const alertErr = (message: string) => {
 }
 
 const alertMsg = (message: string) => {
-  alertx({
+  alert({
     message: message,
     // @ts-ignore
     title: window.i18n.t('alert.success'),
@@ -70,7 +73,12 @@ const toastMsg = (message: string) => {
 // ======================================================
 const setting = settings
 const bearer = setting.tokenBearer ? setting.tokenBearer + ' ' : ''
-
+const gotoLoginPage = (url?: string, next?: NavigationGuardNext) => {
+  handlers.onLogin({
+    url: url,
+    next: next
+  })
+}
 const msgBox: {
   [func: string]: (msg: string, title?: string) => void
 }[] = [
@@ -89,9 +97,9 @@ const msgBox: {
 const requestFn = (config: InternalAxiosRequestConfig & RequestOptions) => {
   console.debug('开始请求:', config.url)
 
-  if (settings.tokenHeaderName && user.value.token && config.login !== false) {
+  if (settings.tokenHeaderName && user.value.accessToken && config.login !== false) {
     // console.debug('Bearer: ', bearer)
-    config.headers[settings.tokenHeaderName] = bearer + user.value.token
+    config.headers[settings.tokenHeaderName] = bearer + user.value.accessToken
   }
 
   config.headers['Accept-Language'] = language.value
@@ -132,7 +140,7 @@ const responseFn = (response: AxiosResponse) => {
       const msgType = ((data.type || 'toast') as string).toLowerCase()
 
       if (typeof data.errCode != 'undefined' && msgType !== 'none') {
-        let msg = ((data.errMsg || data.message || '') as string).trim()
+        const msg = ((data.errMsg || data.message || '') as string).trim()
         if (msg) {
           if (data.errCode === 0) {
             typeof msgBox[0][msgType] === 'function' && msgBox[0][msgType](msg)
@@ -151,10 +159,42 @@ const responseErr = async (err: AxiosError) => {
   const t: (str: string, args?: any) => string = window.i18n.t
   if (err.response) {
     console.debug('响应出错[1]: ', err.config?.url, err)
-    // 处理非401错误，因为401错误是由AccessToken防抖处理器处理
-    if (err.response.status != 401) {
-      // 在这里进行网络错误处理（不包括401)
-      const status = err.response.status
+
+    const status = err.response.status
+    if (status == 401) {
+      const data = (err.response.data || {}) as CommonResponse
+      const cfg = (err.config || {}) as RequestConfig
+      cfg.autoRefresh = false
+
+      if (typeof data == 'object' && !Array.isArray(data)) {
+        const errCode = Math.abs(data.errCode || 401)
+        const handlerName = 'onErr' + errCode
+        const handler =
+          handlers[handlerName] ||
+          ((event?: any) => {
+            console.debug(handlerName, ' : ', event)
+          })
+        const event = {
+          error: err,
+          url: cfg.url,
+          data: data
+        }
+        switch (errCode) {
+          case 401:
+            gotoLoginPage()
+            return
+          case 810:
+            cfg.autoRefresh = true
+            break
+          default:
+            handler(event)
+        }
+      } else {
+        gotoLoginPage()
+        return
+      }
+    } else {
+      // 在这里进行网络错误处理（不包括401，因为401错误是由AccessToken防抖处理器处理)
       switch (status) {
         case 400:
         case 403:
@@ -178,7 +218,7 @@ const responseErr = async (err: AxiosError) => {
     console.debug('请求出错[1]: ', err.config?.url, err)
     notifyErr(t('network.error', [0, err.message]), t('network.title'))
   }
-
+  // 1. 透传给应用，使应用可以catch到该错误
   return Promise.reject(err)
 }
 
@@ -202,7 +242,7 @@ if (Object.keys(instances).length == 0) {
       instances[gtw] = axios.create(cfg)
     }
 
-    let interceptors = instances[gtw].interceptors
+    const interceptors = instances[gtw].interceptors
     interceptors.request.use(requestFn, requestErr)
     interceptors.response.use(responseFn, responseErr)
   }
@@ -219,7 +259,6 @@ const refreshTokenError = (err: AxiosError, reject: (err: any) => void) => {
     gotoLoginPage()
   } else {
     //todo
-    console.error(err)
     reject(err)
   }
 }
@@ -242,7 +281,7 @@ const refreshToken = (
         console.debug('刷新accessToken: ', config.url, setting.refreshTokenApi)
         useAxios()
           .post(setting.refreshTokenApi, {
-            accessToken: user.value.token,
+            accessToken: user.value.accessToken,
             refreshToken: user.value.refreshToken
           })
           .then((resp) => {
@@ -250,7 +289,7 @@ const refreshToken = (
             if (resp.data && resp.data.errCode === 0) {
               // accessToken刷新完成, 重放请求
               user.value.refreshToken = resp.data.data.refreshToken
-              user.value.token = resp.data.data.accessToken
+              user.value.accessToken = resp.data.data.accessToken
               refreshing = false
               console.debug('重放请求[1]: ', config.url, config)
               axios.request(config).then(resolve).catch(reject)
@@ -294,28 +333,33 @@ const refreshToken = (
   } else {
     // 响应码不是401
     console.debug('响应码不是401: ', config.url)
-    // todo
-    console.error(err)
     logout()
     reject(err)
   }
 }
+const onRequestTooFast =
+  handlers['onRequestTooFast'] ||
+  ((event?: any) => {
+    console.debug('Request too fast:', event)
+  })
+
 // 代理类
 class AxiosProxy {
   private axios: AxiosInstance
-  private debounces: Set<string>
+  private debounceMap: Set<string>
 
   constructor(axios: AxiosInstance) {
     this.axios = axios
-    this.debounces = new Set<string>()
-    //this.debounces.add('/data')
+    this.debounceMap = new Set<string>()
   }
+
   get<T = any, D = any>(url: string, config?: RequestConfig): Promise<AxiosResponse<T, D>> {
     config = config || {}
     config.url = url
     config.method = 'get'
     return this.request(config)
   }
+
   post<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponse<T, D>> {
     config = config || {}
     config.url = url
@@ -323,6 +367,7 @@ class AxiosProxy {
     config.method = 'post'
     return this.request(config)
   }
+
   put<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponse<T, D>> {
     config = config || {}
     config.url = url
@@ -330,6 +375,7 @@ class AxiosProxy {
     config.method = 'put'
     return this.request(config)
   }
+
   patch<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponse<T, D>> {
     config = config || {}
     config.url = url
@@ -337,6 +383,7 @@ class AxiosProxy {
     config.method = 'patch'
     return this.request(config)
   }
+
   delete<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponse<T, D>> {
     config = config || {}
     config.url = url
@@ -344,35 +391,35 @@ class AxiosProxy {
     config.method = 'delete'
     return this.request(config)
   }
+
   request<T = any, D = any>(config: RequestConfig): Promise<AxiosResponse<T, D>> {
     const url = config.url || ''
     if (setting.debounce !== false) {
-      if (this.debounces.has(url)) {
+      if (this.debounceMap.has(url)) {
         return new Promise<AxiosResponse<T, D>>((resolve, reject) => {
           const err = new AxiosError('Too Fast Requests', 'TOO_FAST')
-          // todo
-          console.error(err)
+          onRequestTooFast({ error: err, url: url })
           reject(err)
         })
       }
-      this.debounces.add(url)
+      this.debounceMap.add(url)
     }
-    // 刷新
+
     return new Promise<AxiosResponse<T, D>>((resolve, reject) => {
       this.axios
         .request(config)
         .then(resolve)
         .catch((err) => {
-          if (config.autoRefresh !== false) {
+          const cfg = err.config || config
+          if (err.response && err.response.status == 401 && cfg.autoRefresh !== false) {
             refreshToken(this, err, config, resolve, reject)
           } else {
-            // todo
-            console.error(err)
+            // 2. 透传给应用，让应用可以catch该错误.
             reject(err)
           }
         })
         .finally(() => {
-          this.debounces.delete(url)
+          this.debounceMap.delete(url)
           console.debug('Complete ' + url)
         })
     })
@@ -382,14 +429,3 @@ class AxiosProxy {
 export default function useAxios(gtw?: string): AxiosProxy {
   return new AxiosProxy(instances[gtw || 'default'])
 }
-
-export type CommonResponse = {
-  errCode: number
-  errMsg?: string
-  message?: string
-  type?: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
-}
-
-export type Response<T, D = any> = Promise<AxiosResponse<CommonResponse & { data?: T }, D>>
-
-export type FlatResponse<T extends CommonResponse, D = any> = Promise<AxiosResponse<T, D>>

@@ -10,7 +10,9 @@ export type IdFieldName = 'id' | 'path'
 
 export interface ITreeMgr<T> {
   readonly nodes: Array<T>
+
   add(routes: Array<T>): void
+
   get(id: string): T | null
 }
 
@@ -23,6 +25,7 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
     this.idf = idf
     this.separator = separator
   }
+
   add(nodes: Array<T>) {
     this._add(nodes, this.nodes, 1)
   }
@@ -30,7 +33,7 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
   _add(nodes: Array<T>, current: Array<T>, level: number) {
     const idf = this.idf
     for (let i = 0; i < nodes.length; i++) {
-      let node = nodes[i]
+      const node = nodes[i]
       node.level = level
       const cr = current.find((r) => r[idf] === node[idf])
       // console.debug('添加Node', JSON.stringify(node))
@@ -85,5 +88,13 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
         }
       }
     }
+  }
+}
+
+export const toArray = (args: string | string[]): string[] => {
+  if (Array.isArray(args)) {
+    return args
+  } else {
+    return [args]
   }
 }
