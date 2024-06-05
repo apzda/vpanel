@@ -1,5 +1,3 @@
-import { isArray } from 'lodash-es'
-
 const merge = (dest: any, source: any): void => {
   for (const key in source) {
     if (key != 'children') {
@@ -62,23 +60,23 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
     const ids = id.split(this.separator)
     const lastIdx = ids.length - 1
     const idf = this.idf
-    let cnodes = this.nodes
-    let cnode: T | undefined
+    let cNodes = this.nodes
+    let cNode: T | undefined
 
     for (let i = 0; i <= lastIdx; i++) {
       if (!ids[i].trim()) continue
-      cnode = cnodes.find((n) => n[idf] == ids[i])
-      if (!cnode) {
+      cNode = cNodes.find((n) => n[idf] == ids[i])
+      if (!cNode) {
         return null
       } else if (i != lastIdx) {
-        if (cnode.children) {
-          cnodes = cnode.children
+        if (cNode.children) {
+          cNodes = cNode.children
         } else {
           return null
         }
       }
     }
-    return cnode ? cnode : null
+    return cNode ? cNode : null
   }
 
   _fill(level: number, children?: T[]) {
@@ -94,7 +92,7 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
 }
 
 export const toArray = (args: string | string[]): string[] => {
-  if (isArray(args)) {
+  if (Array.isArray(args)) {
     return args
   } else {
     return [args]
@@ -105,11 +103,11 @@ export const isObject = (data: any) => {
   return typeof data == 'object' && !Array.isArray(data)
 }
 
-const pad = (num) => String(num).padStart(2, '0')
+const pad = (num: string | number) => String(num).padStart(2, '0')
 
-export const formatDate = (date, format = 'yyyy-MM-dd'): string => {
-  const tokens = {
-    'yyyy': date.getFullYear(),
+export const formatDate = (date: Date, format = 'yyyy-MM-dd'): string => {
+  const tokens: { [format: string]: string } = {
+    'yyyy': date.getFullYear().toString(),
     'MM': pad(date.getMonth() + 1),
     'dd': pad(date.getDate()),
     'HH': pad(date.getHours()),
@@ -120,7 +118,7 @@ export const formatDate = (date, format = 'yyyy-MM-dd'): string => {
   return format.replace(/yyyy|MM|dd|HH|mm|ss/g, match => tokens[match])
 }
 
-export const formatDatetime = (date, format = 'yyyy-MM-dd HH:mm:ss'): string => {
+export const formatDatetime = (date: Date, format = 'yyyy-MM-dd HH:mm:ss'): string => {
   return formatDate(date, format)
 }
 
@@ -128,11 +126,13 @@ export const fromUnixTimestamp = (timestamp: number | string, format = 'yyyy-MM-
   if (!timestamp) {
     return ''
   }
+
   const d = new Date()
   if (timestamp.toString().length > 12) {
-    d.setTime(timestamp)
+    d.setTime(timestamp as number)
   } else {
-    d.setTime(timestamp * 1000)
+    d.setTime(timestamp as number * 1000)
   }
+
   return formatDate(d, format)
 }
