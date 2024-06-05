@@ -30,7 +30,7 @@ export default {
     })
 
     app.directive('has-permission', (el: HTMLElement, binding: DirectiveBinding) => {
-      if (!hasPermission(binding.value, binding.arg, binding.modifiers)) {
+      if (!hasPermission(binding.value, binding.arg ? { id: binding.arg } : {})) {
         el.parentNode?.removeChild(el)
       }
     })

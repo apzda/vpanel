@@ -4,8 +4,8 @@
   </el-config-provider>
 </template>
 
-<script setup lang="ts">
-import { watchEffect, ref,inject } from 'vue'
+<script lang="ts" setup>
+import { watchEffect, ref, inject } from 'vue'
 import { ElConfigProvider } from 'element-plus'
 import { RouterView } from 'vue-router'
 import { language } from '@/utils/lang'

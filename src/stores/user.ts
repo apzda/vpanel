@@ -1,9 +1,12 @@
 import { useStorage } from '@vueuse/core'
 
+import useAxios from '@/utils/axios'
 import { toArray } from '@/utils'
+import { t } from '@/utils/i18n'
 import setting from '@/config/settings'
 
-const ROLE_PREFIX = setting.rolePrefix ? setting.rolePrefix : 'ROLE_'
+const axios = useAxios()
+const ROLE_PREFIX = setting.rolePrefix || 'ROLE_'
 const patterns = new Map<string, RegExp>()
 
 const getPattern = (authority: string): RegExp | undefined => {
@@ -38,6 +41,7 @@ export interface Job {
   icon?: string
   current?: true
 }
+
 export interface Department {
   id: string
   name: string
@@ -46,6 +50,7 @@ export interface Department {
   current?: true
   jobs?: { [id: string]: Job }
 }
+
 export interface Organization {
   id: string
   name: string
@@ -54,11 +59,18 @@ export interface Organization {
   current?: true
   departments?: { [id: string]: Department }
 }
+
 export interface Tenant {
   id: string
   name: string
   current?: true
   organizations?: { [id: string]: Organization }
+}
+
+export interface Role {
+  id: string
+  name: string
+  role: string
 }
 
 export interface UserInfo {
@@ -75,6 +87,7 @@ export interface UserInfo {
   phone?: string
   phonePrefix?: string
   email?: string
+  provider?: string
   avatar?: string
   timezone?: string
   theme?: string
@@ -82,7 +95,11 @@ export interface UserInfo {
   accessToken?: string
   refreshToken?: string
   mfa?: string
+  locked?: boolean
+  credentialsExpired?: boolean
+  runAs?: string
   authorities?: string[]
+  roles?: Role[]
   tenants?: { [id: string]: Tenant }
   tenant?: Tenant
   organization?: Organization
@@ -95,13 +112,24 @@ export const user = useStorage<UserInfo>('_json_user_info', {}, localStorage, {
 })
 
 export const logout = (): void => {
-  user.value.refreshToken = ''
-  user.value.accessToken = ''
-  user.value.login = false
+  user.value = {}
+}
+
+export const switchTo = (user: { username: string }) => {
+  if (setting.switchToApi) {
+    return axios.post(setting.switchToApi, user)
+  }
+  throw new Error(t('user.switch_api_not_set'))
+}
+
+export const switchBack = () => {
+  if (setting.switchBackApi) {
+    return axios.post(setting.switchBackApi, {})
+  }
+  throw new Error(t('user.switch_api_not_set'))
 }
 
 export const isSuperAdmin = (): boolean => {
-  // console.debug('isAdmin')
   return hasRole('sa')
 }
 
@@ -133,7 +161,7 @@ export const hasAuthority = (authorities: string | string[], modifiers: Record<s
 
 export const hasPermission = (
   permission: string,
-  args: { id?: string | number; [key: string]: any } | (() => string)
+  args?: { id?: string | number; [key: string]: any } | (() => string)
 ): boolean => {
   // console.debug('hasPermission: ', permission, ', args =>', args)
   if (!user.value.login || !user.value.authorities) {
@@ -162,3 +190,4 @@ export const hasPermission = (
   // console.debug('matched =>', authority)
   return authority != undefined
 }
+

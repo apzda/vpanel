@@ -12,7 +12,9 @@ import { LANGUAGE_LOAD_KEY } from '@/@types'
 const i18n = setupI18n({
   legacy: false,
   locale: locale.value,
-  fallbackLocale: 'en'
+  fallbackLocale: 'en',
+  silentTranslationWarn: true,
+  silentFallbackWarn: true
 })
 const languageLoaded = ref(false)
 

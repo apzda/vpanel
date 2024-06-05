@@ -1,3 +1,5 @@
+import { isArray } from 'lodash-es'
+
 const merge = (dest: any, source: any): void => {
   for (const key in source) {
     if (key != 'children') {
@@ -92,9 +94,45 @@ export class TreeMgr<T extends { path?: string; id?: string; level?: number; chi
 }
 
 export const toArray = (args: string | string[]): string[] => {
-  if (Array.isArray(args)) {
+  if (isArray(args)) {
     return args
   } else {
     return [args]
   }
+}
+
+export const isObject = (data: any) => {
+  return typeof data == 'object' && !Array.isArray(data)
+}
+
+const pad = (num) => String(num).padStart(2, '0')
+
+export const formatDate = (date, format = 'yyyy-MM-dd'): string => {
+  const tokens = {
+    'yyyy': date.getFullYear(),
+    'MM': pad(date.getMonth() + 1),
+    'dd': pad(date.getDate()),
+    'HH': pad(date.getHours()),
+    'mm': pad(date.getMinutes()),
+    'ss': pad(date.getSeconds())
+  }
+
+  return format.replace(/yyyy|MM|dd|HH|mm|ss/g, match => tokens[match])
+}
+
+export const formatDatetime = (date, format = 'yyyy-MM-dd HH:mm:ss'): string => {
+  return formatDate(date, format)
+}
+
+export const fromUnixTimestamp = (timestamp: number | string, format = 'yyyy-MM-dd HH:mm:ss'): string => {
+  if (!timestamp) {
+    return ''
+  }
+  const d = new Date()
+  if (timestamp.toString().length > 12) {
+    d.setTime(timestamp)
+  } else {
+    d.setTime(timestamp * 1000)
+  }
+  return formatDate(d, format)
 }

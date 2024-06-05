@@ -32,3 +32,16 @@ export async function loadLocaleMessages(i18n: _I18n, locale: string, callback?:
     setI18nLanguage(i18n, locale)
   })
 }
+
+export function t(msg: string, args?: any) {
+  //@ts-ignore
+  return window.i18n.t(msg, args)
+}
+
+export function ts(message: string, defaultString: string, args?: any) {
+  const text = t(message, args)
+  if (text == message) {
+    return defaultString
+  }
+  return text
+}

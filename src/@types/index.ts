@@ -1,11 +1,7 @@
 import type { InjectionKey, Ref } from 'vue'
-import type { RouteRecordRaw } from 'vue-router'
-import type { AxiosResponse, AxiosRequestConfig } from 'axios'
-// 响应模板
-export type ApiResponse<T, D> = {
-  errCode: number
-  errMsg?: string
-} & AxiosResponse<T, D>
+import type { RouteRecordRaw, NavigationGuardNext } from 'vue-router'
+import type { AxiosRequestConfig } from 'axios'
+import { AxiosError } from 'axios'
 
 // 网关选项
 export interface GtwOptions {
@@ -19,17 +15,27 @@ export interface GtwOptions {
   responseEncoding?: string
   xsrfCookieName?: string
   xsrfHeaderName?: string
+  transformResponse?: ((response: any) => any) | ((response: any) => any)[]
 }
 
 // 配置选项
 export interface Settings {
   [index: string]: any
 
-  loginUrl?: string
+  loginUrl?: string // 登录地址
+  activeUrl?: string // 激活地址
+  resetPwdUrl?: string // 重置密码地址
+  mfaSetupUrl?: string // 设置多因素认证地址
+  mfaVerifyUrl?: string // 多因素认证地址
+  registerUrl?: string // 注册地址
+  logoutApi?: string // 退出接口
+  refreshTokenApi?: string // 刷新TOKEN接口
+  switchToApi?: string // 切换到用户
+  switchBackApi?: string // 切回原用户
+  fromArg?: string // 来源URL
   rolePrefix?: string
-  refreshTokenApi?: string
-  fromArg?: string
-  transformResponse?: (response: any) => any
+  simulator?: string
+  transformResponse?: ((response: any) => any) | ((response: any) => any)[]
   tokenHeaderName?: string
   tokenBearer?: string
   whiteList: string[]
@@ -39,6 +45,7 @@ export interface Settings {
   }
   debounce?: boolean
   language?: string
+  logo?: string
   languages: {
     [lang: string]: {
       name: string
@@ -71,24 +78,83 @@ export interface MenuItem {
   children?: MenuItem[]
 }
 
+// 网络请求错误事件
+export interface ErrorEvent {
+  url?: string
+  next?: NavigationGuardNext
+  data?: CommonResponse
+  error?: AxiosError
+  suppress?: boolean
+}
+
+// 网络请求错误处理器
+export interface Handlers {
+  [event: string]: (event: ErrorEvent) => boolean | void
+
+  onLogin: (event: ErrorEvent) => void
+  onResetPassword: (event: ErrorEvent) => void
+  onRequestTooFast: (event: ErrorEvent) => void
+}
+
 // 扩展选项
-export type RequestOptions = { login?: boolean; autoRefresh?: boolean }
+export type RequestOptions = { login?: false; autoRefresh?: false; showErrMsg?: false, converter: (data: any) => any }
 export type RequestConfig = AxiosRequestConfig & RequestOptions
 // 路由规则
 export type Route = MenuItem &
   RouteRecordRaw & {
-    children?: Route[]
-  }
+  children?: Route[]
+}
+
+// 排序
+export interface Order {
+  /**
+   * 排序方向
+   */
+  direction?: 'ASC' | 'DESC';
+  /**
+   * 排序字段
+   */
+  field: string;
+  /**
+   * 忽略大小写
+   */
+  ignoreCase?: boolean;
+}
+
+/**
+ * Sorter
+ */
+export interface Sorter {
+  order: Order[]
+}
+
+/**
+ * Pager
+ */
+export interface Pager {
+  offset?: number;
+  pageNumber?: number;
+  pageSize?: number;
+  sort?: Sorter;
+}
+
+/**
+ * PaginationQuery
+ */
+export interface PaginationQuery {
+  [q: string]: any;
+
+  pager: Pager;
+}
+
 // 普通响应
-export type CommonResponse = {
+export interface CommonResponse {
   errCode: number
   errMsg?: string
   message?: string
   type?: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
 }
 
-export type Response<T, D = any> = Promise<AxiosResponse<CommonResponse & { data?: T }, D>>
-
-export type FlatResponse<T extends CommonResponse, D = any> = Promise<AxiosResponse<T, D>>
+export type Response<T> = CommonResponse & { data?: T }
 
 export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>

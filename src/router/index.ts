@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type NavigationGuardNext } from 'vue-ro
 import { useNProgress } from '@vueuse/integrations/useNProgress'
 
 import { TreeMgr } from '@/utils'
+import { notify } from '@/utils/msgbox'
 import settings from '@/config/settings'
 
 import { useAppStore } from '@/stores/app'
@@ -26,43 +27,54 @@ const { isLoading } = useNProgress(0.3, {
   showSpinner: false
 })
 
-export function gotoLoginPage(url?: string, next?: NavigationGuardNext): boolean | void {
-  const fromArg = settings.fromArg || 'from'
+const fromArg = settings.fromArg || 'from'
 
-  if (settings.loginUrl?.match(/^https?:\/\/.+/)) {
-    window.location.href = settings.loginUrl + `?${fromArg}=` + encodeURI(location.href)
+export const gotoPage = (page: string, from?: string, next?: NavigationGuardNext): boolean | void => {
+  const pageUrl = settings[page] || null
+  from = from === settings.loginUrl ? '/' : from
+  if (pageUrl?.match(/^https?:\/\/.+/)) {
+    window.location.href = pageUrl + `?${fromArg}=` + encodeURI(location.href)
     return false
-  } else if (settings.loginUrl && settings.loginUrl != location.pathname) {
-    url = url || location.pathname + location.search
+  } else if (pageUrl && pageUrl != location.pathname) {
+    from = from || location.pathname + location.search
     if (next) {
       // console.debug('跳转到登录页: ' + settings.loginUrl)
-      next({
+      return next({
         path: settings.loginUrl,
-        query: url === '/' ? {} : { [fromArg]: url }
+        query: from === '/' ? {} : { [fromArg]: from }
       })
     } else {
       router.push({
-        path: settings.loginUrl,
-        query: url === '/' ? {} : { [fromArg]: url }
+        path: pageUrl,
+        query: from === '/' ? {} : { [fromArg]: from }
       })
     }
-  } else if (settings.loginUrl == location.pathname) {
-    // console.debug('已经在登录页了')
+  } else if (pageUrl == location.pathname) {
     isLoading.value = false
   }
+}
+
+export const gotoLoginPage = (url?: string, next?: NavigationGuardNext): boolean | void => {
+  return gotoPage('loginUrl', url, next)
 }
 
 router.beforeEach((to, from, next) => {
   isLoading.value = true
   // @ts-ignore
   const t = window.i18n.t as (str: string) => string
-  // console.debug('beforeEach', [isLogin.value, to, from])
   // @ts-ignore
   if (to.login === false || !settings.loginUrl || settings.whiteList.indexOf(to.path) !== -1) {
-    // console.debug('放行 -- ' + settings.whiteList.indexOf(to.path))
     next()
   } else if (user.value.login) {
-    // console.debug('beforeEach - 1', [isLogin.value, to, from])
+    if (user.value.credentialsExpired && settings.resetPwdUrl) {
+      return gotoPage('resetPwdUrl', to.path, next)
+    } else if (user.value.locked && settings.activeUrl) {
+      return gotoPage('activeUrl', to.path, next)
+    } else if (user.value.mfa == 'UNSET' && settings.mfaSetupUrl) {
+      return gotoPage('mfaSetupUrl', to.path, next)
+    } else if (user.value.mfa == 'VERIFY' && settings.mfaVerifyUrl) {
+      return gotoPage('mfaVerifyUrl', to.path, next)
+    }
     let hasA = true
     let hasR = true
     //@ts-ignore
@@ -78,9 +90,8 @@ router.beforeEach((to, from, next) => {
     if (hasR && hasA) {
       next()
     } else {
-      alert(t('network.403'))
-      next({ ...from })
-      return false
+      notify({ title: t('network.403'), message: t('alert.error'), type: 'error' })
+      return next({ ...from })
     }
   } else {
     return gotoLoginPage(to.path, next)
