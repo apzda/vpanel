@@ -1,8 +1,7 @@
 import { merge } from 'lodash-es'
-import { useStorage } from '@vueuse/core'
 import type { Ref } from 'vue'
-
-import settings from './../config/settings'
+import { useStorage } from '@vueuse/core'
+import settings from '@/config/settings'
 
 export interface Msg {
   [key: string]: string | number | Msg
@@ -27,7 +26,7 @@ export function loadMessages(messages: Msg) {
 
 export const SUPPORT_LOCALES: string[] = Object.keys(settings.languages)
 
-let defaultLang: string = (settings as Settings).language || navigator.language || 'en'
+let defaultLang: string = settings.language || navigator.language || 'en'
 console.debug('Supported Languages:', SUPPORT_LOCALES)
 if (!SUPPORT_LOCALES.includes(defaultLang)) {
   defaultLang = defaultLang.substring(0, 2)
@@ -36,6 +35,6 @@ if (!SUPPORT_LOCALES.includes(defaultLang)) {
   }
 }
 
-;(settings as Settings).language = defaultLang
+settings.language = defaultLang
 
 export const language: Ref<string> = useStorage('lang', defaultLang)

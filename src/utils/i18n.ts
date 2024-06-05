@@ -17,12 +17,31 @@ export function setI18nLanguage(i18n: _I18n, locale: string) {
   document.querySelector('html')?.setAttribute('lang', locale)
 }
 
-export async function loadLocaleMessages(i18n: _I18n, locale: string) {
+export async function loadLocaleMessages(i18n: _I18n, locale: string, callback?: () => void) {
   // load locale messages with dynamic import
-  const messages = await import(`./lang/${locale}.ts`)
+  const messages = await import(`../lang/${locale}.ts`)
   // set locale and locale message
   i18n.global.setLocaleMessage(locale, messages.default)
   i18n.global.locale.value = locale
+  console.debug('Language files loaded: ', locale)
 
-  return nextTick()
+  return nextTick(() => {
+    if (typeof callback == 'function') {
+      callback()
+    }
+    setI18nLanguage(i18n, locale)
+  })
+}
+
+export function t(msg: string, args?: any) {
+  //@ts-ignore
+  return window.i18n.t(msg, args)
+}
+
+export function ts(message: string, defaultString: string, args?: any) {
+  const text = t(message, args)
+  if (text == message) {
+    return defaultString
+  }
+  return text
 }

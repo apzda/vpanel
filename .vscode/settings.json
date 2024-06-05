@@ -5,6 +5,11 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
   "scss.lint.unknownAtRules": "ignore",
-  "css.lint.unknownAtRules": "ignore"
+  "css.lint.unknownAtRules": "ignore",
+  "editor.fontSize": 18,
+  "window.zoomLevel": 1.5
 }
