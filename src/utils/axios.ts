@@ -10,6 +10,7 @@ import { isObject } from '@/utils'
 import { user, logout } from '@/stores/user'
 import handlers from '@/config/handler'
 import { notify, toast, alert } from '@/utils/msgbox'
+import { t } from '@/utils/i18n'
 
 // ======================================================
 // 以下代码可以修改错误提示
@@ -17,7 +18,7 @@ import { notify, toast, alert } from '@/utils/msgbox'
 const notifyErr = (message: string, title?: string) => {
   notify({
     duration: 10000,
-    title: title || window.i18n.t('alert.error'),
+    title: title || t('alert.error'),
     message: message,
     type: 'error',
     position: 'top-right'
@@ -26,7 +27,7 @@ const notifyErr = (message: string, title?: string) => {
 const notifyMsg = (message: string, title?: string) => {
   notify({
     duration: 3000,
-    title: title || window.i18n.t('alert.success'),
+    title: title || t('alert.success'),
     message: message,
     type: 'success',
     position: 'top-right'
@@ -126,6 +127,11 @@ const mergeCfg = (cfg: string | GtwOptions, transformResponse?: ((data: any) => 
   }
   return cfg
 }
+
+export interface AxiosResponseWithResult<T, D> extends AxiosResponse<T, D> {
+  result: T
+}
+
 // 请求预处理
 const requestFn = (config: InternalAxiosRequestConfig & RequestOptions) => {
   if (settings.tokenHeaderName && user.value.accessToken && config.login !== false) {
@@ -160,11 +166,12 @@ const requestErr = (err: AxiosError) => {
   return Promise.reject(err)
 }
 // 响应回调处理
-const responseFn = (response: AxiosResponse) => {
-  console.debug('收到响应', response.config.url, response)
+const responseFn = (response: AxiosResponseWithResult<any, any>) => {
+  // console.debug('收到响应', response.config.url, response)
+  const config = (response.config || {}) as RequestConfig
   // 在这里进行能用的应用错误处理
   const data = response.data
-  if (response.config.showErrMsg !== false && isObject(data)) {
+  if (config.showErrMsg !== false && isObject(data)) {
     const msgType = ((data.type || 'toast') as string).toLowerCase()
 
     if (typeof data.errCode != 'undefined' && msgType !== 'none') {
@@ -179,8 +186,8 @@ const responseFn = (response: AxiosResponse) => {
     }
   }
 
-  if (typeof response.config.converter == 'function') {
-    response.result = response.config.converter(data)
+  if (typeof config.converter == 'function') {
+    response.result = config.converter(data)
   } else {
     response.result = data
   }
@@ -188,11 +195,10 @@ const responseFn = (response: AxiosResponse) => {
   return response
 }
 // 响应错误处理
-const responseErr = async (err: AxiosError) => {
-  //@ts-ignore
-  const t: (str: string, args?: any) => string = window.i18n.t
+const responseErr = async (err: AxiosError & { handled: boolean | void }) => {
+  const config = (err.config || {}) as RequestConfig
   if (err.response) {
-    console.debug('响应出错[1]: ', err.config?.url, err)
+    // console.debug('响应出错[1]: ', err.config?.url, err)
     const status = err.response.status
     const data = (err.response.data || { errCode: 500 }) as CommonResponse
     if (status != 401) {
@@ -210,11 +216,11 @@ const responseErr = async (err: AxiosError) => {
           data: data
         }
         err.handled = handler(event)
-        if (err.config?.showErrMsg !== false && event.suppress !== true) {
+        if (config.showErrMsg !== false && event.suppress !== true) {
           notifyErr(data.errMsg || t('network.' + status), t('alert.error'))
         }
       } else {
-        if (err.config?.showErrMsg !== false) {
+        if (config.showErrMsg !== false) {
           notifyErr(t('network.error', [status, err.message]), t('alert.error'))
         }
       }
@@ -224,15 +230,16 @@ const responseErr = async (err: AxiosError) => {
   } else {
     // 没有收到服务器的响应时
     console.debug('请求出错[1]: ', err.config?.url, err)
-    if (err.config?.showErrMsg !== false) {
+    if (config.showErrMsg !== false) {
       notifyErr(t('network.error', [0, err.message]), t('network.title'))
     }
   }
   // 1. 透传给应用，使应用可以catch到该错误
   return Promise.reject(err)
 }
-
+//@ts-ignore
 axios.interceptors.request.use(requestFn, requestErr)
+//@ts-ignore
 axios.interceptors.response.use(responseFn, responseErr)
 
 const instances: {
@@ -246,7 +253,9 @@ if (Object.keys(instances).length == 0) {
     console.debug('Gateway:', gtw, cfg)
     instances[gtw] = axios.create(cfg)
     const interceptors = instances[gtw].interceptors
+    //@ts-ignore
     interceptors.request.use(requestFn, requestErr)
+    //@ts-ignore
     interceptors.response.use(responseFn, responseErr)
   }
 }
@@ -280,7 +289,7 @@ const refreshToken = (
     if (!refreshing) {
       // 刷新accessToken
       refreshing = true
-      console.debug('刷新accessToken: ', config.url, setting.refreshTokenApi)
+      // console.debug('刷新accessToken: ', config.url, setting.refreshTokenApi)
       useAxios()
         .post(setting.refreshTokenApi, {
           name: user.value.name,
@@ -288,7 +297,7 @@ const refreshToken = (
           refreshToken: user.value.refreshToken
         })
         .then((resp) => {
-          console.debug('刷新AccessToken请求完成: ', config.url, resp.data)
+          // console.debug('刷新AccessToken请求完成: ', config.url, resp.data)
           if (resp.data && resp.data.errCode === 0) {
             for (const f in resp.data.data) {
               user.value[f] = resp.data.data[f]
@@ -340,8 +349,6 @@ const refreshToken = (
 // 请求过快
 const onRequestTooFast = handlers.onRequestTooFast
 
-export type AxiosResponseWithResult<T, D> = AxiosResponse<T, D> & { result: T }
-
 // 代理类
 class AxiosProxy {
   private axios: AxiosInstance
@@ -353,14 +360,14 @@ class AxiosProxy {
   }
 
   get<T = any, D = any>(url: string, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {}
+    config = config || {} as RequestConfig
     config.url = url
     config.method = 'get'
     return this.request(config)
   }
 
   post<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {}
+    config = config || {} as RequestConfig
     config.url = url
     config.data = data
     config.method = 'post'
@@ -368,7 +375,7 @@ class AxiosProxy {
   }
 
   put<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {}
+    config = config || ({}) as RequestConfig
     config.url = url
     config.data = data
     config.method = 'put'
@@ -376,7 +383,7 @@ class AxiosProxy {
   }
 
   patch<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {}
+    config = config || {} as RequestConfig
     config.url = url
     config.data = data
     config.method = 'patch'
@@ -384,7 +391,7 @@ class AxiosProxy {
   }
 
   delete<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {}
+    config = config || {} as RequestConfig
     config.url = url
     config.data = data
     config.method = 'delete'
@@ -395,7 +402,7 @@ class AxiosProxy {
     const url = config.url || ''
     if (setting.debounce !== false) {
       if (this.debounceMap.has(url)) {
-        return new Promise<AxiosResponse<T, D>>((resolve, reject) => {
+        return new Promise<AxiosResponseWithResult<T, D>>((resolve, reject) => {
           const err = new AxiosError('Too Fast Requests', 'TOO_FAST')
           onRequestTooFast({ error: err, url: url })
           reject(err)
@@ -410,9 +417,10 @@ class AxiosProxy {
       config.headers['Accept'] = 'application/json'
     }
 
-    return new Promise<AxiosResponse<T, D>>((resolve, reject) => {
+    return new Promise<AxiosResponseWithResult<T, D>>((resolve, reject) => {
       this.axios
         .request(config)
+        //@ts-ignore
         .then(resolve)
         .catch((err) => {
           if (err.response) {
@@ -428,7 +436,6 @@ class AxiosProxy {
         })
         .finally(() => {
           this.debounceMap.delete(url)
-          console.debug('Complete ' + url)
         })
     })
   }

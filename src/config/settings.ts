@@ -7,7 +7,8 @@ export default defineSetting({
   }, // 支持的语言
   whiteList: [], // 无需登录检测的页面
   loginUrl: '/login', // 登录页地址
-  refreshTokenApi: '/refresh.json', // 刷新AccessToken api
+  logoutApi: '/logout',
+  refreshTokenApi: '/ucenter/refresh-token', // 刷新AccessToken api
   fromArg: 'from',
   gtw: {
     default: {

@@ -30,34 +30,6 @@ export default defineConfig(({ mode }) => {
           additionalData: `@use "@/styles/element/index.scss" as *;`
         }
       }
-    },
-    server: {
-      proxy: {
-        '/data': {
-          target: '/data.json',
-          selfHandleResponse: true,
-          configure(proxy) {
-            proxy.on('start', (req, res) => {
-              if (!req.headers.authorization || req.headers.authorization == 'Bearer 121212') {
-                res.statusCode = 401
-                res.write('{"errCode":-810}')
-              } else {
-                res.writeHead(200, 'OK', { 'content-type': 'application/json' })
-                res.write('{"errCode":0,"data":{"id":888}}')
-              }
-              res.end()
-            })
-          }
-        },
-        '/refresh-token': {
-          target: '/refresh',
-          selfHandleResponse: true,
-          bypass(req, res) {
-            res.writeHead(401)
-            res.end()
-          }
-        }
-      }
     }
   }
 })

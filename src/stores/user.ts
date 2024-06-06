@@ -74,6 +74,8 @@ export interface Role {
 }
 
 export interface UserInfo {
+  [key: string]: any
+
   uid?: string | number
   uuid?: string
   name?: string

@@ -75,7 +75,6 @@ export interface MenuItem {
   login?: false
   authorities?: string[] | string
   roles?: string[] | string
-  children?: MenuItem[]
 }
 
 // 网络请求错误事件
