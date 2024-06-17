@@ -23,7 +23,7 @@ const router = createRouter({
   routes: routerMgr.nodes
 })
 
-const { isLoading } = useNProgress(0.3, {
+const { isLoading } = useNProgress(0, {
   showSpinner: false
 })
 
@@ -52,6 +52,7 @@ export const gotoPage = (page: string, from?: string, next?: NavigationGuardNext
   } else if (pageUrl == location.pathname) {
     isLoading.value = false
   }
+  return false
 }
 
 export const gotoLoginPage = (url?: string, next?: NavigationGuardNext): boolean | void => {
@@ -91,7 +92,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       notify({ title: t('network.403'), message: t('alert.error'), type: 'error' })
-      return next({ ...from })
+      next({ ...from })
     }
   } else {
     return gotoLoginPage(to.path, next)
@@ -99,10 +100,10 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to, from, failure) => {
-  isLoading.value = false
   if (!failure) {
-    const { setAppTitle } = useAppStore()
+    showSucProgress()
     if (to.meta && to.meta.title) {
+      const { setAppTitle } = useAppStore()
       if (typeof to.meta.title == 'function') {
         // @ts-ignore
         setAppTitle(to.meta.title({ route: to, t: window.i18n.t }) as string)
@@ -110,7 +111,39 @@ router.afterEach((to, from, failure) => {
         setAppTitle(to.meta.title as string)
       }
     }
+  } else {
+    showErrorProgress()
   }
+  hideProgress()
 })
+
+router.onError((err: Error) => {
+  console.error('router error:', err)
+  hideProgress()
+})
+
+const htmlTag = document?.getElementsByTagName('html')[0]
+const showSucProgress = () => {
+  if (htmlTag) {
+    htmlTag.classList.add('rt-suc')
+  }
+}
+
+const showErrorProgress = () => {
+  if (htmlTag) {
+    htmlTag.classList.add('rt-err')
+  }
+}
+
+const hideProgress = () => {
+  setTimeout(() => {
+    isLoading.value = false
+    setTimeout(() => {
+      if (htmlTag) {
+        htmlTag.classList.remove('rt-err', 'rt-suc')
+      }
+    }, 200)
+  }, 800)
+}
 
 export default router
