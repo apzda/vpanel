@@ -1,4 +1,4 @@
-import { defineSetting } from '.'
+import { defineSetting } from '@/@types'
 
 export default defineSetting({
   languages: {

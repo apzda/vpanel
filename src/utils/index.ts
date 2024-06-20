@@ -136,3 +136,25 @@ export const fromUnixTimestamp = (timestamp: number | string, format = 'yyyy-MM-
 
   return formatDate(d, format)
 }
+
+export function deepClone(source: any, hash = new WeakMap()) {
+  if (typeof source !== 'object' || source === null) {
+    return source
+  }
+  if (hash.has(source)) {
+    return hash.get(source)
+  }
+  const target = Array.isArray(source) ? [] : {}
+  Reflect.ownKeys(source).forEach(key => {
+    const val = source[key]
+    if (typeof val === 'object' && val !== null) {
+      //@ts-ignore
+      target[key] = deepClone(val, hash)
+    } else {
+      //@ts-ignore
+      target[key] = val
+    }
+  })
+  hash.set(source, target)
+  return target
+}

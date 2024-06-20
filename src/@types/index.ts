@@ -1,11 +1,11 @@
 import type { InjectionKey, Ref } from 'vue'
-import type { RouteRecordRaw, NavigationGuardNext } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 import type { AxiosRequestConfig } from 'axios'
-import { AxiosError } from 'axios'
+import type { CommonResponse, ErrorEvent } from '@/@types/request'
 
 // 网关选项
 export interface GtwOptions {
-  baseURL?: string
+  baseURL: string
   timeout?: number
   withCredentials?: boolean
   responseType?: 'arraybuffer' | 'document' | 'json' | 'text' | 'stream'
@@ -77,26 +77,26 @@ export interface MenuItem {
   roles?: string[] | string
 }
 
-// 网络请求错误事件
-export interface ErrorEvent {
-  url?: string
-  next?: NavigationGuardNext
-  data?: CommonResponse
-  error?: AxiosError
-  suppress?: boolean
-}
+// 错误处理器名称
+export type ErrHandlerName = `on${string}`
 
 // 网络请求错误处理器
 export interface Handlers {
-  [event: string]: (event: ErrorEvent) => boolean | void
+  [event: ErrHandlerName]: (event: ErrorEvent) => boolean | void
 
-  onLogin: (event: ErrorEvent) => void
-  onResetPassword: (event: ErrorEvent) => void
-  onRequestTooFast: (event: ErrorEvent) => void
+  transformResponse?: ((data: any) => CommonResponse)
+
+  encrypt(data: any): string
+
+  decrypt(data: string): CommonResponse
+
+  showTipMessage(success: boolean, type: string, message: string): void
+
+  beforeRequest(options: RequestConfig): RequestConfig
 }
 
 // 扩展选项
-export type RequestOptions = { login?: false; autoRefresh?: false; showErrMsg?: false, converter: (data: any) => any }
+export type RequestOptions = { login?: false; autoRefresh?: false; showErrMsg?: false, converter?: (data: any) => any }
 export type RequestConfig = AxiosRequestConfig & RequestOptions
 // 路由规则
 export type Route = MenuItem &
@@ -146,14 +146,21 @@ export interface PaginationQuery {
   pager: Pager;
 }
 
-// 普通响应
-export interface CommonResponse {
-  errCode: number
-  errMsg?: string
-  message?: string
-  type?: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
+export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>
+
+export const defineRouter = (routes: Route[]): Route[] => routes
+
+export const defineSetting = (settings: Settings): Settings => {
+  settings.whiteList = settings.whiteList || []
+
+  for (const key in settings) {
+    if (key.endsWith('Url')) {
+      settings.whiteList.push(settings[key])
+    }
+  }
+
+  return settings
 }
 
-export type Response<T> = CommonResponse & { data?: T }
+export const defineHandler = (handlers: Handlers): Handlers => handlers
 
-export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>

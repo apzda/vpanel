@@ -119,14 +119,16 @@ export const logout = (): void => {
 
 export const switchTo = (user: { username: string }) => {
   if (setting.switchToApi) {
-    return axios.post(setting.switchToApi, user)
+    return axios.post(setting.switchToApi, {
+      data: user
+    })
   }
   throw new Error(t('user.switch_api_not_set'))
 }
 
 export const switchBack = () => {
   if (setting.switchBackApi) {
-    return axios.post(setting.switchBackApi, {})
+    return axios.post(setting.switchBackApi)
   }
   throw new Error(t('user.switch_api_not_set'))
 }

@@ -1,4 +1,4 @@
-import { defineRouter } from '@/config'
+import { defineRouter } from '@/@types'
 
 export default defineRouter([
   {

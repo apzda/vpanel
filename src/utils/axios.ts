@@ -1,106 +1,13 @@
-import type { NavigationGuardNext } from 'vue-router'
-import axios, { AxiosError } from 'axios'
-import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { v4 as uuid_v4 } from 'uuid'
+import type { CommonResponse, ErrorEvent, IAxios, RejectHandler, SuccessHandler } from '@/@types/request'
 
-import type { RequestOptions, RequestConfig, CommonResponse, GtwOptions, ErrorEvent } from '@/@types'
+import type { ErrHandlerName, GtwOptions, RequestConfig } from '@/@types'
+import setting from '@/config/settings'
 import settings from '@/config/settings'
-import { language } from '@/utils/lang'
-import { isObject } from '@/utils'
-import { user, logout } from '@/stores/user'
-import handlers from '@/config/handler'
-import { notify, toast, alert } from '@/utils/msgbox'
-import { t } from '@/utils/i18n'
+import handler from '@/config/handler'
+import { deepClone, isObject } from '@/utils'
+import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosError } from 'axios'
 
-// ======================================================
-// 以下代码可以修改错误提示
-// ======================================================
-const notifyErr = (message: string, title?: string) => {
-  notify({
-    duration: 10000,
-    title: title || t('alert.error'),
-    message: message,
-    type: 'error',
-    position: 'top-right'
-  })
-}
-const notifyMsg = (message: string, title?: string) => {
-  notify({
-    duration: 3000,
-    title: title || t('alert.success'),
-    message: message,
-    type: 'success',
-    position: 'top-right'
-  })
-}
-// 这里修改错误提示
-const alertErr = (message: string) => {
-  alert({
-    message: message,
-    // @ts-ignore
-    title: window.i18n.t('alert.error'),
-    type: 'error'
-  })
-}
-
-const alertMsg = (message: string) => {
-  alert({
-    message: message,
-    // @ts-ignore
-    title: window.i18n.t('alert.success'),
-    type: 'success'
-  })
-}
-// 这里修改错误toast
-const toastErr = (message: string) => {
-  toast({
-    duration: 10000,
-    showClose: true,
-    message: message,
-    type: 'error'
-  })
-}
-
-const toastMsg = (message: string) => {
-  toast({
-    duration: 3000,
-    showClose: true,
-    message: message,
-    type: 'success'
-  })
-}
-
-// ======================================================
-// 以下代码请谨慎修改
-// ======================================================
-const setting = settings
-const bearer = setting.tokenBearer ? setting.tokenBearer + ' ' : ''
-const gotoLoginPage = (url?: string, next?: NavigationGuardNext) => {
-  handlers.onLogin({
-    url: url,
-    next: next
-  })
-}
-const gotoResetPasswordPage = (url?: string, next?: NavigationGuardNext) => {
-  handlers.onResetPassword({
-    url: url,
-    next: next
-  })
-}
-const msgBox: {
-  [func: string]: (msg: string, title?: string) => void
-}[] = [
-  {
-    notify: notifyMsg,
-    alert: alertMsg,
-    toast: toastMsg
-  },
-  {
-    notify: notifyErr,
-    alert: alertErr,
-    toast: toastErr
-  }
-]
 // 合并axios配置
 const mergeCfg = (cfg: string | GtwOptions, transformResponse?: ((data: any) => any) | ((data: any) => any)[]) => {
   if (typeof cfg === 'string') {
@@ -128,120 +35,13 @@ const mergeCfg = (cfg: string | GtwOptions, transformResponse?: ((data: any) => 
   return cfg
 }
 
-export interface AxiosResponseWithResult<T, D> extends AxiosResponse<T, D> {
-  result: T
-}
-
 // 请求预处理
-const requestFn = (config: InternalAxiosRequestConfig & RequestOptions) => {
-  if (settings.tokenHeaderName && user.value.accessToken && config.login !== false) {
-    config.headers[settings.tokenHeaderName] = bearer + user.value.accessToken
-  }
-
-  config.headers['Accept-Language'] = language.value
-
-  if (!user.value.uuid) {
-    user.value.uuid = uuid_v4()
-  }
-
-  config.headers['uuid'] = user.value.uuid
-
-  if (config.method == 'get') {
-    config.params = {
-      _t: new Date().getTime(),
-      ...config.params
-    }
-  }
-
-  return config
+const requestFn = (config: InternalAxiosRequestConfig & RequestConfig) => {
+  return handler.beforeRequest(config)
 }
-// 发起请求错误处理，例如没网啦
-const requestErr = (err: AxiosError) => {
-  //@ts-ignore
-  const t: (str: string) => string = window.i18n.t
-
-  notifyErr(t('network.error'))
-  console.debug('发起请求时出错啦: ', err)
-  // 在这里进行网络错误处理
-  return Promise.reject(err)
-}
-// 响应回调处理
-const responseFn = (response: AxiosResponseWithResult<any, any>) => {
-  // console.debug('收到响应', response.config.url, response)
-  const config = (response.config || {}) as RequestConfig
-  // 在这里进行能用的应用错误处理
-  const data = response.data
-  if (config.showErrMsg !== false && isObject(data)) {
-    const msgType = ((data.type || 'toast') as string).toLowerCase()
-
-    if (typeof data.errCode != 'undefined' && msgType !== 'none') {
-      const msg = ((data.errMsg || data.message || '') as string).trim()
-      if (msg) {
-        if (data.errCode === 0 || data.errCode === '0') {
-          typeof msgBox[0][msgType] === 'function' && msgBox[0][msgType](msg)
-        } else {
-          typeof msgBox[1][msgType] === 'function' && msgBox[1][msgType](msg)
-        }
-      }
-    }
-  }
-
-  if (typeof config.converter == 'function') {
-    response.result = config.converter(data)
-  } else {
-    response.result = data
-  }
-
-  return response
-}
-// 响应错误处理
-const responseErr = async (err: AxiosError & { handled: boolean | void }) => {
-  const config = (err.config || {}) as RequestConfig
-  if (err.response) {
-    // console.debug('响应出错[1]: ', err.config?.url, err)
-    const status = err.response.status
-    const data = (err.response.data || { errCode: 500 }) as CommonResponse
-    if (status != 401) {
-      if (typeof data == 'object' && !Array.isArray(data)) {
-        const errCode = Math.abs(data.errCode || 500)
-        const handlerName = 'onErr' + errCode
-        const handler =
-          handlers[handlerName] ||
-          ((event?: any): boolean | void => {
-            console.debug(handlerName, ' : ', event)
-          })
-        const event: ErrorEvent = {
-          error: err,
-          url: err.config?.url,
-          data: data
-        }
-        err.handled = handler(event)
-        if (config.showErrMsg !== false && event.suppress !== true) {
-          notifyErr(data.errMsg || t('network.' + status), t('alert.error'))
-        }
-      } else {
-        if (config.showErrMsg !== false) {
-          notifyErr(t('network.error', [status, err.message]), t('alert.error'))
-        }
-      }
-    } else {
-      console.debug(err.config?.url, t('network.401'))
-    }
-  } else {
-    // 没有收到服务器的响应时
-    console.debug('请求出错[1]: ', err.config?.url, err)
-    if (config.showErrMsg !== false) {
-      notifyErr(t('network.error', [0, err.message]), t('network.title'))
-    }
-  }
-  // 1. 透传给应用，使应用可以catch到该错误
-  return Promise.reject(err)
-}
-//@ts-ignore
-axios.interceptors.request.use(requestFn, requestErr)
-//@ts-ignore
-axios.interceptors.response.use(responseFn, responseErr)
-
+// 网关配置列表
+const gateways = (setting.gtw || {}) as { [k: string]: GtwOptions }
+// Axios实例
 const instances: {
   [ins: string]: AxiosInstance
 } = {}
@@ -254,193 +54,258 @@ if (Object.keys(instances).length == 0) {
     instances[gtw] = axios.create(cfg)
     const interceptors = instances[gtw].interceptors
     //@ts-ignore
-    interceptors.request.use(requestFn, requestErr)
-    //@ts-ignore
-    interceptors.response.use(responseFn, responseErr)
+    interceptors.request.use(requestFn)
   }
 }
-
-let refreshing: boolean = false
-// 刷新accessToken出错处理函数
-const refreshTokenError = (err: AxiosError, reject: (err: any) => void) => {
-  // 刷新token失败
-  logout()
-  refreshing = false
-  if (setting.loginUrl) {
-    console.debug('刷新accessToken失败, 转到登录页: ', err.config?.url, setting.loginUrl)
-    gotoLoginPage()
-  } else {
-    notifyErr(t('network.401'), t('alert.error'))
-    reject(err)
-  }
+// 默认错误处理器
+const emptyHandler = (event: ErrorEvent) => {
+  event.suppress = true
+  showMessage(event, event.options, false)
 }
 
-// 刷新accessToken
-const refreshToken = (
-  axios: AxiosProxy,
-  err: AxiosError,
-  config: RequestConfig,
-  resolve: (data: any) => any,
-  reject: (reason?: any) => void
-) => {
-  console.debug('refreshToken[1]: ', config.url, err)
-  if (setting.refreshTokenApi && setting.refreshTokenApi != config.url && user.value.refreshToken) {
-    console.debug('refreshing: ', config.url)
-    if (!refreshing) {
-      // 刷新accessToken
-      refreshing = true
-      // console.debug('刷新accessToken: ', config.url, setting.refreshTokenApi)
-      useAxios()
-        .post(setting.refreshTokenApi, {
-          name: user.value.name,
-          accessToken: user.value.accessToken,
-          refreshToken: user.value.refreshToken
-        })
-        .then((resp) => {
-          // console.debug('刷新AccessToken请求完成: ', config.url, resp.data)
-          if (resp.data && resp.data.errCode === 0) {
-            for (const f in resp.data.data) {
-              user.value[f] = resp.data.data[f]
-            }
-            refreshing = false
-            if (user.value.credentialsExpired) {
-              return gotoResetPasswordPage()
-            }
-            console.debug('重放请求[1]: ', config.url, config)
-            axios.request(config).then(resolve).catch(reject)
-          } else {
-            //未知响应格式
-            console.warn('刷新accessToken失败[响应]: ', config.url, resp.data)
-            refreshTokenError(err, reject)
-          }
-        })
-        .catch((ex) => {
-          console.warn('刷新accessToken失败[网络]: ', config.url, ex)
-          refreshTokenError(err, reject)
-        })
-    } else {
-      // 防抖处理（每隔100ms重试）
-      console.debug('等待accessToken刷新[1]: ', config.url)
-      const timer = setInterval(() => {
-        if (user.value.refreshToken) {
-          if (!refreshing) {
-            // accessToken刷新完成, 重放请求
-            console.debug('重放请求[2]: ', config.url, config)
-            axios.request(config).then(resolve).catch(reject)
-            clearInterval(timer)
-          } else {
-            // 此时刷新还没有完成，需要等待
-            console.debug('等待accessToken刷新[2]: ', config.url)
-          }
-        } else {
-          clearInterval(timer)
-          // 刷新accessToken失败了, 此时应该已经跳转到登录页了
-          console.warn('等待刷新accessToken失败, 停止等待: ', config.url)
-          refreshTokenError(err, reject)
-        }
-      }, 100)
-    }
-  } else {
-    // 未配置刷新功能或登录地址
-    console.debug('不满足刷新条件', config.url)
-    refreshTokenError(err, reject)
-  }
-}
-// 请求过快
-const onRequestTooFast = handlers.onRequestTooFast
+// 请求代理类
+class RequestProxy implements IAxios {
+  private readonly options: RequestConfig
+  private readonly debounceMap: Set<string>
+  private readonly apiBase: string
+  private readonly axios: AxiosInstance
 
-// 代理类
-class AxiosProxy {
-  private axios: AxiosInstance
-  private debounceMap: Set<string>
-
-  constructor(axios: AxiosInstance) {
-    this.axios = axios
+  constructor(gtw: string, options: GtwOptions) {
+    this.options = options
     this.debounceMap = new Set<string>()
+    this.apiBase = options.baseURL
+    this.axios = instances[gtw]
   }
 
-  get<T = any, D = any>(url: string, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {} as RequestConfig
-    config.url = url
-    config.method = 'get'
-    return this.request(config)
+  // POST 请求
+  post<T = any>(api: string, options?: RequestConfig): Promise<CommonResponse<T>> {
+    return this.request<T>(api, 'POST', options)
   }
 
-  post<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {} as RequestConfig
-    config.url = url
-    config.data = data
-    config.method = 'post'
-    return this.request(config)
+  // GET 请求
+  get<T = any>(api: string, options?: RequestConfig): Promise<CommonResponse<T>> {
+    return this.request<T>(api, 'GET', options)
   }
 
-  put<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || ({}) as RequestConfig
-    config.url = url
-    config.data = data
-    config.method = 'put'
-    return this.request(config)
+  // DELETE 请求
+  delete<T = any>(api: string, options?: RequestConfig): Promise<CommonResponse<T>> {
+    return this.request<T>(api, 'DELETE', options)
   }
 
-  patch<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {} as RequestConfig
-    config.url = url
-    config.data = data
-    config.method = 'patch'
-    return this.request(config)
+  // PUT 请求
+  put<T = any>(api: string, options?: RequestConfig): Promise<CommonResponse<T>> {
+    return this.request<T>(api, 'PUT', options)
   }
 
-  delete<T = any, D = any>(url: string, data?: any, config?: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    config = config || {} as RequestConfig
-    config.url = url
-    config.data = data
-    config.method = 'delete'
-    return this.request(config)
+  // PATCH 请求
+  patch<T = any>(api: string, options?: RequestConfig): Promise<CommonResponse<T>> {
+    return this.request<T>(api, 'PATCH', options)
   }
 
-  request<T = any, D = any>(config: RequestConfig): Promise<AxiosResponseWithResult<T, D>> {
-    const url = config.url || ''
-    if (setting.debounce !== false) {
-      if (this.debounceMap.has(url)) {
-        return new Promise<AxiosResponseWithResult<T, D>>((resolve, reject) => {
-          const err = new AxiosError('Too Fast Requests', 'TOO_FAST')
-          onRequestTooFast({ error: err, url: url })
+  // 加密请求
+  encrypted<T = any>(api: string, options?: RequestConfig): Promise<CommonResponse<T>> {
+    options = options || {}
+    options.headers = options.headers || {}
+
+    delete options.headers['Content-Type']
+    delete options.headers['Accept']
+
+    options.headers['content-type'] = 'application/encrypted+json'
+    options.headers['accept'] = 'application/encrypted+json'
+
+    if (typeof options.data != 'undefined') {
+      options.data = handler.encrypt(options.data)
+    } else {
+      options.data = handler.encrypt({})
+    }
+
+    return this.request<T>(api, 'POST', options)
+  }
+
+  // 发起查询
+  request<T = any>(api: string, method: string, options?: RequestConfig): Promise<CommonResponse<T>> {
+    const that = this
+    options = options || {} as RequestConfig
+    options.headers = options.headers || {}
+
+    if (!options.headers['Content-Type'] || !options.headers['content-type']) {
+      if (options.data) {
+        options.headers['Content-Type'] = 'application/json'
+      }
+    }
+    if (!options.headers['accept'] || !options.headers['Accept']) {
+      options.headers['Accept'] = 'application/json'
+    }
+
+    return new Promise<CommonResponse<T>>((resolve, reject) => {
+      this.doRequest<CommonResponse<T>>(api, method, options).then(response => {
+        showMessage(response, options, true)
+        resolve(response)
+      }).catch(err => {
+        {
+          // redo config ==>
+          err.axios = that
+          err.options = options
+          err.resolve = resolve
+          err.reject = reject
+        }
+        // console.debug('request.failure: ', err)
+        const errCode = ('onErr' + Math.abs(err.errCode)) as ErrHandlerName
+        const errHandler = handler[errCode] || emptyHandler
+        const handled = errHandler(err)
+        if (err.suppress !== true) {
+          showMessage(err, options, false)
+        }
+        if (handled !== true) {
           reject(err)
+        }
+      })
+    })
+  }
+
+  private doRequest<T>(api: string, method: string, options?: RequestConfig): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      if (!api || !api.trim()) {
+        reject({
+          errCode: 400,
+          errMsg: 'Missing required parameter "api"'
         })
       }
-      this.debounceMap.add(url)
-    }
 
-    if (!config.headers) {
-      config.headers = { 'Accept': 'application/json' }
-    } else if (!config.headers['Accept']) {
-      config.headers['Accept'] = 'application/json'
-    }
-
-    return new Promise<AxiosResponseWithResult<T, D>>((resolve, reject) => {
-      this.axios
-        .request(config)
+      options = options || {}
+      const gtwCfg = this.options
+      for (const cfg in gtwCfg) {
         //@ts-ignore
-        .then(resolve)
-        .catch((err) => {
-          if (err.response) {
-            const cfg = err.config || config
-            if (err.response.status == 401 && cfg.autoRefresh !== false) {
-              return refreshToken(this, err, config, resolve, reject)
-            }
+        options[cfg] = gtwCfg[cfg]
+      }
+      const url = this.apiBase + api
+      options.url = url
+      options.method = method
+      if (setting.debounce !== false) {
+        if (this.debounceMap.has(url)) {
+          const err = {
+            errCode: 429,
+            errMsg: 'Too many requests'
           }
-          // 2. 透传给应用，让应用可以catch该错误.
-          if (err.handled !== true) {
-            reject(err)
-          }
-        })
-        .finally(() => {
-          this.debounceMap.delete(url)
-        })
+          reject(err)
+          return
+        }
+
+        this.debounceMap.add(url)
+      }
+
+      options = handler.beforeRequest(options)
+      //@ts-ignore
+      const config = getDefaultOptions(resolve, reject, options)
+      this.axios.request(config).then(response => {
+        if (response.status == 200) {
+          responseHandler(response, resolve, reject)
+        } else {
+          const err = new AxiosError('response status is not 200', 'ERROR_RESPONSE', config, response.request, response)
+          responseErrorHandler(extractResponseData(err), reject)
+        }
+      }).catch(err => {
+        const data = extractResponseData(err)
+        responseErrorHandler(data, reject)
+      })
     })
   }
 }
 
-export default function useAxios(gtw?: string): AxiosProxy {
-  return new AxiosProxy(instances[gtw || 'default'])
+// 获取默认配置
+function getDefaultOptions<T>(resolve: SuccessHandler<T>, reject: RejectHandler, options?: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
+  return (options || {}) as InternalAxiosRequestConfig
+}
+
+// 正常响应处理器
+function responseHandler<T>(res: AxiosResponse, resolve: SuccessHandler<T>, reject: RejectHandler) {
+  const contentType = res.headers['Content-Type'] || res.headers['content-type'] || ''
+
+  if (contentType.startsWith('application/encrypted+json')) {
+    try {
+      // 解密
+      res.data = handler.decrypt(res.data)
+    } catch (e) {
+      reject({ errCode: 1000, errMsg: 'Cannot decrypt data:' + e })
+      return
+    }
+  }
+
+  if (res.status == 200) {
+    if (handler.transformResponse) {
+      res.data = handler.transformResponse(res.data)
+    }
+    if (!isObject(res.data)) {
+      // 响应格式错误
+      reject({
+        errCode: -999,
+        errMsg: 'Invalid JSON data',
+        data: res.data
+      })
+    } else if (res.data.errCode == 0) {
+      // 正常响应
+      resolve(res.data)
+    } else {
+      // 其它错误响应
+      res.data.errCode = res.data.errCode || 500
+      reject(res.data)
+    }
+  } else {// 其它类型错误
+    if (handler.transformResponse) {
+      res.data = handler.transformResponse(res.data)
+    }
+    if (isObject(res.data) && res.data.errCode != undefined) {
+      // 其它错误响应
+      reject(res.data)
+    } else {
+      // 网络错误
+      reject({
+        errCode: res.status,
+        errMsg: 'Network Error',
+        data: res.data
+      })
+    }
+  }
+}
+
+// 错误响应处理器
+function responseErrorHandler(err: CommonResponse, reject: RejectHandler) {
+  if (err.errMsg?.endsWith('timeout')) {
+    err.errCode = 504
+  }
+  reject(err)
+}
+
+// 提示
+function showMessage(response: any, options: RequestConfig, success: boolean) {
+  if (options.showErrMsg !== false && (response.errMsg || response.message)) {
+    const errMsg = response.errMsg || response.message || ''
+    const msgType = ((response.type || 'toast') as string).toLowerCase()
+    if (msgType != 'none' && errMsg) {
+      handler.showTipMessage(success, msgType, errMsg)
+    }
+  }
+}
+
+function extractResponseData(err: AxiosError): CommonResponse {
+  if (err.response != undefined) {
+    if (err.response.data && isObject(err.response.data)) {
+      return err.response.data as CommonResponse
+    } else {
+      return {
+        errCode: err.response.status,
+        errMsg: err.message
+      }
+    }
+  }
+  return {
+    errCode: 400,
+    errMsg: 'Network Error'
+  }
+}
+
+// 入口
+export default function useAxios(gtw: string = 'default'): RequestProxy {
+  const gtwCfg = (gateways[gtw || 'default'] || { baseURL: '/' }) as GtwOptions
+  return new RequestProxy(gtw || 'default', deepClone(gtwCfg))
 }

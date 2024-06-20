@@ -47,6 +47,7 @@ export const gotoPage = (page: string, from?: string, next?: NavigationGuardNext
       router.push({
         path: pageUrl,
         query: from === '/' ? {} : { [fromArg]: from }
+      }).then(() => {
       })
     }
   } else if (pageUrl == location.pathname) {
