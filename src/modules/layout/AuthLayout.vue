@@ -9,3 +9,8 @@
 import HeaderPanel from '~/layout/components/HeaderPanel.vue'
 import FooterPanel from '~/layout/components/FooterPanel.vue'
 </script>
+<style>
+html, body {
+  height: 100vh;
+}
+</style>

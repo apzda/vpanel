@@ -23,7 +23,7 @@ const router = createRouter({
   routes: routerMgr.nodes
 })
 
-const { isLoading } = useNProgress(0, {
+const { isLoading } = useNProgress(0.01, {
   showSpinner: false
 })
 
@@ -144,7 +144,7 @@ const hideProgress = () => {
         htmlTag.classList.remove('rt-err', 'rt-suc')
       }
     }, 200)
-  }, 800)
+  }, 600)
 }
 
 export default router

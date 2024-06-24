@@ -6,16 +6,24 @@ export default defineRouter([
     component: () => import('~/layout/AuthLayout.vue'),
     children: [{
       path: '',
-      component: () => import('~/auth/LoginPage.vue')
+      component: () => import('~/auth/Login.vue')
     }]
   },
   {
-    path: '/reset-password',
+    path: '/auth',
     component: () => import('~/layout/AuthLayout.vue'),
     children: [
       {
-        path: '',
-        component: () => import('~/auth/ResetPasswordPage.vue')
+        path: 'reset-password',
+        component: () => import('~/auth/ResetPassword.vue')
+      },
+      {
+        path: 'mfa-setup',
+        component: () => import('~/auth/MfaSetup.vue')
+      },
+      {
+        path: 'mfa-verify',
+        component: () => import('~/auth/MfaVerify.vue')
       }
     ]
   }

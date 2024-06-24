@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { watchEffect, ref, inject } from 'vue'
+import { inject, ref, watchEffect } from 'vue'
 import { ElConfigProvider } from 'element-plus'
 import { RouterView } from 'vue-router'
 import { language } from '@/utils/lang'
@@ -28,3 +28,9 @@ watchEffect(() => {
   console.debug('Element Language switch to', locale.value)
 })
 </script>
+
+<style>
+#app {
+  height: 100%;
+}
+</style>
