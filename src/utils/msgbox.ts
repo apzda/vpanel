@@ -1,4 +1,5 @@
 import { type Component, type VNode } from 'vue'
+import 'element-plus/es/components/message/style/css'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { t } from '@/utils/i18n'
 

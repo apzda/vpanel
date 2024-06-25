@@ -207,6 +207,8 @@ class RequestProxy implements IAxios {
       }).catch(err => {
         const data = extractResponseData(err)
         responseErrorHandler(data, reject)
+      }).finally(() => {
+        this.debounceMap.delete(url)
       })
     })
   }

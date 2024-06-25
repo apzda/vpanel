@@ -1,0 +1,10 @@
+{
+  "auth": {
+    "login": "Login",
+    "loginHolder": "Enter your username.",
+    "password": "Password",
+    "passwordHolder": "Enter your password.",
+    "code": "Captcha",
+    "codeHolder": "Enter the Captcha code."
+  }
+}

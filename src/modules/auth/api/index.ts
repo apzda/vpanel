@@ -22,3 +22,15 @@ export const createCaptcha = () => {
 export const validateCaptcha = (data: CaptchaCode) => {
   return axios.post('captcha/validate', { data })
 }
+
+// 登录
+export const login = (data: {
+  username: string;
+  password: string;
+  captchaId?: string;
+}) => {
+  const cid = data.captchaId
+  delete data.captchaId
+
+  return axios.post('ucenter/login', { data, headers: { 'X-CAPTCHA-ID': cid } })
+}

@@ -1,6 +1,6 @@
 <template>
   <el-config-provider :locale="locale">
-    <RouterView v-show="localeDetected" />
+    <router-view v-show="localeDetected" />
   </el-config-provider>
 </template>
 

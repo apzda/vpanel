@@ -1,5 +1,5 @@
 import { nextTick } from 'vue'
-import { createI18n, type I18nOptions, type I18n } from 'vue-i18n'
+import { createI18n, type I18n, type I18nOptions } from 'vue-i18n'
 import { language } from '@/utils/lang'
 
 type _I18n = I18n<{}, {}, {}, string, false>
@@ -33,12 +33,12 @@ export async function loadLocaleMessages(i18n: _I18n, locale: string, callback?:
   })
 }
 
-export function t(msg: string, args?: any) {
+export function t(msg: string, args?: any): string {
   //@ts-ignore
   return window.i18n.t(msg, args)
 }
 
-export function ts(message: string, defaultString: string, args?: any) {
+export function ts(message: string, defaultString: string, args?: any): string {
   const text = t(message, args)
   if (text == message) {
     return defaultString

@@ -158,3 +158,13 @@ export function deepClone(source: any, hash = new WeakMap()) {
   hash.set(source, target)
   return target
 }
+
+export function encodeBase64Str(str: string): string {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(str)
+  let binary = ''
+  for (let i = 0; i < data.byteLength; i++) {
+    binary += String.fromCharCode(data[i])
+  }
+  return btoa(binary)
+}
