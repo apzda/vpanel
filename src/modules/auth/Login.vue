@@ -94,7 +94,7 @@ import DragVerifier from '@/components/captcha/DragVerifier.vue'
 const formRef = ref<FormInstance>()
 const dragVerifier = ref<InstanceType<typeof DragVerifier>>()
 // 数据绑定
-const multiline = ref(1.0)
+const multiline = ref(0)
 const captchaId = ref('')
 const successText = ref('正在验证...')
 const formModel = reactive<LoginForm>({
@@ -132,7 +132,7 @@ const doLogin = () => {
 const reloadCaptcha = (callback?: (() => void)) => {
   createCaptcha().then(({ data }) => {
     captchaId.value = data?.id || ''
-    multiline.value = Number(data?.captcha || 1.36)
+    multiline.value = Number(data?.captcha || 0)
     if (callback) {
       callback()
     }

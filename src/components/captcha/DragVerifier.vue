@@ -1,7 +1,9 @@
 <template>
   <div class="slider-verification rounded" ref="sliderContainer">
     <div class="slider-left-bg" :style="sliderLeftWidthStyle"></div>
-    <div class="prompt-text" :style="verifySuccess ? promptTextStyleSuccess: {}">
+    <div class="prompt-text"
+         :class="{'disabled-text':multiple<=1}"
+         :style="verifySuccess ? promptTextStyleSuccess: {}">
       {{ verifySuccess ? successText : prompt }}
     </div>
     <div ref="slider" @mousedown="mouseDownHandler($event)"
@@ -40,7 +42,7 @@ export default defineComponent({
     },
     multiple: {
       type: Number,
-      default: 1.225
+      default: 0
     }
   },
   setup(props, context) {
@@ -143,6 +145,7 @@ export default defineComponent({
     })
 
     onMounted(() => {
+      console.log(props.multiple)
       maxWidth.value = (sliderContainer.value?.offsetWidth || 0) - (slider.value?.offsetWidth || 0)
     })
 
@@ -214,7 +217,12 @@ export default defineComponent({
   font-size: 14px;
   line-height: 1;
   padding: 13px;
-  color: #ffffff;
+  color: #fff;
   opacity: 0.7;
+}
+
+.disabled-text {
+  color: #aaa !important;
+  text-decoration: underline #db2828 wavy 1.5px !important;
 }
 </style>
