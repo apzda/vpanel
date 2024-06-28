@@ -1,15 +1,11 @@
 <template>
   <div class="flex flex-row gap-3 h-[100vh]">
     <!-- left -->
-    <div class="hidden md:w-2/5 md:block bg-gray-200">
+    <div class="hidden md:w-2/5 md:block">
       <div class="flex flex-col justify-center h-full">
         <div class="flex flex-row justify-end">
           <!-- login tip -->
-          <div>
-            <!--
-            优美的提示在这里
-            -->
-          </div>
+          <img :src="assets('img/user-left.png')" style="width: 70%" alt="">
         </div>
       </div>
     </div>
@@ -78,7 +74,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ts } from '@/utils/i18n'
-import { encodeBase64Str } from '@/utils'
+import { assets, encodeBase64Str } from '@/utils'
 
 import { createCaptcha, login, validateCaptcha } from './api'
 import type { LoginForm } from '~/auth/@types'

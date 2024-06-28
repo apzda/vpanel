@@ -168,3 +168,7 @@ export function encodeBase64Str(str: string): string {
   }
   return btoa(binary)
 }
+
+export function assets(url: string) {
+  return new URL('../assets/' + url, import.meta.url).href
+}
