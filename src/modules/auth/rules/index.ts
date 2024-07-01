@@ -12,7 +12,7 @@ export const LoginFormRules: Reactive<FormRules<LoginForm>> = reactive<FormRules
       message() {
         return ts('auth.rule.username', 'Username is required!')
       },
-      trigger: 'blur'
+      trigger: ['change', 'blur']
     }
   ],
   password: [
@@ -21,7 +21,7 @@ export const LoginFormRules: Reactive<FormRules<LoginForm>> = reactive<FormRules
       message() {
         return ts('auth.rule.password', 'Password is required!')
       },
-      trigger: 'blur'
+      trigger: ['change', 'blur']
     }
   ],
   code: [

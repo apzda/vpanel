@@ -164,3 +164,8 @@ export const defineSetting = (settings: Settings): Settings => {
 
 export const defineHandler = (handlers: Handlers): Handlers => handlers
 
+// 表单
+export interface FormError {
+  message?: string
+  status: '' | 'error' | 'validating' | 'success'
+}

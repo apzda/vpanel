@@ -26,13 +26,27 @@
                 :model="formModel"
                 :rules="LoginFormRules"
               >
-                <el-form-item :label="lbl.username" prop="username">
+                <el-form-item
+                  prop="username"
+                  :label="lbl.username"
+                  :error="err.username.message"
+                  :validate-status="err.username.status"
+                >
                   <template #label="{label}">
                     <span class="font-bold text-sm">{{ label }}</span>
                   </template>
-                  <el-input v-model="formModel.username" :placeholder="holder.username" clearable />
+                  <el-input
+                    v-model="formModel.username"
+                    :placeholder="holder.username"
+                    :prefix-icon="User"
+                    clearable />
                 </el-form-item>
-                <el-form-item :label="lbl.password" prop="password">
+                <el-form-item
+                  :label="lbl.password"
+                  :error="err.password.message"
+                  :validate-status="err.password.status"
+                  prop="password"
+                >
                   <template #label="{label}">
                     <span class="font-bold text-sm">{{ label }}</span>
                   </template>
@@ -40,6 +54,7 @@
                     type="password"
                     v-model="formModel.password"
                     :placeholder="holder.password"
+                    :prefix-icon="Lock"
                     clearable
                     show-password />
                 </el-form-item>
@@ -79,8 +94,9 @@ import { assets, encodeBase64Str } from '@/utils'
 import { createCaptcha, login, validateCaptcha } from './api'
 import type { LoginForm } from '~/auth/@types'
 import { LoginFormRules } from './rules'
-import { HelpFilled } from '@element-plus/icons-vue'
+import { HelpFilled, Lock, User } from '@element-plus/icons-vue'
 import DragVerifier from '@/components/captcha/DragVerifier.vue'
+import type { FormError } from '@/@types'
 
 // 状态管理
 // 组件属性
@@ -107,6 +123,20 @@ const holder = reactive<Record<string, string>>({
   username: ts('auth.usernameHolder', 'Enter your username.'),
   password: ts('auth.passwordHolder', 'Enter your password.'),
   code: ts('auth.codeHolder', 'Enter the captcha code.')
+})
+const err = reactive<Record<string, FormError>>({
+  username: {
+    message: '',
+    status: ''
+  },
+  password: {
+    message: '',
+    status: ''
+  },
+  code: {
+    message: '',
+    status: ''
+  }
 })
 // 私有函数
 // - 登录
