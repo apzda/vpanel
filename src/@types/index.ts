@@ -164,8 +164,15 @@ export const defineSetting = (settings: Settings): Settings => {
 
 export const defineHandler = (handlers: Handlers): Handlers => handlers
 
-// 表单
-export interface FormError {
+// 表单选项
+export interface FormItemOpt {
   message?: string
-  status: '' | 'error' | 'validating' | 'success'
+  status?: '' | 'error' | 'validating' | 'success',
+  placeholder?: string,
+  label?: string
+}
+
+// 表单配置
+export type FormItemOpts<T extends Record<string, any>> = {
+  [key in keyof T]: FormItemOpt
 }

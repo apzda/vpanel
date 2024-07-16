@@ -28,23 +28,23 @@
               >
                 <el-form-item
                   prop="username"
-                  :label="lbl.username"
-                  :error="err.username.message"
-                  :validate-status="err.username.status"
+                  :label="formOpts.username.label"
+                  :error="formOpts.username.message"
+                  :validate-status="formOpts.username.status"
                 >
                   <template #label="{label}">
                     <span class="font-bold text-sm">{{ label }}</span>
                   </template>
                   <el-input
                     v-model="formModel.username"
-                    :placeholder="holder.username"
+                    :placeholder="formOpts.username.placeholder"
                     :prefix-icon="User"
                     clearable />
                 </el-form-item>
                 <el-form-item
-                  :label="lbl.password"
-                  :error="err.password.message"
-                  :validate-status="err.password.status"
+                  :label="formOpts.password.label"
+                  :error="formOpts.password.message"
+                  :validate-status="formOpts.password.status"
                   prop="password"
                 >
                   <template #label="{label}">
@@ -53,7 +53,7 @@
                   <el-input
                     type="password"
                     v-model="formModel.password"
-                    :placeholder="holder.password"
+                    :placeholder="formOpts.password.placeholder"
                     :prefix-icon="Lock"
                     clearable
                     show-password />
@@ -92,11 +92,11 @@ import { ts } from '@/utils/i18n'
 import { assets, encodeBase64Str } from '@/utils'
 
 import { createCaptcha, login, validateCaptcha } from './api'
-import type { LoginForm } from '~/auth/@types'
+import type { LoginForm } from './@types'
 import { LoginFormRules } from './rules'
 import { HelpFilled, Lock, User } from '@element-plus/icons-vue'
 import DragVerifier from '@/components/captcha/DragVerifier.vue'
-import type { FormError } from '@/@types'
+import type { FormItemOpts } from '@/@types'
 
 // 状态管理
 // 组件属性
@@ -114,28 +114,24 @@ const formModel = reactive<LoginForm>({
   password: '',
   code: ''
 })
-const lbl = reactive<Record<string, string>>({
-  username: ts('auth.username', 'Username'),
-  password: ts('auth.password', 'Password'),
-  code: ts('auth.code', 'Captcha')
-})
-const holder = reactive<Record<string, string>>({
-  username: ts('auth.usernameHolder', 'Enter your username.'),
-  password: ts('auth.passwordHolder', 'Enter your password.'),
-  code: ts('auth.codeHolder', 'Enter the captcha code.')
-})
-const err = reactive<Record<string, FormError>>({
+const formOpts = reactive<FormItemOpts<LoginForm>>({
   username: {
     message: '',
-    status: ''
+    status: '',
+    label: ts('auth.username', 'Username'),
+    placeholder: ts('auth.usernameHolder', 'Enter your username.')
   },
   password: {
     message: '',
-    status: ''
+    status: '',
+    label: ts('auth.password', 'Password'),
+    placeholder: ts('auth.passwordHolder', 'Enter your password.')
   },
   code: {
     message: '',
-    status: ''
+    status: '',
+    label: ts('auth.code', 'Captcha'),
+    placeholder: ts('auth.codeHolder', 'Enter the captcha code.')
   }
 })
 // 私有函数
