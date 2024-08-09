@@ -8,8 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     DragVerifier: typeof import('./src/components/captcha/DragVerifier.vue')['default']
-    DragVerifierV2: typeof import('./src/components/captcha/DragVerifierV2.vue')['default']
-    ElButton: typeof import('element-plus/es')['ElButton']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
