@@ -6,10 +6,12 @@
          :style="verifySuccess ? promptTextStyleSuccess: {}">
       {{ verifySuccess ? successText : prompt }}
     </div>
-    <div ref="slider" @mousedown="mouseDownHandler($event)"
+    <div ref="slider"
          :class="{'slider-verify-success':verifySuccess,'rounded-l':!verifySuccess&&!sliderState,'rounded-r':verifySuccess}"
          class="slider"
-         :style="sliderToLeftStyle"></div>
+         :style="sliderToLeftStyle"
+         @mousedown="mouseDownHandler($event)"
+         @touchstart="handleTouchStart($event)"></div>
   </div>
 </template>
 
@@ -58,10 +60,43 @@ export default defineComponent({
     const slider = ref<HTMLDivElement>()
     const sliderContainer = ref<HTMLDivElement>()
 
+    const handleTouchStart = (event: any) => {
+      startDrag(event.changedTouches[0].clientX, event.changedTouches[0].clientY)
+    }
+    const handleTouchMove = (e: any) => {
+      moveSlider(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
+    }
+
+    const handleTouchEnd = (e: any) => {
+      // 触摸结束时的处理逻辑
+      console.log('Touch end', e)
+      stopDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
+    }
+
     const mouseMoveHandler = (e: MouseEvent) => {
+      moveSlider(e.clientX, e.clientY)
+    }
+
+    const moseUpHandler = (e: MouseEvent) => {
+      stopDrag(e.clientX, e.clientY)
+    }
+
+    const mouseDownHandler = (e: MouseEvent) => { // 鼠标在滑块上按下事件
+      startDrag(e.clientX, e.clientY)
+    }
+
+    const startDrag = (x: number, y: number) => {
+      if (!verifySuccess.value) {
+        beginTime.value = (new Date()).getTime()
+        sliderState.value = true
+        beginClientX.value = x
+        points.value.push([x, y])
+      }
+    }
+    const moveSlider = (x: number, y: number) => {
       if (sliderState.value) {
-        const width = (e.clientX - beginClientX.value) / props.multiple
-        points.value.push([e.clientX, e.clientY])
+        const width = (x - beginClientX.value) / props.multiple
+        points.value.push([x, y])
         if (width > 0 && width <= maxWidth.value) {
           slideWidth.value = width
         } else if (width > maxWidth.value) {
@@ -69,15 +104,15 @@ export default defineComponent({
         }
       }
     }
-    const moseUpHandler = (e: MouseEvent) => {
+    const stopDrag = (x: number, y: number) => {
       if (!sliderState.value) {
         return
       }
       endTime.value = (new Date()).getTime()
       sliderState.value = false
-      stopClientX.value = e.clientX
-      points.value.push([e.clientX, e.clientY])
-      const width = (e.clientX - beginClientX.value) / props.multiple
+      stopClientX.value = x
+      points.value.push([x, y])
+      const width = (x - beginClientX.value) / props.multiple
       if (width < maxWidth.value) {
         slideWidth.value = 0
         points.value = []
@@ -95,14 +130,7 @@ export default defineComponent({
         verifySuccessFun()
       }
     }
-    const mouseDownHandler = (e: MouseEvent) => { // 鼠标在滑块上按下事件
-      if (!verifySuccess.value) {
-        beginTime.value = (new Date()).getTime()
-        sliderState.value = true
-        beginClientX.value = e.clientX
-        points.value.push([e.clientX, e.clientY])
-      }
-    }
+
     const verifySuccessFun = () => {
       verifySuccess.value = true
       context.emit('statusChange', true, {
@@ -112,13 +140,19 @@ export default defineComponent({
         points: points.value
       })
       slideWidth.value = maxWidth.value
-      document.getElementsByTagName('html')[0].removeEventListener('mousemove', mouseMoveHandler)
-      document.getElementsByTagName('html')[0].removeEventListener('mouseup', moseUpHandler)
+      const ele = document.getElementsByTagName('html')[0]
+      ele.removeEventListener('mousemove', mouseMoveHandler)
+      ele.removeEventListener('mouseup', moseUpHandler)
+      ele.removeEventListener('touchend', handleTouchEnd)
+      ele.removeEventListener('touchmove', handleTouchMove)
     }
 
     const addListener = () => {
-      document.getElementsByTagName('html')[0].addEventListener('mousemove', mouseMoveHandler)
-      document.getElementsByTagName('html')[0].addEventListener('mouseup', moseUpHandler)
+      const ele = document.getElementsByTagName('html')[0]
+      ele.addEventListener('mousemove', mouseMoveHandler)
+      ele.addEventListener('mouseup', moseUpHandler)
+      ele.addEventListener('touchend', handleTouchEnd)
+      ele.addEventListener('touchmove', handleTouchMove)
     }
 
     const reset = () => { // 重置
@@ -132,8 +166,11 @@ export default defineComponent({
       beginTime.value = 0
       points.value = []
 
-      document.getElementsByTagName('html')[0].removeEventListener('mousemove', mouseMoveHandler)
-      document.getElementsByTagName('html')[0].removeEventListener('mouseup', moseUpHandler)
+      const ele = document.getElementsByTagName('html')[0]
+      ele.removeEventListener('mousemove', mouseMoveHandler)
+      ele.removeEventListener('mouseup', moseUpHandler)
+      ele.removeEventListener('touchend', handleTouchEnd)
+      ele.removeEventListener('touchmove', handleTouchMove)
 
       addListener()
     }
@@ -157,6 +194,7 @@ export default defineComponent({
       verifySuccess,  // 是否验证成功
       slideWidth, // 滑块滑过的区域宽度
       mouseDownHandler,
+      handleTouchStart,
       reset
     }
   },
