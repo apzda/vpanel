@@ -7,18 +7,22 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AuthLayout: typeof import('./src/components/layout/AuthLayout.vue')['default']
     DragVerifier: typeof import('./src/components/captcha/DragVerifier.vue')['default']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElText: typeof import('element-plus/es')['ElText']
+    FooterPanel: typeof import('./src/components/layout/widgets/FooterPanel.vue')['default']
+    HeaderPanel: typeof import('./src/components/layout/widgets/HeaderPanel.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']
     IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']
     IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
+    MainLayout: typeof import('./src/components/layout/MainLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sms: typeof import('./src/components/captcha/Sms.vue')['default']

@@ -6,8 +6,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import HeaderPanel from '~/layout/components/HeaderPanel.vue'
-import FooterPanel from '~/layout/components/FooterPanel.vue'
+import HeaderPanel from './widgets/HeaderPanel.vue'
+import FooterPanel from './widgets/FooterPanel.vue'
 </script>
 <style>
 html, body {

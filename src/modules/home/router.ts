@@ -4,7 +4,7 @@ import { defineRouter } from '@/@types'
 export default defineRouter([
   {
     path: '/',
-    component: () => import('~/layout/MainLayout.vue'),
+    component: () => import('@/components/layout/MainLayout.vue'),
     redirect: '/login',
     hidden: false,
     children: [

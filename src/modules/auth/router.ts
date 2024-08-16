@@ -3,7 +3,7 @@ import { defineRouter } from '@/@types'
 export default defineRouter([
   {
     path: '/login',
-    component: () => import('~/layout/AuthLayout.vue'),
+    component: () => import('@/components/layout/AuthLayout.vue'),
     children: [{
       path: '',
       component: () => import('~/auth/Login.vue')
@@ -11,7 +11,7 @@ export default defineRouter([
   },
   {
     path: '/auth',
-    component: () => import('~/layout/AuthLayout.vue'),
+    component: () => import('@/components/layout/AuthLayout.vue'),
     children: [
       {
         path: 'reset-password',
