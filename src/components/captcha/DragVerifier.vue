@@ -11,7 +11,7 @@
          class="slider"
          :style="sliderToLeftStyle"
          @mousedown="mouseDownHandler($event)"
-         @touchstart="handleTouchStart($event)"></div>
+         @touchstart.passive="handleTouchStart($event)"></div>
   </div>
 </template>
 
@@ -149,10 +149,10 @@ export default defineComponent({
 
     const addListener = () => {
       const ele = document.getElementsByTagName('html')[0]
-      ele.addEventListener('mousemove', mouseMoveHandler)
-      ele.addEventListener('mouseup', moseUpHandler)
-      ele.addEventListener('touchend', handleTouchEnd)
-      ele.addEventListener('touchmove', handleTouchMove)
+      ele.addEventListener('mousemove', mouseMoveHandler, { passive: true })
+      ele.addEventListener('mouseup', moseUpHandler, { passive: true })
+      ele.addEventListener('touchend', handleTouchEnd, { passive: true })
+      ele.addEventListener('touchmove', handleTouchMove, { passive: true })
     }
 
     const reset = () => { // 重置
@@ -182,7 +182,6 @@ export default defineComponent({
     })
 
     onMounted(() => {
-      console.log(props.multiple)
       maxWidth.value = (sliderContainer.value?.offsetWidth || 0) - (slider.value?.offsetWidth || 0)
     })
 
