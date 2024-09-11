@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import { addDynamicIconSelectors } from '@iconify/tailwind'
 
 export default <Config>{
   darkMode: 'class',
@@ -6,5 +7,7 @@ export default <Config>{
   theme: {
     extend: {}
   },
-  plugins: []
+  plugins: [
+    addDynamicIconSelectors()
+  ]
 }

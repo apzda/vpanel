@@ -13,7 +13,7 @@
     <div class="w-full md:w-3/5">
       <div class="flex flex-col justify-center h-full">
         <div class="flex flex-row  justify-center">
-          <div class="w-4/5 max-w-[500px] md:w-2/3 md:min-w-[450px] xl:ml-[-300px]">
+          <div class="w-4/5 max-w-[500px] md:w-3/5 md:min-w-[400px] xl:ml-[-100px] 2xl:ml-[-400px]">
             <!-- login form -->
             <div class="rounded shadow shadow-gray-300 p-10">
               <h1 class="mb-5 font-bold text-2xl" v-t="'auth.login'"></h1>
@@ -22,7 +22,6 @@
                 size="large"
                 label-position="top"
                 require-asterisk-position="right"
-                status-icon
                 :model="formModel"
                 :rules="LoginFormRules"
               >
@@ -72,10 +71,8 @@
             <!-- extra actions -->
             <div class="mt-2 text-center text-gray-400 text-sm align-middle">
               <el-text size="small" type="info">
-                <el-icon>
-                  <HelpFilled />
-                </el-icon>
-                Powered by <a target="_blank" href="https://www.github.com/apzda/vpanel">apzda</a>
+                <span class="el-icon icon-[ep--help-filled]"></span>
+                POWERED BY <a target="_blank" href="https://www.github.com/apzda/vpanel">APZDA</a>
               </el-text>
             </div>
           </div>
@@ -94,7 +91,7 @@ import { assets, encodeBase64Str } from '@/utils'
 import { createCaptcha, login, validateCaptcha } from './api'
 import type { LoginForm } from './@types'
 import { LoginFormRules } from './rules'
-import { HelpFilled, Lock, User } from '@element-plus/icons-vue'
+import { Lock, User } from '@element-plus/icons-vue'
 import DragVerifier from '@/components/captcha/DragVerifier.vue'
 import type { FormItemOpts } from '@/@types'
 

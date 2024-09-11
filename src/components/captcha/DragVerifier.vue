@@ -69,7 +69,6 @@ export default defineComponent({
 
     const handleTouchEnd = (e: any) => {
       // 触摸结束时的处理逻辑
-      console.log('Touch end', e)
       stopDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
     }
 
@@ -96,9 +95,9 @@ export default defineComponent({
     const moveSlider = (x: number, y: number) => {
       if (sliderState.value) {
         const width = (x - beginClientX.value) / props.multiple
-        points.value.push([x, y])
         if (width > 0 && width <= maxWidth.value) {
           slideWidth.value = width
+          points.value.push([x, y])
         } else if (width > maxWidth.value) {
           slideWidth.value = maxWidth.value
         }
@@ -124,7 +123,7 @@ export default defineComponent({
         ) {
           slideWidth.value = 0
           points.value = []
-
+          console.error('stopDrag - 2 ,points=', ps.length, 'time=', t, 'diff=', Math.abs(ps[0][1] - ps[ps.length - 1][1]))
           return
         }
         verifySuccessFun()
