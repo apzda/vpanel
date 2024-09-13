@@ -1,8 +1,9 @@
-import { createRouter, createWebHistory, type NavigationGuardNext } from 'vue-router'
+import { createRouter, createWebHistory, type LocationQueryValue, type NavigationGuardNext } from 'vue-router'
 import { useNProgress } from '@vueuse/integrations/useNProgress'
 
 import { TreeMgr } from '@/utils'
 import { notify } from '@/utils/msgbox'
+import { tsc } from '@/utils/i18n'
 import settings from '@/config/settings'
 
 import { useAppStore } from '@/stores/app'
@@ -23,13 +24,13 @@ const router = createRouter({
   routes: routerMgr.nodes
 })
 
-const { isLoading } = useNProgress(0.01, {
+const { isLoading } = useNProgress(0.1, {
   showSpinner: false
 })
 
 const fromArg = settings.fromArg || 'from'
 
-export const gotoPage = (page: string, from?: string, next?: NavigationGuardNext): boolean | void => {
+export const gotoPage = (page: string, from?: string | LocationQueryValue[], next?: NavigationGuardNext): boolean | void => {
   const pageUrl = settings[page] || null
   from = from === settings.loginUrl ? '/' : from
   if (pageUrl?.match(/^https?:\/\/.+/)) {
@@ -105,12 +106,7 @@ router.afterEach((to, from, failure) => {
     showSucProgress()
     if (to.meta && to.meta.title) {
       const { setAppTitle } = useAppStore()
-      if (typeof to.meta.title == 'function') {
-        // @ts-ignore
-        setAppTitle(to.meta.title({ route: to, t: window.i18n.t }) as string)
-      } else {
-        setAppTitle(to.meta.title as string)
-      }
+      setAppTitle(tsc(to.meta.title, to))
     }
   } else {
     showErrorProgress()
@@ -137,14 +133,12 @@ const showErrorProgress = () => {
 }
 
 const hideProgress = () => {
+  isLoading.value = false
   setTimeout(() => {
-    isLoading.value = false
-    setTimeout(() => {
-      if (htmlTag) {
-        htmlTag.classList.remove('rt-err', 'rt-suc')
-      }
-    }, 200)
-  }, 600)
+    if (htmlTag) {
+      htmlTag.classList.remove('rt-err', 'rt-suc')
+    }
+  }, 300)
 }
 
 export default router

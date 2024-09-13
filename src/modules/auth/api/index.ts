@@ -1,4 +1,5 @@
 import useAxios from '@/utils/axios'
+import type { UserInfo } from '@/stores/user'
 
 const axios = useAxios()
 
@@ -32,5 +33,5 @@ export const login = (data: {
   const cid = data.captchaId
   delete data.captchaId
 
-  return axios.post('ucenter/login', { data, headers: { 'X-CAPTCHA-ID': cid } })
+  return axios.post<UserInfo>('ucenter/login', { data, headers: { 'X-CAPTCHA-ID': cid } })
 }

@@ -38,10 +38,25 @@ export function t(msg: string, args?: any): string {
   return window.i18n.t(msg, args)
 }
 
-export function ts(message: string, defaultString: string, args?: any): string {
+export function ts(message: string, defaultString?: string, args?: any): string {
   const text = t(message, args)
   if (text == message) {
-    return defaultString
+    return defaultString || message
   }
   return text
+}
+
+export function tsc<T>(message: string | ((arg: {
+  context: T,
+  ts: ((text: string, defaultString?: string, args?: any) => string)
+}) => string) | null | undefined, context: T): string {
+  if (typeof message == 'function') {
+    return message({ context, ts })
+  } else if (typeof message == 'string' && message.startsWith('{') && message.endsWith('}')) {
+    return ts(message.substring(1, message.length - 1))
+  } else if (typeof message == 'string') {
+    return message
+  }
+
+  return String(message)
 }

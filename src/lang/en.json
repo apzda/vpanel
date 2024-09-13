@@ -23,5 +23,9 @@
     "success": "Success",
     "error": "Oops!"
   },
+  "page": {
+    "NotFound": "Not Found",
+    "Login": "Login"
+  },
   "hello": "Hello"
 }

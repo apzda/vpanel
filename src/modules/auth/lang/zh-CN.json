@@ -1,6 +1,7 @@
 {
   "auth": {
     "login": "登录",
+    "tip": "欢迎回来，请使用您的账号登录系统。",
     "username": "用户名",
     "usernameHolder": "请输入您的用户名",
     "password": "密码",
@@ -11,6 +12,11 @@
       "username": "用户名不能为空",
       "password": "密码不能为空",
       "code": "验证码不能为空"
+    },
+    "drag": {
+      "prompt": "向右拖动滑块进行登录",
+      "success": "正在验证...",
+      "login": "正在登录..."
     }
   }
 }

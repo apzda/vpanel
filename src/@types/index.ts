@@ -46,6 +46,7 @@ export interface Settings {
   debounce?: boolean
   language?: string
   logo?: string
+  appName?: string
   languages: {
     [lang: string]: {
       name: string
@@ -57,22 +58,22 @@ export interface Settings {
 // 菜单参数
 export interface MenuOption {
   data: any
-  t: (str: string) => string
+  t: (str: string, defaultString?: string, args?: any) => string
 }
 
 // 菜单选项
 export interface MenuItem {
   id?: string
-  name?: string | ((ctx: MenuOption) => string)
   path?: string
-  title?: string | ((ctx: MenuOption) => string)
   icon?: any
   badge?: number | ((ctx: MenuOption) => number)
   color?: any
+  cls?: string
   sort?: number | ((ctx: MenuOption) => number)
-  hidden?: boolean | ((ctx: MenuOption) => number)
   level?: number
   login?: false
+  menu?: true
+  group?: string
   authorities?: string[] | string
   roles?: string[] | string
 }
@@ -147,6 +148,7 @@ export interface PaginationQuery {
 }
 
 export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>
+export const CURRENT_MENU_NODE = Symbol() as InjectionKey<Ref<Route | null>>
 
 export const defineRouter = (routes: Route[]): Route[] => routes
 
@@ -172,6 +174,7 @@ export interface FormItemOpt {
   label?: string
 }
 
+export type translateFunc = (text: string, defaultStr?: string) => string
 // 表单配置
 export type FormItemOpts<T extends Record<string, any>> = {
   [key in keyof T]: FormItemOpt

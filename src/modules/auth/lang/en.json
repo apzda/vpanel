@@ -1,10 +1,15 @@
 {
   "auth": {
-    "login": "Login",
+    "login": "Sign In",
     "loginHolder": "Enter your username.",
     "password": "Password",
     "passwordHolder": "Enter your password.",
     "code": "Captcha",
-    "codeHolder": "Enter the Captcha code."
+    "codeHolder": "Enter the Captcha code.",
+    "drag": {
+      "prompt": "Sliding to the right to log in.",
+      "success": "Validating ...",
+      "login": "Login ..."
+    }
   }
 }

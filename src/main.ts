@@ -27,7 +27,6 @@ const languageLoaded = ref(false)
 watch(
   locale,
   async (lang) => {
-    console.debug('Language switch to:', lang)
     await loadLocaleMessages(i18n, lang, () => {
       languageLoaded.value = true
     })

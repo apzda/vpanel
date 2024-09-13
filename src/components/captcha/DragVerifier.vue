@@ -118,7 +118,7 @@ export default defineComponent({
       } else {
         const ps = points.value
         const t = endTime.value - beginTime.value
-        if (ps.length < 15 || ps.length > 50 || t < 350 || t > 3500
+        if (ps.length < 15 || t < 350 || t > 3500
           || Math.abs(ps[0][1] - ps[ps.length - 1][1]) < 3
         ) {
           slideWidth.value = 0

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row gap-3 h-[100vh]">
+  <div class="flex flex-row gap-3">
     <!-- left -->
     <div class="hidden md:w-2/5 md:block">
       <div class="flex flex-col justify-center h-full">
@@ -15,8 +15,9 @@
         <div class="flex flex-row  justify-center">
           <div class="w-4/5 max-w-[500px] md:w-3/5 md:min-w-[400px] xl:ml-[-100px] 2xl:ml-[-400px]">
             <!-- login form -->
-            <div class="rounded shadow shadow-gray-300 p-10">
-              <h1 class="mb-5 font-bold text-2xl" v-t="'auth.login'"></h1>
+            <div class="rounded shadow shadow-gray-300 dark:shadow-gray-600 p-4 md:p-10">
+              <h1 class="mb-2 font-bold text-2xl" v-t="'auth.login'"></h1>
+              <p class="mb-5 text-sm text-gray-400">{{ ts('auth.tip', 'Welcome back to your account.') }}</p>
               <el-form
                 ref="formRef"
                 size="large"
@@ -27,7 +28,7 @@
               >
                 <el-form-item
                   prop="username"
-                  :label="formOpts.username.label"
+                  :label="ts('auth.username', 'Username')"
                   :error="formOpts.username.message"
                   :validate-status="formOpts.username.status"
                 >
@@ -47,7 +48,7 @@
                   prop="password"
                 >
                   <template #label="{label}">
-                    <span class="font-bold text-sm">{{ label }}</span>
+                    <span class="font-bold text-sm flex-grow">{{ label }}</span>
                   </template>
                   <el-input
                     type="password"
@@ -62,7 +63,7 @@
                     ref="dragVerifier"
                     :multiple="multiline"
                     @status-change="captchaVerified"
-                    prompt="向右拖动滑块进行登录"
+                    :prompt="ts('auth.drag.prompt','Sliding to the right to log in.')"
                     :success-text="successText"
                   />
                 </el-form-item>
@@ -72,7 +73,7 @@
             <div class="mt-2 text-center text-gray-400 text-sm align-middle">
               <el-text size="small" type="info">
                 <span class="el-icon icon-[ep--help-filled]"></span>
-                POWERED BY <a target="_blank" href="https://www.github.com/apzda/vpanel">APZDA</a>
+                POWERED BY <a target="_blank" href="https://github.com/orgs/apzda/repositories">APZDA</a>
               </el-text>
             </div>
           </div>
@@ -87,25 +88,31 @@ import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ts } from '@/utils/i18n'
 import { assets, encodeBase64Str } from '@/utils'
-
+import { user } from '@/stores/user'
 import { createCaptcha, login, validateCaptcha } from './api'
 import type { LoginForm } from './@types'
 import { LoginFormRules } from './rules'
 import { Lock, User } from '@element-plus/icons-vue'
 import DragVerifier from '@/components/captcha/DragVerifier.vue'
 import type { FormItemOpts } from '@/@types'
+import { gotoPage } from '@/router'
+import { useRoute, useRouter } from 'vue-router'
+import settings from '@/config/settings'
 
-// 状态管理
-// 组件属性
-// 组件事件
+// constants
+const fromArg: string = settings.fromArg || ''
+// hooks
+const $router = useRouter()
+const $route = useRoute()
 // 组件接口
-// 组件引用
+// === 件引用 ===
 const formRef = ref<FormInstance>()
 const dragVerifier = ref<InstanceType<typeof DragVerifier>>()
-// 数据绑定
+// === 数据绑定 ===
+const captchaType = ref('none')
 const multiline = ref(0)
 const captchaId = ref('')
-const successText = ref('正在验证...')
+const successText = ref(ts('auth.drag.success', '...'))
 const formModel = reactive<LoginForm>({
   username: '',
   password: '',
@@ -131,7 +138,7 @@ const formOpts = reactive<FormItemOpts<LoginForm>>({
     placeholder: ts('auth.codeHolder', 'Enter the captcha code.')
   }
 })
-// 私有函数
+// === 私有函数 ===
 // - 登录
 const doLogin = () => {
   login({
@@ -139,7 +146,17 @@ const doLogin = () => {
     password: formModel.password,
     captchaId: captchaId.value
   }).then(({ data }) => {
-    console.log('登录成功:', data)
+    user.value = data
+    user.value.login = true
+    if (user.value.credentialsExpired) {
+      gotoPage('resetPwdUrl', $route.query[fromArg] || '/')
+    } else if (user.value.mfa == 'PENDING') {
+      gotoPage('mfaVerifyUrl', $route.query[fromArg] || '/')
+    } else if (user.value.mfa == 'UNSET') {
+      gotoPage('mfaSetupUrl', $route.query[fromArg] || '/')
+    } else {
+      $router.push(($route.query[fromArg] || '/') as string)
+    }
   }).catch(err => {
     console.error('登录失败', err)
     reloadCaptcha(() => {
@@ -151,16 +168,17 @@ const doLogin = () => {
 const reloadCaptcha = (callback?: (() => void)) => {
   createCaptcha().then(({ data }) => {
     captchaId.value = data?.id || ''
+    captchaType.value = data?.type || 'none'
     multiline.value = Number(data?.captcha || 0)
     if (callback) {
       callback()
     }
   })
 }
-// 事件处理器
+// === 事件处理器 ===
 const captchaVerified = async (verified: boolean, results: any) => {
   if (verified) {
-    successText.value = '正在验证...'
+    successText.value = ts('auth.drag.success', '...')
     try {
       const valid = await formRef.value?.validate()
       if (!valid) {
@@ -176,7 +194,7 @@ const captchaVerified = async (verified: boolean, results: any) => {
       id: captchaId.value,
       code: encodeBase64Str(JSON.stringify(results))
     }).then(() => {
-      successText.value = '正在登录...'
+      successText.value = ts('auth.drag.login', '...')
       doLogin()
     }).catch(err => {
       console.error(err)
@@ -187,7 +205,7 @@ const captchaVerified = async (verified: boolean, results: any) => {
     })
   }
 }
-// 生命周期
+// === 生命周期 ===
 onMounted(() => {
   reloadCaptcha()
 })

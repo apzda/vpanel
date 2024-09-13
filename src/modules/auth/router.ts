@@ -6,6 +6,9 @@ export default defineRouter([
     component: () => import('@/components/layout/AuthLayout.vue'),
     children: [{
       path: '',
+      meta: {
+        title: '{page.Login}'
+      },
       component: () => import('~/auth/Login.vue')
     }]
   },
