@@ -11,7 +11,7 @@
     </el-tooltip>
 
     <el-badge class="expand flex-grow" v-if="badge>0" :value="badge" :offset="[-30, 12]">
-      <a class="expand text-sm">{{ itemText }}</a>
+      <a class="text-sm cursor-default">{{ itemText }}</a>
     </el-badge>
     <a v-else class="expand flex-grow text-sm cursor-default">{{ itemText }}</a>
 

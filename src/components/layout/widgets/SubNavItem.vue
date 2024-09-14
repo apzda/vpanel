@@ -1,10 +1,10 @@
 <template>
   <div
-    class="h-full px-3 flex flex-col justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
+    class="flex-shrink-0 h-full px-3 flex flex-col justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
     :class="itemCls"
     :style="itemStyle"
     @click="onItemClick">
-    <el-badge v-if="badge>0" :value="badge" :offset="[10, 5]" class="cursor-default">
+    <el-badge v-if="badge>0" :value="badge" :offset="[5, -5]" class="cursor-default">
       <a class="text-md">{{ itemText }}</a>
     </el-badge>
     <a v-else class="text-md cursor-default">{{ itemText }}</a>
@@ -51,7 +51,7 @@ const itemStyle = computed(() => {
 const itemCls = computed(() => {
   let cls = ''
   if (props.menu && props.menu.path == route.path) {
-    cls = 'bg-gray-200 dark:bg-gray-800'
+    cls = 'bg-gray-200 text-sky-500 dark:bg-gray-800'
   }
 
   if (props.menu && props.menu.cls) {

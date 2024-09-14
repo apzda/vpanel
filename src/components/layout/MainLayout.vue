@@ -64,18 +64,21 @@
             <!-- 默认头部:二级导致 -->
             <div v-if="!cPage.components?.header"
                  class="h-full flex justify-start items-center gap-1 text-gray-700 dark:text-white">
-              <span v-if="cIcon" class="w-[20px] h-[20px]" :class="cIcon" />
-              <div v-if="cName" class="font-semibold text-md mr-5" :class="{'':cNode?.children}">
+              <span v-if="cIcon" class="flex-shrink-0 w-[20px] h-[20px]" :class="cIcon" />
+              <div v-if="cName" class="flex-shrink-0 font-semibold text-md mr-2" :class="{'':cNode?.children}">
                 {{ cName }}
               </div>
-              <div v-if="cNode?.children" class="h-full text-md flex-grow flex justify-start items-center">
-                <div class="border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-2"></div>
-                <sub-nav-item v-for="(sub,idx) in cNode.children" :menu="sub" :key="idx" />
-              </div>
+              <div v-if="cNode?.children"
+                   class="flex-shrink-0 border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-1"></div>
+              <el-scrollbar v-if="cNode?.children" class="flex-grow">
+                <div class="h-[--el-header-height] text-sm flex justify-start items-center gap-0.5">
+                  <sub-nav-item v-for="(sub,idx) in cNode.children" :menu="sub" :key="idx" />
+                </div>
+              </el-scrollbar>
               <!-- 右部菜单 -->
               <router-view name="right"></router-view>
               <!-- 帮助按钮 -->
-              <div v-if="cPage.components?.help" class="ml-1 flex flex-col h-full justify-center">
+              <div v-if="cPage.components?.help" class="flex-shrink-0 ml-1 flex flex-col h-full justify-center">
                 <span class="icon-[mdi--help-circle-outline] w-5 h-5 cursor-help" @click="drawer=true"></span>
               </div>
             </div>
