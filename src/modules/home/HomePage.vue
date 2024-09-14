@@ -1,6 +1,5 @@
 <template>
   <div>
-    <span class="icon-[ep--home-filled]"></span>
     Home
   </div>
 </template>

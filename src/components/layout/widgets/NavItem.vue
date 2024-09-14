@@ -1,15 +1,21 @@
 <template>
-  <div class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 my-1 py-3.5"
+  <div class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 my-1 py-3.5 rounded"
        :class="itemCls"
        :style="itemStyle"
        @click="onItemClick">
-    <span v-if="!props.avatar" class="menu-item" :class="icon"></span>
-    <el-avatar v-else-if="props.avatar.startsWith('http')" :src="props.avatar" class="menu-item" />
-    <el-avatar v-else size="small" class="menu-item">{{ props.avatar }}</el-avatar>
-    <el-badge class="expand" v-if="badge>0" :value="badge" :offset="[10, 5]">
-      <a class="expand text-md">{{ itemText }}</a>
+
+    <el-tooltip placement="right" :content="itemText" effect="light" :disabled="expand">
+      <span v-if="!props.avatar" class="menu-item" :class="icon" />
+      <el-avatar v-else-if="props.avatar.startsWith('http')" :src="props.avatar" class="menu-item" />
+      <el-avatar v-else size="small" class="menu-item">{{ props.avatar }}</el-avatar>
+    </el-tooltip>
+
+    <el-badge class="expand flex-grow" v-if="badge>0" :value="badge" :offset="[-30, 12]">
+      <a class="expand text-sm">{{ itemText }}</a>
     </el-badge>
-    <a v-else class="expand text-md cursor-default">{{ itemText }}</a>
+    <a v-else class="expand flex-grow text-sm cursor-default">{{ itemText }}</a>
+
+    <span v-if="itemTip" class="expand text-sm text-gray-300 pr-1">{{ itemTip }}</span>
   </div>
 </template>
 
@@ -28,6 +34,7 @@ const props = withDefaults(defineProps<{
   text?: string
   cls?: string
   color?: string
+  tip?: string
 }>(), {})
 // events
 const emits = defineEmits<{
@@ -35,10 +42,11 @@ const emits = defineEmits<{
 }>()
 // data bindings
 const cNode = inject(CURRENT_MENU_NODE, null)
+const expand = inject('asideExpand', true)
 // computed
 const icon = computed(() => {
-  if (props.menu && props.menu.icon) {
-    return `icon-[${props.menu.icon}]`
+  if (props.menu?.icon) {
+    return props.menu.icon
   }
   return 'icon-[ep--link]'
 })
@@ -46,7 +54,7 @@ const itemText = computed(() => {
   if (props.menu && props.menu.meta?.name) {
     return tsc(props.menu.meta?.name, props.menu)
   }
-  return props.text || 'My Dashboard'
+  return props.text || ''
 })
 const itemStyle = computed(() => {
   if (props.menu && props.menu.color) {
@@ -57,15 +65,17 @@ const itemStyle = computed(() => {
   return {}
 })
 const itemCls = computed(() => {
-  let cls = ''
+  let cls = expand ? '' : 'rounded-3xl '
   if (cNode?.value != null && props.menu && cNode.value.path == props.menu.path) {
-    cls = 'bg-sky-600 dark:bg-sky-800'
+    cls += 'bg-sky-800 '
   }
+
   if (props.menu && props.menu.cls) {
     return cls + props.menu.cls
   } else if (props.cls) {
     return cls + props.cls
   }
+
   return cls
 })
 const badge = computed(() => {
@@ -77,8 +87,19 @@ const badge = computed(() => {
   }
   return 0
 })
+const itemTip = computed(() => {
+  if (props.tip) {
+    return props.tip
+  } else if (props.menu?.meta?.tip) {
+    return props.menu.meta.tip
+  }
+  return null
+})
 // methods
 const onItemClick = () => {
+  if (cNode != null && props.menu != null) {
+    cNode.value = props.menu
+  }
   if (typeof props.menu?.meta?.click == 'function') {
     props.menu.meta.click({ context: props.menu })
   } else if (props.menu?.path) {
@@ -93,5 +114,6 @@ const onItemClick = () => {
 .menu-item {
   width: 22px;
   height: 22px;
+  cursor: default;
 }
 </style>

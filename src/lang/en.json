@@ -27,5 +27,7 @@
     "NotFound": "Not Found",
     "Login": "Login"
   },
+  "help": "Help",
+  "search": "Search",
   "hello": "Hello"
 }

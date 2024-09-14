@@ -1,5 +1,4 @@
 import { defineRouter } from '@/@types'
-import { useRoute } from 'vue-router'
 
 export default defineRouter([
   {
@@ -8,13 +7,52 @@ export default defineRouter([
     children: [
       {
         path: '',
-        menu: true,
-        group: 'top',
-        icon: 'ep--home-filled',
+        group: 0,
+        icon: 'icon-[ep--home-filled]',
+        sort: 1,
+        children: [
+          {
+            path: '',
+            menu: true,
+            components: {
+              help: () => import('~/home/widgets/DashboardHelp.vue'),
+              default: () => import('~/home/HomePage.vue')
+            },
+            meta: {
+              title: '{home.dashboard}',
+              name: '概述'
+            }
+          },
+          {
+            path: 'd',
+            menu: true,
+            badge: 1,
+            component: () => import('~/home/HomePage.vue'),
+            meta: {
+              title: '{home.dashboard}',
+              name: '概述d'
+            }
+          }
+        ],
+        meta: {
+          name: '{home.dashboard}',
+          tip: 'Ctr+J'
+        }
+      },
+      {
+        path: 'notification',
+        group: 0,
+        sort: 2,
+        icon: 'icon-[mdi--bell]',
+        badge() {
+          return 10
+        },
         component: () => import('~/home/HomePage.vue'),
         meta: {
-          title: '{home.dashboard}',
-          name: '{home.dashboard}'
+          title() {
+            return '通知(10)'
+          },
+          name: '通知'
         }
       }
     ]
@@ -25,14 +63,46 @@ export default defineRouter([
     children: [
       {
         path: '',
-        menu: true,
         sort: 1,
         component: () => import('~/home/HomePage.vue'),
         meta: {
           title: '概览',
           name({ ts }) {
-            const route = useRoute()
-            return ts('home.dashboard') + ' - ' + route.fullPath
+            return ts('home.dashboard')
+          }
+        }
+      },
+      {
+        path: 'a',
+        sort: 2,
+        component: () => import('~/home/HomePage.vue'),
+        meta: {
+          title: '概览',
+          name({ ts }) {
+            return ts('home.dashboard') + ' a'
+          }
+        }
+      },
+      {
+        path: 'b',
+        sort: 3,
+        component: () => import('~/home/HomePage.vue'),
+        meta: {
+          title: '概览',
+          name({ ts }) {
+            return ts('home.dashboard') + ' b'
+          }
+        }
+      },
+      {
+        path: 'c',
+        sort: 3,
+        group: 2,
+        component: () => import('~/home/HomePage.vue'),
+        meta: {
+          title: '概览',
+          name({ ts }) {
+            return ts('home.dashboard') + ' c'
           }
         }
       }

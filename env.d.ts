@@ -20,12 +20,13 @@ declare module 'vue-router' {
     title?: string | ((arg: {
       context: RouteLocationNormalized,
       ts: (text: string, defaultString?: string, args?: any) => string
-    }) => string),
+    }) => string)
     name?: string | ((arg: {
       context: Route,
       ts: (text: string, defaultString?: string, args?: any) => string
-    }) => string),
+    }) => string)
     click?: (arg: { context: Route }) => any
+    tip?: string
   }
 }
 

@@ -7,8 +7,8 @@ export default defineRouter([
     name: 'NotFound',
     component: () => import('~/error/NotFound.vue'),
     meta: {
-      title({ t }) {
-        return t('page.NotFound', 'Not Found')
+      title({ ts }) {
+        return ts('page.NotFound', 'Not Found')
       }
     }
   }

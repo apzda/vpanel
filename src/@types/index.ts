@@ -73,7 +73,7 @@ export interface MenuItem {
   level?: number
   login?: false
   menu?: true
-  group?: string
+  group?: number
   authorities?: string[] | string
   roles?: string[] | string
 }
@@ -174,7 +174,6 @@ export interface FormItemOpt {
   label?: string
 }
 
-export type translateFunc = (text: string, defaultStr?: string) => string
 // 表单配置
 export type FormItemOpts<T extends Record<string, any>> = {
   [key in keyof T]: FormItemOpt
