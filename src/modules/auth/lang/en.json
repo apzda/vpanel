@@ -10,6 +10,9 @@
       "prompt": "Sliding to the right to log in.",
       "success": "Validating ...",
       "login": "Login ..."
+    },
+    "slider": {
+      "prompt": "Sliding to log in."
     }
   }
 }

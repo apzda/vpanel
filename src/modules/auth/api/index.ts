@@ -1,5 +1,6 @@
 import useAxios from '@/utils/axios'
 import type { UserInfo } from '@/stores/user'
+import type { RequestConfig } from '@/@types'
 
 const axios = useAxios()
 
@@ -20,8 +21,12 @@ export const createCaptcha = () => {
   return axios.get<Captcha>('captcha/create', { showErrMsg: false })
 }
 // 验证
-export const validateCaptcha = (data: CaptchaCode) => {
-  return axios.post('captcha/validate', { data })
+export const validateCaptcha = (data: CaptchaCode, showErrMsg: boolean = true) => {
+  const options: RequestConfig = { data: data }
+  if (!showErrMsg) {
+    options.showErrMsg = false
+  }
+  return axios.post('captcha/validate', options)
 }
 
 // 登录

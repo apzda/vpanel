@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 my-1 py-3.5 rounded"
+  <div class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 my-1 py-3.5 pl-[0.1rem] rounded"
        :class="itemCls"
        :style="itemStyle"
        @click="onItemClick">

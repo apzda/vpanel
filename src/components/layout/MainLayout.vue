@@ -58,7 +58,7 @@
       <slot>
         <el-container>
           <!-- 头部 -->
-          <el-header class="shadow-xl" style="--el-header-padding:0 10px">
+          <el-header class="shadow-md shadow-gray-200 dark:shadow-gray-950" style="--el-header-padding:0 10px">
             <!-- 自定义头部 -->
             <router-view name="header"></router-view>
             <!-- 默认头部:二级导致 -->

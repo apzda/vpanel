@@ -11,6 +11,7 @@ export default defineSetting({
   logoutApi: '/logout',
   refreshTokenApi: '/ucenter/refresh-token', // 刷新AccessToken api
   fromArg: 'from',
+  captcha: 'drag',
   gtw: {
     default: {
       timeout: 10000,

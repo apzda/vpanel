@@ -33,26 +33,27 @@ export interface Settings {
   switchToApi?: string // 切换到用户
   switchBackApi?: string // 切回原用户
   fromArg?: string // 来源URL
-  rolePrefix?: string
-  simulator?: string
-  transformResponse?: ((response: any) => any) | ((response: any) => any)[]
-  tokenHeaderName?: string
-  tokenBearer?: string
-  whiteList: string[]
+  rolePrefix?: string // 角色前缀
+  simulator?: string // 模拟器
+  captcha?: 'image' | 'drag' | 'slider' // 验证码类型
+  transformResponse?: ((response: any) => any) | ((response: any) => any)[] // 响应转换器
+  tokenHeaderName?: string // 请求头中令牌名称
+  tokenBearer?: string // 令牌投递员名称
+  whiteList: string[] // 无需要身份认证页面白名单
   gtw: {
     [gtw: string]: string | GtwOptions
-    default: string | GtwOptions
-  }
-  debounce?: boolean
-  language?: string
-  logo?: string
-  appName?: string
+    default: string | GtwOptions // 默认网关配置
+  } // 网关配置
+  debounce?: boolean // 网络请求防抖开关
+  language?: string // 默认语言
+  logo?: string // 应用LOGO
+  appName?: string // 应用名称
   languages: {
     [lang: string]: {
       name: string
       flag?: string
     }
-  }
+  } // 支持的语言列表
 }
 
 // 菜单参数
