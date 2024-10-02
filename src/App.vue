@@ -1,7 +1,6 @@
 <template>
   <el-config-provider :locale="locale">
     <router-view v-show="localeDetected" />
-    <span class="icon-[ep--link] hidden" />
   </el-config-provider>
 </template>
 
