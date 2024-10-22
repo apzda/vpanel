@@ -66,7 +66,7 @@ router.beforeEach((to, from, next) => {
   // @ts-ignore
   const t = window.i18n.t as (str: string) => string
   // @ts-ignore
-  if (to.login === false || !settings.loginUrl || settings.whiteList.indexOf(to.path) !== -1) {
+  if (to.meta?.login === false || to.login === false || !settings.loginUrl || settings.whiteList.indexOf(to.path) !== -1) {
     next()
   } else if (user.value.login) {
     if (user.value.credentialsExpired && settings.resetPwdUrl) {

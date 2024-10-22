@@ -1,5 +1,5 @@
 import type { InjectionKey, Ref } from 'vue'
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteMeta, RouteRecordRaw } from 'vue-router'
 import type { AxiosRequestConfig } from 'axios'
 import type { CommonResponse, ErrorEvent } from '@/@types/request'
 
@@ -72,11 +72,13 @@ export interface MenuItem {
   cls?: string
   sort?: number | ((ctx: MenuOption) => number)
   level?: number
-  login?: false
   menu?: true
   group?: number
   authorities?: string[] | string
   roles?: string[] | string
+  meta?: RouteMeta & {
+    login?: false
+  }
 }
 
 // 错误处理器名称

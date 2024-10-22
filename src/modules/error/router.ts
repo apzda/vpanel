@@ -7,6 +7,7 @@ export default defineRouter([
     name: 'NotFound',
     component: () => import('~/error/NotFound.vue'),
     meta: {
+      login: false,
       title({ ts }) {
         return ts('page.NotFound', 'Not Found')
       }
