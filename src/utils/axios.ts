@@ -228,7 +228,7 @@ function responseHandler<T>(res: AxiosResponse, resolve: SuccessHandler<T>, reje
       // 解密
       res.data = handler.decrypt(res.data)
     } catch (e) {
-      reject({ errCode: 1000, errMsg: 'Cannot decrypt data:' + e })
+      reject({ errCode: 1000, errMsg: 'Cannot decrypt data:' + e, data: null })
       return
     }
   }
@@ -296,13 +296,15 @@ function extractResponseData(err: AxiosError): CommonResponse {
     } else {
       return {
         errCode: err.response.status,
-        errMsg: err.message
+        errMsg: err.message,
+        data: null
       }
     }
   }
   return {
     errCode: 400,
-    errMsg: 'Network Error'
+    errMsg: 'Network Error',
+    data: null
   }
 }
 

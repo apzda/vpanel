@@ -13,7 +13,7 @@ export interface CommonResponse<T = any> {
   errMsg?: string
   message?: string
   type?: 'TOAST' | 'NOTIFY' | 'ALERT' | 'NONE' | string
-  data?: T
+  data: T
 }
 
 // 网络请求错误事件
