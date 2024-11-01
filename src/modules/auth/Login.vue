@@ -156,7 +156,7 @@ import settings from '@/config/settings'
 
 // constants
 const fromArg: string = settings.fromArg || ''
-const captchaType: 'image' | 'drag' | 'slider' = settings.captcha || 'image'
+const captchaType: 'image' | 'drag' | 'slider' = settings.captcha || 'slider'
 // hooks
 const $router = useRouter()
 const $route = useRoute()
@@ -224,8 +224,8 @@ const doLogin = async () => {
     password: formModel.password,
     captchaId: captchaId.value
   }).then(({ data }) => {
+    data.login = true
     user.value = data
-    user.value.login = true
     if (user.value.credentialsExpired) {
       gotoPage('resetPwdUrl', $route.query[fromArg] || '/')
     } else if (user.value.mfa == 'PENDING') {
