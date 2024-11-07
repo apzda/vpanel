@@ -3,6 +3,7 @@
     "login": "Sign In",
     "loginHolder": "Enter your username.",
     "password": "Password",
+    "unbind": "Please bind the platform account",
     "passwordHolder": "Enter your password.",
     "code": "Captcha",
     "codeHolder": "Enter the Captcha code.",

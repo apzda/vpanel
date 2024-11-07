@@ -1,5 +1,6 @@
 import type { NavigationGuardNext } from 'vue-router'
 import type { RequestConfig } from '@/@types/index'
+import { AxiosError } from 'axios'
 
 export interface Response {
   data: any;
@@ -40,4 +41,14 @@ export interface IAxios {
   encrypted: <T = any>(api: string, options?: RequestConfig) => Promise<CommonResponse<T>>
 
   request<T = any>(api: string, method: string, options?: RequestConfig): Promise<CommonResponse<T>>
+}
+
+export const ERR_CODES: Record<string, number | string> = {
+  [AxiosError.ERR_NETWORK]: 'error',
+  [AxiosError.ERR_BAD_RESPONSE]: 'error',
+  [AxiosError.ERR_CANCELED]: 'canceled',
+  [AxiosError.ERR_BAD_REQUEST]: 400,
+  [AxiosError.ETIMEDOUT]: 504,
+  [AxiosError.ECONNABORTED]: 'aborted',
+  'error': 'error'
 }

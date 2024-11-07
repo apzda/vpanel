@@ -23,6 +23,7 @@ export interface Settings {
   [index: string]: any
 
   loginUrl?: string // 登录地址
+  landingUrl?: string// 登录成功后的落地页地址
   activeUrl?: string // 激活地址
   resetPwdUrl?: string // 重置密码地址
   mfaSetupUrl?: string // 设置多因素认证地址

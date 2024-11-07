@@ -12,7 +12,9 @@
     "502": "Bad Gateway",
     "503": "Service Unavailable",
     "504": "Gateway Timeout",
-    "error": "{1}",
+    "error": "Cannot connect to server",
+    "aborted": "Request Timeout",
+    "canceled": "Request Canceled",
     "title": "Network Error"
   },
   "user": {

@@ -1,12 +1,17 @@
 import { useStorage } from '@vueuse/core'
+import setting from '@/config/settings'
 
 import useAxios from '@/utils/axios'
 import { toArray } from '@/utils'
 import { t } from '@/utils/i18n'
-import setting from '@/config/settings'
+import { name } from './../../package.json'
+import handlers from '@/config/handler'
+import type { ErrorEvent } from '@/@types/request'
+import { notify } from '@/utils/msgbox'
 
 const axios = useAxios()
 const ROLE_PREFIX = setting.rolePrefix || 'ROLE_'
+const storagePrefix = name || ''
 const patterns = new Map<string, RegExp>()
 
 const getPattern = (authority: string): RegExp | undefined => {
@@ -84,6 +89,7 @@ export interface UserInfo {
   lastName?: string
   status?: string
   login?: boolean
+  landingUrl?: string
   lastLoginTime?: number
   lastLoginIp?: string
   phone?: string
@@ -109,12 +115,33 @@ export interface UserInfo {
   job?: Job
 }
 
-export const user = useStorage<UserInfo>('_json_user_info', {}, localStorage, {
+export const user = useStorage<UserInfo>(storagePrefix + '::userData', {}, localStorage, {
   mergeDefaults: true
 })
 
+export const refresh = (data: UserInfo, event: ErrorEvent) => {
+  data.login = true
+  user.value = data
+  if (!data.uid || data.uid == 0) {
+    if (typeof handlers['onErr808'] === 'function') {
+      handlers['onErr808'](event)
+    } else {
+      notify({
+        title: t('alert.error'),
+        message: t('auth.unbind'),
+        type: 'warning'
+      })
+    }
+    return false
+  }
+  return true
+}
+
 export const logout = (): void => {
-  user.value = {}
+  user.value = {
+    login: false,
+    uuid: user.value.uuid
+  }
 }
 
 export const switchTo = (user: { username: string }) => {

@@ -1,12 +1,15 @@
 import type { CommonResponse, ErrorEvent, IAxios, RejectHandler, SuccessHandler } from '@/@types/request'
+import { ERR_CODES } from '@/@types/request'
 
 import type { ErrHandlerName, GtwOptions, RequestConfig } from '@/@types'
 import setting from '@/config/settings'
 import settings from '@/config/settings'
 import handler from '@/config/handler'
 import { deepClone, isObject } from '@/utils'
+import { t, ts } from './i18n'
 import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios, { AxiosError } from 'axios'
+import { trimEnd, trimStart } from 'lodash-es'
 
 // 合并axios配置
 const mergeCfg = (cfg: string | GtwOptions, transformResponse?: ((data: any) => any) | ((data: any) => any)[]) => {
@@ -64,16 +67,18 @@ const emptyHandler = (event: ErrorEvent) => {
 }
 
 // 请求代理类
-class RequestProxy implements IAxios {
+export class RequestProxy implements IAxios {
+  private readonly gtw: string
   private readonly options: RequestConfig
   private readonly debounceMap: Set<string>
   private readonly apiBase: string
   private readonly axios: AxiosInstance
 
   constructor(gtw: string, options: GtwOptions) {
+    this.gtw = gtw
     this.options = options
     this.debounceMap = new Set<string>()
-    this.apiBase = options.baseURL
+    this.apiBase = trimEnd(options.baseURL, '/') + '/'
     this.axios = instances[gtw]
   }
 
@@ -144,6 +149,7 @@ class RequestProxy implements IAxios {
       }).catch(err => {
         {
           // redo config ==>
+          err.url = api
           err.axios = that
           err.options = options
           err.resolve = resolve
@@ -163,7 +169,8 @@ class RequestProxy implements IAxios {
     })
   }
 
-  private doRequest<T>(api: string, method: string, options?: RequestConfig): Promise<T> {
+  doRequest<T>(api: string, method: string, options?: RequestConfig): Promise<T> {
+    api = trimStart(api, '/')
     return new Promise<T>((resolve, reject) => {
       if (!api || !api.trim()) {
         reject({
@@ -176,7 +183,10 @@ class RequestProxy implements IAxios {
       const gtwCfg = this.options
       for (const cfg in gtwCfg) {
         //@ts-ignore
-        options[cfg] = gtwCfg[cfg]
+        if (typeof options[cfg] == 'undefined') {
+          //@ts-ignore
+          options[cfg] = gtwCfg[cfg]
+        }
       }
       const url = this.apiBase + api
       options.url = url
@@ -201,7 +211,7 @@ class RequestProxy implements IAxios {
         if (response.status == 200) {
           responseHandler(response, resolve, reject)
         } else {
-          const err = new AxiosError('response status is not 200', 'ERROR_RESPONSE', config, response.request, response)
+          const err = new AxiosError('response status is not 200', AxiosError.ERR_BAD_RESPONSE, config, response.request, response)
           responseErrorHandler(extractResponseData(err), reject)
         }
       }).catch(err => {
@@ -263,7 +273,7 @@ function responseHandler<T>(res: AxiosResponse, resolve: SuccessHandler<T>, reje
       // 网络错误
       reject({
         errCode: res.status,
-        errMsg: 'Network Error',
+        errMsg: ts('network.' + res.status, t('network.error')),
         data: res.data
       })
     }
@@ -274,6 +284,9 @@ function responseHandler<T>(res: AxiosResponse, resolve: SuccessHandler<T>, reje
 function responseErrorHandler(err: CommonResponse, reject: RejectHandler) {
   if (err.errMsg?.endsWith('timeout')) {
     err.errCode = 504
+    if (!err.errMsg) {
+      err.errMsg = ts('network.504', t('network.error'))
+    }
   }
   reject(err)
 }
@@ -296,14 +309,16 @@ function extractResponseData(err: AxiosError): CommonResponse {
     } else {
       return {
         errCode: err.response.status,
-        errMsg: err.message,
+        errMsg: ts('network.' + err.response.status, err.message),
         data: null
       }
     }
   }
+
+  const code = ERR_CODES[err.code || 'error']
   return {
-    errCode: 400,
-    errMsg: 'Network Error',
+    errCode: code,
+    errMsg: ts('network.' + code, t('network.error')),
     data: null
   }
 }

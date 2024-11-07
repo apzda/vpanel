@@ -1,10 +1,10 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { version } from './../../package.json'
-
+import { name, version } from './../../package.json'
 import { useDark, useStorage, useTitle, useToggle } from '@vueuse/core'
 
-export const useAppStore = defineStore('application', () => {
+const storagePrefix = name || ''
+export const useAppStore = defineStore(storagePrefix + '::application', () => {
   const title = ref('Dashboard')
 
   const appTitle = computed(
@@ -17,14 +17,17 @@ export const useAppStore = defineStore('application', () => {
 
   useTitle(appTitle)
 
-  const isDark = useDark()
+  const isDark = useDark({
+    storageKey: storagePrefix + '::theme'
+  })
   const toggleDark = useToggle(isDark)
 
   const appCfg = useStorage<{
     [key: string]: any
     asideExpand: boolean
-  }>('appdata', {
-    asideExpand: true
+  }>(storagePrefix + '::appData', {
+    asideExpand: true,
+    path: '/'
   }, localStorage, {
     mergeDefaults: true
   })

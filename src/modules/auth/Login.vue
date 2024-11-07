@@ -156,6 +156,7 @@ import settings from '@/config/settings'
 
 // constants
 const fromArg: string = settings.fromArg || ''
+const landingUrl: string = settings.landingUrl || '/'
 const captchaType: 'image' | 'drag' | 'slider' = settings.captcha || 'slider'
 // hooks
 const $router = useRouter()
@@ -226,15 +227,18 @@ const doLogin = async () => {
   }).then(({ data }) => {
     data.login = true
     user.value = data
-    if (user.value.credentialsExpired) {
-      gotoPage('resetPwdUrl', $route.query[fromArg] || '/')
-    } else if (user.value.mfa == 'PENDING') {
-      gotoPage('mfaVerifyUrl', $route.query[fromArg] || '/')
-    } else if (user.value.mfa == 'UNSET') {
-      gotoPage('mfaSetupUrl', $route.query[fromArg] || '/')
-    } else {
-      $router.push(($route.query[fromArg] || '/') as string)
-    }
+    const landing = data.landingUrl || landingUrl
+    setTimeout(() => {
+      if (user.value.credentialsExpired) {
+        gotoPage('resetPwdUrl', $route.query[fromArg] || landing)
+      } else if (user.value.mfa == 'PENDING') {
+        gotoPage('mfaVerifyUrl', $route.query[fromArg] || landing)
+      } else if (user.value.mfa == 'UNSET') {
+        gotoPage('mfaSetupUrl', $route.query[fromArg] || landing)
+      } else {
+        $router.push(($route.query[fromArg] || landing) as string)
+      }
+    }, 100)
   }).catch(() => {
     reloadCaptcha(() => {
       visible.value = false
@@ -344,6 +348,11 @@ const sliderVerified = async (offset: number) => {
 }
 // === 生命周期 ===
 onMounted(() => {
-  reloadCaptcha()
+  if (user.value.login === true) {
+    const landing = user.value.landingUrl || landingUrl
+    $router.push(($route.query[fromArg] || landing) as string)
+  } else {
+    reloadCaptcha()
+  }
 })
 </script>

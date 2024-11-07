@@ -18,11 +18,11 @@ export interface CaptchaCode {
 
 // 创建验证码
 export const createCaptcha = () => {
-  return axios.get<Captcha>('captcha/create', { showErrMsg: false })
+  return axios.get<Captcha>('captcha/create', { showErrMsg: false, login: false })
 }
 // 验证
 export const validateCaptcha = (data: CaptchaCode, showErrMsg: boolean = true) => {
-  const options: RequestConfig = { data: data }
+  const options: RequestConfig = { data: data, login: false }
   if (!showErrMsg) {
     options.showErrMsg = false
   }
@@ -38,5 +38,5 @@ export const login = (data: {
   const cid = data.captchaId
   delete data.captchaId
 
-  return axios.post<UserInfo>('ucenter/login', { data, headers: { 'X-CAPTCHA-ID': cid } })
+  return axios.post<UserInfo>('ucenter/login', { data, login: false, headers: { 'X-CAPTCHA-ID': cid } })
 }

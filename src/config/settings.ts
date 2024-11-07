@@ -8,17 +8,18 @@ export default defineSetting({
   }, // 支持的语言
   whiteList: [], // 无需登录检测的页面
   loginUrl: '/login', // 登录页地址
+  landingUrl: '/',
   logoutApi: '/logout',
   refreshTokenApi: '/ucenter/refresh-token', // 刷新AccessToken api
   fromArg: 'from',
   captcha: 'slider',
   gtw: {
     default: {
-      timeout: 10000,
+      timeout: 30000,
       baseURL: import.meta.env.VITE_GTW_DEFAULT_URL
     },
     demo: {
-      timeout: 10000,
+      timeout: 30000,
       baseURL: import.meta.env.VITE_GTW_DEMO_URL
     }
   },

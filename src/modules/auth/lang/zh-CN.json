@@ -5,6 +5,7 @@
     "username": "用户名",
     "usernameHolder": "请输入您的用户名",
     "password": "密码",
+    "unbind": "请绑定平台账户",
     "passwordHolder": "请输入您的密码",
     "code": "验证码",
     "codeHolder": "请输入验证码",

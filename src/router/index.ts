@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { createRouter, createWebHistory, type LocationQueryValue, type NavigationGuardNext } from 'vue-router'
 import { useNProgress } from '@vueuse/integrations/useNProgress'
 
@@ -60,7 +61,7 @@ export const gotoPage = (page: string, from?: string | LocationQueryValue[], nex
 export const gotoLoginPage = (url?: string, next?: NavigationGuardNext): boolean | void => {
   return gotoPage('loginUrl', url, next)
 }
-
+export const currentPage = ref<string>('/')
 router.beforeEach((to, from, next) => {
   isLoading.value = true
   // @ts-ignore
@@ -103,6 +104,7 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach((to, from, failure) => {
   if (!failure) {
+    currentPage.value = to.path
     showSucProgress()
     if (to.meta && to.meta.title) {
       const { setAppTitle } = useAppStore()
