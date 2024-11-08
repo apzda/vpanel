@@ -1,4 +1,4 @@
-import type { Plugin, DirectiveBinding } from 'vue'
+import type { DirectiveBinding, Plugin } from 'vue'
 import { hasAuthority, hasRole } from '@/stores/user'
 import type { MenuItem } from '@/@types'
 
@@ -24,7 +24,7 @@ const injectMenuName = (el: HTMLElement, binding: DirectiveBinding) => {
 const createMenuItem = (el: HTMLElement, binding: DirectiveBinding, inject: boolean) => {
   if (binding.value) {
     const menu = binding.value as MenuItem
-    if (menu.hidden !== false) {
+    if (menu.menu === true) {
       const checkDisabled = !(menu.authorities || menu.roles)
 
       if (checkDisabled || (menu.authorities && hasAuthority(menu.authorities))) {
