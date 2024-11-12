@@ -1,139 +1,126 @@
 <template>
   <div class="flex flex-row gap-3">
     <!-- left -->
-    <div class="hidden md:w-2/5 md:block">
-      <div class="flex flex-col justify-center h-full">
-        <div class="flex flex-row justify-end">
-          <!-- login tip -->
-          <img :src="assets('img/user-left.png')" style="width: 70%" alt="">
-        </div>
-      </div>
-    </div>
+    <left-aside class="hidden md:w-2/5 md:block" />
     <!-- right -->
-    <div class="w-full md:w-3/5">
-      <div class="flex flex-col justify-center h-full">
-        <div class="flex flex-row  justify-center">
-          <div class="w-4/5 max-w-[500px] md:w-3/5 md:min-w-[400px] xl:ml-[-100px] 2xl:ml-[-400px]">
-            <!-- login form -->
-            <div class="rounded shadow shadow-gray-300 dark:shadow-gray-600 p-4 md:p-10">
-              <h1 class="mb-2 font-bold text-2xl" v-t="'auth.login'"></h1>
-              <p class="mb-5 text-sm text-gray-400">{{ ts('auth.tip', 'Welcome back to your account.') }}</p>
-              <el-form
-                ref="formRef"
-                size="large"
-                label-position="top"
-                require-asterisk-position="right"
-                :model="formModel"
-                :rules="LoginFormRules"
+    <right-aside class="w-full md:w-3/5">
+      <!-- login form -->
+      <div class="rounded shadow shadow-gray-300 dark:shadow-gray-600 p-4 md:p-10">
+        <h1 class="mb-2 font-bold text-2xl" v-t="'auth.login'"></h1>
+        <p class="mb-5 text-sm text-gray-400">{{ ts('auth.tip', 'Welcome back to your account.') }}</p>
+        <el-form
+          ref="formRef"
+          size="large"
+          label-position="top"
+          require-asterisk-position="right"
+          :model="formModel"
+          :rules="LoginFormRules"
+        >
+          <el-form-item
+            prop="username"
+            :label="ts('auth.username', 'Username')"
+            :error="formOpts.username.message"
+            :validate-status="formOpts.username.status"
+          >
+            <template #label="{label}">
+              <span class="font-bold text-sm">{{ label }}</span>
+            </template>
+            <el-input
+              v-model="formModel.username"
+              :placeholder="formOpts.username.placeholder"
+              :prefix-icon="User"
+              clearable />
+          </el-form-item>
+          <el-form-item
+            :label="formOpts.password.label"
+            :error="formOpts.password.message"
+            :validate-status="formOpts.password.status"
+            prop="password"
+          >
+            <template #label="{label}">
+              <span class="font-bold text-sm flex-grow">{{ label }}</span>
+            </template>
+            <el-input
+              type="password"
+              v-model="formModel.password"
+              :placeholder="formOpts.password.placeholder"
+              :prefix-icon="Lock"
+              clearable
+              show-password />
+          </el-form-item>
+          <el-form-item v-if="captchaType == 'drag'" style="margin-bottom: 0">
+            <drag-verifier
+              ref="dragVerifier"
+              :multiple="multiline"
+              @status-change="captchaVerified"
+              :prompt="ts('auth.drag.prompt','Sliding to the right to log in.')"
+              :success-text="successText"
+            />
+          </el-form-item>
+          <template v-else-if="captchaType == 'slider'">
+            <el-form-item style="margin-bottom: 0">
+              <el-popover placement="top" :width="330" :visible="visible" :show-arrow="false" :offset="-40">
+                <template #reference>
+                  <el-button :loading="loading" class="w-full" type="primary" @click="showSliderCaptcha">
+                    {{ ts('auth.login') }}
+                  </el-button>
+                </template>
+                <slider-verifier
+                  v-if="captchaType=='slider'"
+                  ref="sliderVerifier"
+                  :captcha="captchaCode"
+                  :loading="loading"
+                  :prompt="ts('auth.slider.prompt')"
+                  @reload="reloadCaptcha"
+                  @dropped="sliderVerified" />
+              </el-popover>
+            </el-form-item>
+          </template>
+          <template v-else>
+            <el-form-item
+              :label="formOpts.code.label"
+              :error="formOpts.code.message"
+              :validate-status="formOpts.code.status"
+              prop="code">
+              <template #label="{label}">
+                <span class="font-bold text-sm flex-grow">{{ label }}</span>
+              </template>
+              <el-input
+                v-model="formModel.code"
+                :placeholder="formOpts.code.placeholder"
+                :prefix-icon="CircleCheck"
+                @blur="verifyImageCaptcha"
+                @change="captchaValid=false"
+                maxlength="4"
               >
-                <el-form-item
-                  prop="username"
-                  :label="ts('auth.username', 'Username')"
-                  :error="formOpts.username.message"
-                  :validate-status="formOpts.username.status"
-                >
-                  <template #label="{label}">
-                    <span class="font-bold text-sm">{{ label }}</span>
-                  </template>
-                  <el-input
-                    v-model="formModel.username"
-                    :placeholder="formOpts.username.placeholder"
-                    :prefix-icon="User"
-                    clearable />
-                </el-form-item>
-                <el-form-item
-                  :label="formOpts.password.label"
-                  :error="formOpts.password.message"
-                  :validate-status="formOpts.password.status"
-                  prop="password"
-                >
-                  <template #label="{label}">
-                    <span class="font-bold text-sm flex-grow">{{ label }}</span>
-                  </template>
-                  <el-input
-                    type="password"
-                    v-model="formModel.password"
-                    :placeholder="formOpts.password.placeholder"
-                    :prefix-icon="Lock"
-                    clearable
-                    show-password />
-                </el-form-item>
-                <el-form-item v-if="captchaType == 'drag'" style="margin-bottom: 0">
-                  <drag-verifier
-                    ref="dragVerifier"
-                    :multiple="multiline"
-                    @status-change="captchaVerified"
-                    :prompt="ts('auth.drag.prompt','Sliding to the right to log in.')"
-                    :success-text="successText"
-                  />
-                </el-form-item>
-                <template v-else-if="captchaType == 'slider'">
-                  <el-form-item style="margin-bottom: 0">
-                    <el-popover placement="top" :width="330" :visible="visible" :show-arrow="false" :offset="-40">
-                      <template #reference>
-                        <el-button :loading="loading" class="w-full" type="primary" @click="showSliderCaptcha">
-                          {{ ts('auth.login') }}
-                        </el-button>
-                      </template>
-                      <slider-verifier
-                        v-if="captchaType=='slider'"
-                        ref="sliderVerifier"
-                        :captcha="captchaCode"
-                        :loading="loading"
-                        :prompt="ts('auth.slider.prompt')"
-                        @reload="reloadCaptcha"
-                        @dropped="sliderVerified" />
-                    </el-popover>
-                  </el-form-item>
+                <template #append>
+                  <div class="w-[110px] mx-[-18px] bg-white" @click="reloadCaptcha">
+                    <img v-if="captchaCode" :src="captchaCode" alt="" />
+                  </div>
                 </template>
-                <template v-else>
-                  <el-form-item
-                    :label="formOpts.code.label"
-                    :error="formOpts.code.message"
-                    :validate-status="formOpts.code.status"
-                    prop="code">
-                    <template #label="{label}">
-                      <span class="font-bold text-sm flex-grow">{{ label }}</span>
-                    </template>
-                    <el-input
-                      v-model="formModel.code"
-                      :placeholder="formOpts.code.placeholder"
-                      :prefix-icon="CircleCheck"
-                      @blur="verifyImageCaptcha"
-                      @change="captchaValid=false"
-                      maxlength="4"
-                    >
-                      <template #append>
-                        <div class="w-[110px] mx-[-18px] bg-white" @click="reloadCaptcha">
-                          <img v-if="captchaCode" :src="captchaCode" alt="" />
-                        </div>
-                      </template>
-                    </el-input>
-                  </el-form-item>
-                  <el-form-item style="margin-bottom: 0">
-                    <el-button :loading="loading"
-                               class="w-full"
-                               :dark="true"
-                               type="primary"
-                               :disabled="!captchaValid"
-                               @click="doLogin">
-                      {{ ts('auth.login') }}
-                    </el-button>
-                  </el-form-item>
-                </template>
-              </el-form>
-            </div>
-            <!-- extra actions -->
-            <div class="mt-2 text-center text-gray-400 text-sm align-middle">
-              <el-text size="small" type="info">
-                <span class="el-icon icon-[ep--help-filled]"></span>
-                POWERED BY <a target="_blank" href="https://github.com/orgs/apzda/repositories">APZDA</a>
-              </el-text>
-            </div>
-          </div>
-        </div>
+              </el-input>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 0">
+              <el-button :loading="loading"
+                         class="w-full"
+                         :dark="true"
+                         type="primary"
+                         :disabled="!captchaValid"
+                         @click="doLogin">
+                {{ ts('auth.login') }}
+              </el-button>
+            </el-form-item>
+          </template>
+        </el-form>
       </div>
-    </div>
+      <!-- extra actions -->
+      <div class="mt-2 text-center text-gray-400 text-sm align-middle">
+        <el-text size="small" type="info">
+          <span class="el-icon icon-[ep--help-filled]"></span>
+          POWERED BY <a target="_blank" href="https://github.com/orgs/apzda/repositories">APZDA</a>
+        </el-text>
+      </div>
+    </right-aside>
   </div>
 </template>
 
@@ -141,7 +128,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ts } from '@/utils/i18n'
-import { assets, encodeBase64Str } from '@/utils'
+import { encodeBase64Str } from '@/utils'
 import { user } from '@/stores/user'
 import { createCaptcha, login, validateCaptcha } from './api'
 import type { LoginForm } from './@types'
@@ -153,10 +140,12 @@ import type { FormItemOpts } from '@/@types'
 import { gotoPage } from '@/router'
 import { useRoute, useRouter } from 'vue-router'
 import settings from '@/config/settings'
+import LeftAside from '~/auth/components/LeftAside.vue'
+import RightAside from '~/auth/components/RightAside.vue'
 
 // constants
 const fromArg: string = settings.fromArg || ''
-const landingUrl: string = settings.landingUrl || '/'
+const landingUrl: string = settings.landing || '/'
 const captchaType: 'image' | 'drag' | 'slider' = settings.captcha || 'slider'
 // hooks
 const $router = useRouter()
@@ -201,16 +190,11 @@ const formOpts = reactive<FormItemOpts<LoginForm>>({
 })
 // === 私有函数 ===
 const validateForm = async () => {
-  try {
-    const valid = await formRef.value?.validate()
-    if (!valid) {
-      throw new Error('form is invalid')
-    }
-  } catch (err) {
+  const valid = await formRef.value?.validate()
+  if (!valid) {
     dragVerifier.value?.reset()
-    throw err
+    throw new Error('form is invalid')
   }
-
 }
 /**
  * 登录

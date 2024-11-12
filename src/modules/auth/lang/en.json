@@ -7,7 +7,9 @@
     "unbind": "Please bind the platform account",
     "passwordHolder": "Enter your password.",
     "code": "Captcha",
-    "codeHolder": "Enter the Captcha code.",
+    "security": "Security Code",
+    "codeHolder": "Enter the Captcha Code.",
+    "securityHolder": "Enter the Security Code",
     "drag": {
       "prompt": "Sliding to the right to log in.",
       "success": "Validating ...",

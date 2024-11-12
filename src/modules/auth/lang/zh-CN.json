@@ -9,11 +9,16 @@
     "unbind": "请绑定平台账户",
     "passwordHolder": "请输入您的密码",
     "code": "验证码",
+    "security": "安全码",
     "codeHolder": "请输入验证码",
+    "securityHolder": "请输入安全码",
+    "setupMfa": "配置MFA并登录",
     "rule": {
       "username": "用户名不能为空",
       "password": "密码不能为空",
-      "code": "验证码不能为空"
+      "code": "验证码不能为空",
+      "security": "安全码不能为空",
+      "security1": "安全码至少{0}位数字"
     },
     "drag": {
       "prompt": "拖到最右侧进行登录",

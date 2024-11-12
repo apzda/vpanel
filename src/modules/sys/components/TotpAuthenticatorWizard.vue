@@ -14,7 +14,9 @@
         <div class="w-full text-center">
           <p class="text-gray-400">请使用Google Authenticator App扫描二维码或使用密钥进行配置。</p>
           <div class="flex items-center justify-center mt-0.5">
-            <component :is="qrCode" />
+            <div :style="{'min-width':width+'px','min-height':height+'px'}">
+              <component :is="qrCode" />
+            </div>
           </div>
           <p class="mt-1 font-bold">密钥: {{ secretKey }}</p>
         </div>
@@ -60,8 +62,12 @@ const cornersDotOptions = { type: undefined, color: '#000000' }
 
 const props = withDefaults(defineProps<{
   okBtnText?: string
+  width?: number
+  height?: number
 }>(), {
-  okBtnText: '验证并启用多重验证'
+  okBtnText: '验证并启用多重验证',
+  width: 300,
+  height: 300
 })
 
 const emits = defineEmits<{
@@ -115,8 +121,8 @@ const getNewMfaConfig = () => {
       dotsOptions,
       cornersSquareOptions,
       cornersDotOptions,
-      width: 300,
-      height: 300
+      width: props.width,
+      height: props.height
     })
   }).catch(err => {
     if (err.errMsg) {
@@ -142,8 +148,8 @@ const init = () => {
       dotsOptions,
       cornersSquareOptions,
       cornersDotOptions,
-      width: 300,
-      height: 300
+      width: props.width,
+      height: props.height
     })
   }).catch(err => {
     if (err.errMsg) {

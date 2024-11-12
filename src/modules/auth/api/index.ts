@@ -40,3 +40,7 @@ export const login = (data: {
 
   return axios.post<UserInfo>('ucenter/login', { data, login: false, headers: { 'X-CAPTCHA-ID': cid } })
 }
+
+export const verifyMfa = (data: { code: string, type: string }) => {
+  return axios.post('account/verifyMfa', { data, showErrMsg: false })
+}

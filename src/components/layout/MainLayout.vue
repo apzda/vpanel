@@ -271,7 +271,6 @@ onBeforeMount(() => {
       }
     }
   }
-  // console.debug('route: ', $route)
 })
 </script>
 

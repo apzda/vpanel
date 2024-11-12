@@ -8,8 +8,10 @@ export default defineSetting({
   }, // 支持的语言
   whiteList: [], // 无需登录检测的页面
   loginUrl: '/login', // 登录页地址
-  landingUrl: '/',
+  landing: '/',
   logoutApi: '/logout',
+  mfaVerifyUrl: '/auth/mfa/verify',
+  mfaSetupUrl: '/auth/mfa/setup',
   refreshTokenApi: '/ucenter/refresh-token', // 刷新AccessToken api
   fromArg: 'from',
   captcha: 'slider',

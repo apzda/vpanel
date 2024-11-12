@@ -62,6 +62,7 @@ export const gotoLoginPage = (url?: string, next?: NavigationGuardNext): boolean
   return gotoPage('loginUrl', url, next)
 }
 export const currentPage = ref<string>('/')
+
 router.beforeEach((to, from, next) => {
   isLoading.value = true
   // @ts-ignore
@@ -71,13 +72,13 @@ router.beforeEach((to, from, next) => {
     next()
   } else if (user.value.login) {
     if (user.value.credentialsExpired && settings.resetPwdUrl) {
-      return gotoPage('resetPwdUrl', to.path, next)
+      return gotoPage('resetPwdUrl', to.path)
     } else if (user.value.locked && settings.activeUrl) {
-      return gotoPage('activeUrl', to.path, next)
+      return gotoPage('activeUrl', to.path)
     } else if (user.value.mfa == 'UNSET' && settings.mfaSetupUrl) {
-      return gotoPage('mfaSetupUrl', to.path, next)
-    } else if (user.value.mfa == 'VERIFY' && settings.mfaVerifyUrl) {
-      return gotoPage('mfaVerifyUrl', to.path, next)
+      return gotoPage('mfaSetupUrl', to.path)
+    } else if (user.value.mfa == 'PENDING' && settings.mfaVerifyUrl) {
+      return gotoPage('mfaVerifyUrl', to.path)
     }
     let hasA = true
     let hasR = true

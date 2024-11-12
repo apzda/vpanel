@@ -1,8 +1,8 @@
 <template>
   <div class="h-[100vh] flex flex-col justify-between">
-    <header-panel class="flex-initial sticky"></header-panel>
+    <header-panel class="flex-initial sticky" />
     <router-view class="flex-grow" />
-    <footer-panel class="flex-initial"></footer-panel>
+    <footer-panel class="flex-initial" />
   </div>
 </template>
 <script lang="ts" setup>

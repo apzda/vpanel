@@ -17,15 +17,15 @@ export default defineRouter([
     component: () => import('@/components/layout/AuthLayout.vue'),
     children: [
       {
-        path: 'reset-password',
+        path: 'reset/password',
         component: () => import('~/auth/ResetPassword.vue')
       },
       {
-        path: 'mfa-setup',
+        path: 'mfa/setup',
         component: () => import('~/auth/MfaSetup.vue')
       },
       {
-        path: 'mfa-verify',
+        path: 'mfa/verify',
         component: () => import('~/auth/MfaVerify.vue')
       }
     ]
