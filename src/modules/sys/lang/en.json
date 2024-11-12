@@ -1,6 +1,13 @@
 {
+  "sys": {
+    "settings": "Settings",
+    "u": {
+      "profile": "{0} Profile"
+    }
+  },
   "activity": {
     "login": "Sign In",
-    "logout": "Sign Out"
+    "logout": "Sign Out",
+    "mfa": "MFA"
   }
 }

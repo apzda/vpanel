@@ -1,13 +1,13 @@
 <template>
-  <div class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 my-1 py-3.5 pl-[0.1rem] rounded"
+  <div class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 menu"
        :class="itemCls"
        :style="itemStyle"
        @click="onItemClick">
 
     <el-tooltip placement="right" :content="itemText" effect="light" :disabled="expand">
-      <span v-if="!props.avatar" class="menu-item" :class="icon" />
-      <el-avatar v-else-if="props.avatar.startsWith('http')" :src="props.avatar" class="menu-item" />
-      <el-avatar v-else size="small" class="menu-item">{{ props.avatar }}</el-avatar>
+      <span v-if="!avatar" class="menu-item" :class="icon" />
+      <el-avatar v-else-if="avatar.startsWith('http')" :src="avatar" class="menu-item" />
+      <el-avatar v-else size="small" class="menu-item">{{ avatar }}</el-avatar>
     </el-tooltip>
 
     <el-badge class="expand flex-grow" v-if="badge>0" :value="badge" :offset="[-30, 12]">
@@ -49,6 +49,17 @@ const icon = computed(() => {
     return props.menu.icon
   }
   return 'icon-[ep--link]'
+})
+const avatar = computed(() => {
+  if (props.avatar) {
+    return props.avatar
+  } else if (props.menu?.meta?.avatar) {
+    if (typeof props.menu.meta.avatar === 'function') {
+      return props.menu.meta.avatar()
+    }
+    return props.menu.meta.avatar
+  }
+  return null
 })
 const itemText = computed(() => {
   if (props.menu && props.menu.meta?.name) {
@@ -97,8 +108,9 @@ const itemTip = computed(() => {
 })
 // methods
 const onItemClick = () => {
-  if (cNode != null && props.menu != null) {
+  if (cNode != null && props.menu) {
     cNode.value = props.menu
+    console.log('cNode:', props.menu)
   }
   if (typeof props.menu?.meta?.click == 'function') {
     props.menu.meta.click({ context: props.menu })
@@ -111,6 +123,10 @@ const onItemClick = () => {
 </script>
 
 <style scoped>
+.menu {
+  @apply my-1 py-3.5 pl-[3px] rounded;
+}
+
 .menu-item {
   width: 22px;
   height: 22px;

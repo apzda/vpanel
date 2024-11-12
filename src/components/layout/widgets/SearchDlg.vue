@@ -1,5 +1,5 @@
 <template>
-  <el-dialog>
+  <el-dialog class="max-w-[600px] min-w-[400px]">
     <div>
       <el-input
         v-model="q"
@@ -15,7 +15,9 @@
         </template>
       </el-input>
     </div>
-    <div class="min-h-[400px]"></div>
+    <div class="min-h-[400px] max-h-[600px]">
+
+    </div>
     <template #footer>
       <div class="flex justify-end">
         <div>a</div>

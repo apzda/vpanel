@@ -29,7 +29,6 @@
           <!-- 底部固定导航: group = 999 -->
           <div class="flex-initial flex-shrink-0">
             <nav-item v-for="(menu,idx) in bottomMenus" :menu="menu" :key="idx" />
-            <nav-item :avatar="avatar" :text="user.displayName" @click="gotoUserProfile" />
           </div>
           <div class="flex-initial flex-shrink-0 flex justify-between gap-2 items-center h-[30px]">
             <span class="w-6 h-6 cursor-pointer"
@@ -104,14 +103,14 @@
 </template>
 <script lang="ts" setup>
 import { computed, onBeforeMount, provide, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { hasAuthority, hasRole, user } from '@/stores/user'
+import { useRoute } from 'vue-router'
+import { hasPermission, hasRole, user } from '@/stores/user'
 
 import { gotoLoginPage, routerMgr } from '@/router'
 import { CURRENT_MENU_NODE, type Route } from '@/@types'
 import { ts, tsc } from '@/utils/i18n'
 import { useAppStore } from '@/stores/app'
-import { assets, deepClone } from '@/utils'
+import { assets, deepClone, toArray } from '@/utils'
 import { language as locale } from '@/utils/lang'
 import settings from '@/config/settings'
 import NavItem from '@/components/layout/widgets/NavItem.vue'
@@ -119,7 +118,6 @@ import SubNavItem from '@/components/layout/widgets/SubNavItem.vue'
 import SearchDlg from '@/components/layout/widgets/SearchDlg.vue'
 // hooks
 const $route = useRoute()
-const $router = useRouter()
 // constants
 const groups = new Set<number>()
 // data bindings
@@ -161,14 +159,25 @@ const sortMenuItem = (a: Route, b: Route): number => {
 }
 // 过滤菜单
 const filterMenuItem = (menu: Route) => {
-  if (menu.menu === true || menu.sort != undefined || menu.group != undefined || menu.icon != undefined || menu.cls != undefined || menu.color != undefined) {
+  if (menu.menu === true
+    || menu.sort != undefined
+    || menu.group != undefined
+    || menu.icon != undefined
+    || menu.cls != undefined
+    || menu.color != undefined
+    || menu.authorities
+    || menu.roles
+  ) {
+    console.log('menu: ', menu)
     let hasA = true
     let hasR = true
     if (menu.authorities) {
-      hasA = hasAuthority(menu.authorities as string[])
+      toArray(menu.authorities).forEach(perm => {
+        hasA = hasA && hasPermission(perm)
+      })
     }
     if (menu.roles) {
-      hasR = hasRole(menu.roles as string[], { or: true })
+      hasR = hasRole(menu.roles, { or: true })
     }
     return hasA && hasR
   }
@@ -193,18 +202,8 @@ const createMenuItem = (menu: Route, parent: Route): Route => {
   return m
 }
 // === handlers ===
-const gotoUserProfile = () => {
-  $router.push('/sys/u/profile')
-}
+
 // === computed ===
-const avatar = computed(() => {
-  if (user.value.avatar) {
-    return user.value.avatar
-  } else if (user.value.displayName) {
-    return user.value.displayName.substring(0, 1).toUpperCase()
-  }
-  return 'U'
-})
 const cIcon = computed(() => {
   if (cNode.value?.icon) {
     return cNode.value.icon
@@ -284,7 +283,7 @@ onBeforeMount(() => {
 }
 
 .aside-collapse {
-  --el-aside-width: 64px;
+  --el-aside-width: 68px;
 
   .expand {
     display: none;

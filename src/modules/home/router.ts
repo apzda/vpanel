@@ -9,7 +9,7 @@ export default defineRouter([
         path: '',
         group: 0,
         icon: 'icon-[ep--home-filled]',
-        sort: 1,
+        sort: 0,
         children: [
           {
             path: '',
@@ -37,22 +37,6 @@ export default defineRouter([
         meta: {
           name: '{home.dashboard}',
           tip: 'Ctr+J'
-        }
-      },
-      {
-        path: 'notification',
-        group: 0,
-        sort: 2,
-        icon: 'icon-[mdi--bell]',
-        badge() {
-          return 10
-        },
-        component: () => import('~/home/HomePage.vue'),
-        meta: {
-          title() {
-            return '通知(10)'
-          },
-          name: '通知'
         }
       }
     ]

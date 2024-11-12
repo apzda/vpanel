@@ -1,8 +1,17 @@
 {
+  "sys": {
+    "settings": "系统设置",
+    "audit": "审计日志",
+    "u": {
+      "profile": "【{0}】个人资料"
+    }
+  },
   "activity": {
     "login": "登录",
     "logout": "退出",
+    "mfa": "多因素认证",
     "@": {
+      "_0": " {0}",
       "0_authenticated_successfully": "{0} 登录成功",
       "0_authenticated_failure_0": "{0} 登录失败: {1}"
     }
