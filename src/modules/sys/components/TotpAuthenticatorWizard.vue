@@ -129,6 +129,7 @@ const getNewMfaConfig = () => {
 
 const init = () => {
   loading.value = true
+  verifyMfaErr.value = ''
   formRef.value?.resetFields()
   getMfaConfig().then(({ data }) => {
     secretKey.value = data.secretKey
@@ -155,9 +156,3 @@ const init = () => {
 
 defineExpose({ init })
 </script>
-
-<style>
-div[button-name="Download"] img {
-  margin: 0 auto;
-}
-</style>

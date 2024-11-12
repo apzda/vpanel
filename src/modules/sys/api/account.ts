@@ -102,7 +102,7 @@ export const getMfaConfig = () => {
 }
 
 export const setupMfa = (data: { code: string, password: string }) => {
-  return axios.post('/account/setupMfa', { data })
+  return axios.post('/account/setupMfa', { data, showErrMsg: false })
 }
 
 export const resetMfa = () => {
