@@ -1,0 +1,10 @@
+{
+  "activity": {
+    "login": "登录",
+    "logout": "退出",
+    "@": {
+      "0_authenticated_successfully": "{0} 登录成功",
+      "0_authenticated_failure_0": "{0} 登录失败: {1}"
+    }
+  }
+}

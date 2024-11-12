@@ -7,8 +7,7 @@ import settings from '@/config/settings'
 import handler from '@/config/handler'
 import { deepClone, isObject } from '@/utils'
 import { t, ts } from './i18n'
-import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import { trimEnd, trimStart } from 'lodash-es'
 
 // 合并axios配置
@@ -145,8 +144,13 @@ export class RequestProxy implements IAxios {
     return new Promise<CommonResponse<T>>((resolve, reject) => {
       this.doRequest<CommonResponse<T>>(api, method, options).then(response => {
         showMessage(response, options, true)
-        resolve(response)
+        if (options.converter) {
+          resolve(options.converter(response))
+        } else {
+          resolve(response)
+        }
       }).catch(err => {
+        // console.debug('request.failure: ', err)
         {
           // redo config ==>
           err.url = api
@@ -155,7 +159,6 @@ export class RequestProxy implements IAxios {
           err.resolve = resolve
           err.reject = reject
         }
-        // console.debug('request.failure: ', err)
         const errCode = ('onErr' + Math.abs(err.errCode)) as ErrHandlerName
         const errHandler = handler[errCode] || emptyHandler
         const handled = errHandler(err)

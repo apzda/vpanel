@@ -56,56 +56,5 @@ export default defineRouter([
         }
       }
     ]
-  },
-  {
-    path: '/abc',
-    component: () => import('@/components/layout/BlankLayout.vue'),
-    children: [
-      {
-        path: '',
-        sort: 1,
-        component: () => import('~/home/HomePage.vue'),
-        meta: {
-          title: '概览',
-          name({ ts }) {
-            return ts('home.dashboard')
-          }
-        }
-      },
-      {
-        path: 'a',
-        sort: 2,
-        component: () => import('~/home/HomePage.vue'),
-        meta: {
-          title: '概览',
-          name({ ts }) {
-            return ts('home.dashboard') + ' a'
-          }
-        }
-      },
-      {
-        path: 'b',
-        sort: 3,
-        component: () => import('~/home/HomePage.vue'),
-        meta: {
-          title: '概览',
-          name({ ts }) {
-            return ts('home.dashboard') + ' b'
-          }
-        }
-      },
-      {
-        path: 'c',
-        sort: 3,
-        group: 2,
-        component: () => import('~/home/HomePage.vue'),
-        meta: {
-          title: '概览',
-          name({ ts }) {
-            return ts('home.dashboard') + ' c'
-          }
-        }
-      }
-    ]
   }
 ])

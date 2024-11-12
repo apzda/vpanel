@@ -1,6 +1,7 @@
 {
   "auth": {
     "login": "Sign In",
+    "logout": "Sign Out",
     "loginHolder": "Enter your username.",
     "password": "Password",
     "unbind": "Please bind the platform account",

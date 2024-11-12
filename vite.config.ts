@@ -2,7 +2,6 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -17,7 +16,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vue(),
-      vueJsx(),
+      // vueJsx(),
       AutoImport({
         // Auto import functions from Vue, e.g. ref, reactive, toRef...
         imports: ['vue'],
@@ -52,6 +51,7 @@ export default defineConfig(({ mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
+          api: 'modern-compiler',
           additionalData: `@use "@/styles/element/index.scss" as *;`
         }
       }

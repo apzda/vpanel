@@ -39,7 +39,7 @@ const createMenuItem = (el: HTMLElement, binding: DirectiveBinding, inject: bool
   el.parentNode?.removeChild(el)
 }
 
-export default {
+export default <Plugin>{
   install(app) {
     app.directive('menu-name', (el: HTMLElement, binding: DirectiveBinding) => {
       createMenuItem(el, binding, true)
@@ -48,4 +48,4 @@ export default {
       createMenuItem(el, binding, false)
     })
   }
-} as Plugin
+}

@@ -60,7 +60,7 @@
           <!-- 头部 -->
           <el-header class="shadow-md shadow-gray-200 dark:shadow-gray-950" style="--el-header-padding:0 10px">
             <!-- 自定义头部 -->
-            <router-view name="header"></router-view>
+            <router-view v-if="cPage.components?.header" name="header"></router-view>
             <!-- 默认头部:二级导致 -->
             <div v-if="!cPage.components?.header"
                  class="h-full flex justify-start items-center gap-1 text-gray-700 dark:text-white">
@@ -85,7 +85,9 @@
           </el-header>
           <!-- 工作区 -->
           <el-main style="--el-main-padding: 10px">
-            <router-view></router-view>
+            <el-scrollbar height="100%" :noresize="true" aria-orientation="vertical">
+              <router-view></router-view>
+            </el-scrollbar>
           </el-main>
         </el-container>
       </slot>
@@ -102,7 +104,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onBeforeMount, provide, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { hasAuthority, hasRole, user } from '@/stores/user'
 
 import { gotoLoginPage, routerMgr } from '@/router'
@@ -117,6 +119,7 @@ import SubNavItem from '@/components/layout/widgets/SubNavItem.vue'
 import SearchDlg from '@/components/layout/widgets/SearchDlg.vue'
 // hooks
 const $route = useRoute()
+const $router = useRouter()
 // constants
 const groups = new Set<number>()
 // data bindings
@@ -143,7 +146,7 @@ provide('asideExpand', expand)
 // 切换语言
 const languageChanged = (lang: string) => {
   locale.value = lang
-  // window.location.reload()
+  window.location.reload()
 }
 // 展开/折叠侧边栏
 const toggleExpand = () => {
@@ -191,7 +194,7 @@ const createMenuItem = (menu: Route, parent: Route): Route => {
 }
 // === handlers ===
 const gotoUserProfile = () => {
-  console.log('打开用户')
+  $router.push('/sys/u/profile')
 }
 // === computed ===
 const avatar = computed(() => {

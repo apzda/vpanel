@@ -1,7 +1,7 @@
-import type { Plugin, DirectiveBinding } from 'vue'
-import { user, isSuperAdmin, hasPermission, hasAuthority, hasRole } from '@/stores/user'
+import type { DirectiveBinding, Plugin } from 'vue'
+import { hasAuthority, hasPermission, hasRole, isSuperAdmin, user } from '@/stores/user'
 
-export default {
+export default <Plugin>{
   install(app) {
     app.config.globalProperties.$isSuperAdmin = isSuperAdmin
     app.config.globalProperties.$hasRole = hasRole
@@ -35,4 +35,4 @@ export default {
       }
     })
   }
-} as Plugin
+}

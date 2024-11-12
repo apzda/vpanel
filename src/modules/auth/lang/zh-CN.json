@@ -1,6 +1,7 @@
 {
   "auth": {
     "login": "登录",
+    "logout": "退出",
     "tip": "欢迎回来，请使用您的账号登录系统。",
     "username": "用户名",
     "usernameHolder": "请输入您的用户名",
