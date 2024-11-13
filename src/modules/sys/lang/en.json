@@ -1,8 +1,13 @@
 {
   "sys": {
+    "exitMsg": "Are you sure you want to log out of the system?",
     "settings": "Settings",
+    "activities": "Activities",
     "u": {
-      "profile": "{0} Profile"
+      "profile": "{0} Profile",
+      "tip": "Manage your account profile and password",
+      "mfa": "Setup MFA",
+      "code": "Switch Code"
     }
   },
   "activity": {

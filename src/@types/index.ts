@@ -57,6 +57,8 @@ export interface Settings {
   } // 支持的语言列表
 }
 
+export type tsFunc = (text: string, defaultString?: string, args?: any) => string
+
 // 菜单参数
 export interface MenuOption {
   data: any
@@ -68,10 +70,10 @@ export interface MenuItem {
   id?: string
   path?: string
   icon?: any
-  badge?: number | ((ctx: MenuOption) => number)
+  badge?: number | ((content: MenuOption) => number)
   color?: any
   cls?: string
-  sort?: number | ((ctx: MenuOption) => number)
+  sort?: number | ((content: MenuOption) => number)
   level?: number
   menu?: true
   group?: number

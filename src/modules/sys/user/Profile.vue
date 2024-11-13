@@ -11,32 +11,37 @@
             <el-tag v-for="role in user.roles" :key="role.id">{{ role.name }}</el-tag>
           </div>
           <div class="flex flex-wrap gap-5 mt-3.5 text-sm">
-            <span>最后登录时间: </span>
+            <span>{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
             <span>{{ fromUnixTimestamp(user.lastLoginTime || '') }}</span>
           </div>
           <div class="flex flex-wrap gap-5 mt-1 text-sm">
-            <span>最后登录IP: </span>
+            <span>{{ ts(['last', '-', 'login', '-']) }}IP: </span>
             <span>{{ user.lastLoginIp }}</span>
           </div>
           <template #footer>
-            <el-button
-              v-if="!user.runAs"
-              v-has-authority="'SIMPLE_USER'"
-              type="warning"
-              @click="showSwitchCode"
-              :icon="View"
-              :loading="isShowLoading"
-              :disabled="isShowLoading">查看授权码
-            </el-button>
-            <el-button type="primary" v-if="!user.runAs" @click="setupMfa" :icon="Unlock">多重认证</el-button>
+            <!--
+             v-if="!user.runAs"
+             v-has-authority="'SIMPLE_USER'"
+             -->
+            <div class="flex gap-5 justify-center items-center">
+              <el-button
+                type="warning"
+                @click="showSwitchCode"
+                :icon="View"
+                :loading="isShowLoading"
+                :disabled="isShowLoading">{{ ts(['View', '-', 'sys.u.code']) }}
+              </el-button>
+              <el-button type="primary" v-if="!user.runAs" @click="setupMfa" :icon="Unlock">{{ ts('sys.u.mfa') }}
+              </el-button>
+            </div>
           </template>
         </el-card>
         <el-card class="mt-10" style="--el-card-padding:10px">
           <template #header>
             <div class="card-header">
-              <span>账户活动</span>
-              <span class="float-right text-blue-500 cursor" title="更多"
-                    @click="$router.push('/audit-log/my-activities')">...</span>
+              <span v-t="'sys.activities'" />
+              <span class="float-right text-blue-500 cursor-default" :title="ts('more')"
+                    @click="$router.push('/sys/audit/my-activities')">...</span>
             </div>
           </template>
           <el-scrollbar style="height: 500px;">
@@ -63,36 +68,37 @@
         <el-card>
           <template #header>
             <div class="card-header">
-              <span>基础信息</span>
+              <span>{{ ts(['Base', '-', 'Profile']) }}</span>
             </div>
           </template>
           <el-form
             ref="updateAccountForm"
             label-position="left"
+            require-asterisk-position="right"
             label-width="auto"
             :rules="updateAccountFormRules"
             :model="updateAccountFormModel"
             size="large"
           >
-            <el-form-item label="账号">
+            <el-form-item :label="ts('Account')">
               <el-input :model-value="user.name" disabled />
             </el-form-item>
-            <el-form-item label="昵称" prop="displayName">
+            <el-form-item :label="ts('Nickname')" prop="displayName">
               <el-input v-model="updateAccountFormModel.displayName" :disabled="!canBeUpdated" clearable />
             </el-form-item>
-            <el-form-item label="手机号" prop="phone">
+            <el-form-item :label="ts('Phone')" prop="phone">
               <el-input v-model="updateAccountFormModel.phone" :disabled="!canBeUpdated" clearable />
             </el-form-item>
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item :label="ts('Email')" prop="email">
               <el-input v-model="updateAccountFormModel.email" :disabled="!canBeUpdated" clearable />
             </el-form-item>
           </el-form>
           <template #footer>
             <el-alert class="mb-10" v-if="updateAccountErr" :title="updateAccountErr" type="error" />
             <div class="text-right">
-              <el-button @click="discardUpdateAccount">取消</el-button>
+              <el-button @click="discardUpdateAccount">{{ ts('Cancel') }}</el-button>
               <el-button type="success" @click="updateAccount" :disabled="!canBeUpdated || isUpdatingAccount"
-                         :loading="isUpdatingAccount">保存
+                         :loading="isUpdatingAccount">{{ ts('Save') }}
               </el-button>
             </div>
           </template>
@@ -100,26 +106,27 @@
         <el-card class="mt-10">
           <template #header>
             <div class="card-header">
-              <span>修改密码</span>
+              <span>{{ ts(['Change', '-', 'Password']) }}</span>
             </div>
           </template>
           <el-form
             ref="updatePasswordForm"
             label-position="left"
+            require-asterisk-position="right"
             label-width="auto"
             :rules="updatePasswordFormRules"
             :model="updatePasswordFormModel"
             size="large"
           >
-            <el-form-item label="原密码" prop="oldPassword">
+            <el-form-item :label="ts(['old','-','Password'])" prop="oldPassword">
               <el-input type="password" v-model="updatePasswordFormModel.oldPassword" :disabled="!canBeUpdated"
                         clearable />
             </el-form-item>
-            <el-form-item label="新密码" prop="newPassword">
+            <el-form-item :label="ts(['new','-','Password'])" prop="newPassword">
               <el-input v-model="updatePasswordFormModel.newPassword" type="password" :disabled="!canBeUpdated"
                         clearable />
             </el-form-item>
-            <el-form-item label="新密码(确认)" prop="confirmPassword">
+            <el-form-item :label="ts(['new','-','Password','(','Confirm',')'])" prop="confirmPassword">
               <el-input v-model="updatePasswordFormModel.confirmPassword" type="password" :disabled="!canBeUpdated"
                         clearable />
             </el-form-item>
@@ -127,9 +134,9 @@
           <template #footer>
             <el-alert class="mb-10" v-if="updatePasswordErr" :title="updatePasswordErr" type="error" />
             <div class="text-right">
-              <el-button @click="discardUpdatePassword">取消修改</el-button>
+              <el-button @click="discardUpdatePassword">{{ ts('Cancel') }}</el-button>
               <el-button type="success" :disabled="!canBeUpdated" @click="updatePassword" :loading="isUpdatingPassword">
-                修改密码
+                {{ ts('Confirm') }}
               </el-button>
             </div>
           </template>
@@ -138,7 +145,7 @@
     </el-row>
     <setup-mfa-dialog
       ref="setupMfaDialog"
-      title="设置多重认证"
+      :title="ts('sys.u.mfa')"
       width="500"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -165,6 +172,7 @@ import {
 } from '../api/account'
 import { type  AuditLog, getMyActivities } from '../api/audit'
 import SetupMfaDialog from '../components/SetupMfaDialog.vue'
+import { ts } from '@/utils/i18n'
 
 const $router = useRouter()
 

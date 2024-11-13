@@ -57,11 +57,12 @@
       <slot>
         <el-container>
           <!-- 头部 -->
-          <el-header class="shadow-md shadow-gray-200 dark:shadow-gray-950" style="--el-header-padding:0 10px">
+          <el-header v-if="cPage.meta?.header!==false" class="shadow-md shadow-gray-200 dark:shadow-gray-950"
+                     style="--el-header-padding:0 10px">
             <!-- 自定义头部 -->
-            <router-view v-if="cPage.components?.header" name="header"></router-view>
+            <router-view v-if="cPage.components?.header" name="header" />
             <!-- 默认头部:二级导致 -->
-            <div v-if="!cPage.components?.header"
+            <div v-else
                  class="h-full flex justify-start items-center gap-1 text-gray-700 dark:text-white">
               <span v-if="cIcon" class="flex-shrink-0 w-[20px] h-[20px]" :class="cIcon" />
               <div v-if="cName" class="flex-shrink-0 font-semibold text-md mr-2" :class="{'':cNode?.children}">
@@ -92,12 +93,14 @@
       </slot>
     </el-container>
     <!-- 开始菜单 -->
-    <search-dlg v-model="showSearchDlg" :title="ts('search','Search')"
-                width="50%"
-                align-center />
+    <search-dlg
+      v-model="showSearchDlg"
+      :title="ts('search','Search')"
+      width="50%"
+      align-center />
     <!-- 帮助 -->
     <el-drawer v-model="drawer" direction="rtl" :title="ts('help','Help')" size="45%">
-      <router-view name="help"></router-view>
+      <router-view name="help" />
     </el-drawer>
   </div>
 </template>
@@ -106,7 +109,7 @@ import { computed, onBeforeMount, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { hasPermission, hasRole, user } from '@/stores/user'
 
-import { gotoLoginPage, routerMgr } from '@/router'
+import { gotoLoginPage, routerMgr, sortRoute as sortMenuItem } from '@/router'
 import { CURRENT_MENU_NODE, type Route } from '@/@types'
 import { ts, tsc } from '@/utils/i18n'
 import { useAppStore } from '@/stores/app'
@@ -120,6 +123,7 @@ import SearchDlg from '@/components/layout/widgets/SearchDlg.vue'
 const $route = useRoute()
 // constants
 const groups = new Set<number>()
+const nodes = routerMgr.nodes.sort(sortMenuItem)
 // data bindings
 const drawer = ref(false)
 const showSearchDlg = ref(false)
@@ -151,12 +155,6 @@ const toggleExpand = () => {
   expand.value = !expand.value
   appCfg.asideExpand = expand.value
 }
-// 菜单排序
-const sortMenuItem = (a: Route, b: Route): number => {
-  const s1 = typeof a.sort == 'function' ? a.sort({ data: a, t: ts }) : a.sort || 9999
-  const s2 = typeof b.sort == 'function' ? b.sort({ data: b, t: ts }) : b.sort || 9999
-  return s1 - s2
-}
 // 过滤菜单
 const filterMenuItem = (menu: Route) => {
   if (menu.menu === true
@@ -168,7 +166,6 @@ const filterMenuItem = (menu: Route) => {
     || menu.authorities
     || menu.roles
   ) {
-    console.log('menu: ', menu)
     let hasA = true
     let hasR = true
     if (menu.authorities) {
@@ -201,8 +198,59 @@ const createMenuItem = (menu: Route, parent: Route): Route => {
   }
   return m
 }
-// === handlers ===
+const detectiveActivateItem = () => {
+  let match = 0
+  let mNode: Route | null = null
+  menus.value.forEach(item => {
+    if ($route.path.startsWith(item.path) && item.path.length > match) {
+      match = item.path.length
+      mNode = item
+    }
+  })
+  if (match > 0) {
+    cNode.value = mNode
+  } else if (menus.value.length > 0) {
+    cNode.value = menus.value.find(item => item.path == '') || menus.value[0]
+  }
+}
+const initMenu = (): Route[] => {
+  const items: Route[] = []
 
+  if (nodes.length > 0) {
+    for (let i = 0; i < nodes.length; i++) {
+      nodes[i].children?.filter(filterMenuItem).sort(sortMenuItem).forEach(item => {
+        items.push(createMenuItem(item, nodes[i]))
+        if (item.group != 0 && item.group != 999) {
+          groups.add(item.group == undefined ? 1 : item.group)
+        }
+      })
+    }
+
+    if (items) {
+      menus.value = items.sort(sortMenuItem)
+      detectiveActivateItem()
+      // group
+      menus.value.filter(item => item.group === 0).forEach(item => {
+        topMenus.value.push(item)
+      })
+      menus.value.filter(item => item.group === 999).forEach(item => {
+        bottomMenus.value.push(item)
+      })
+      // 分组一级导航
+      Array.from(groups).sort().forEach(group => {
+        const ms: Route[] = []
+        menus.value.filter(item => item.group == group).forEach(item => {
+          ms.push(item)
+        })
+        groupMenus.value.push(ms)
+      })
+    } else {
+      menus.value = []
+    }
+  }
+  console.log('menus: ', menus.value)
+  return items
+}
 // === computed ===
 const cIcon = computed(() => {
   if (cNode.value?.icon) {
@@ -221,54 +269,12 @@ const cPage = computed(() => {
 })
 // === lifecycles ===
 onBeforeMount(() => {
+  console.debug('onBeforeMount: MainLayout')
   if (!user.value.login) {
     gotoLoginPage($route.path)
   } else {
-    const nodes = routerMgr.nodes.sort(sortMenuItem)
-
-    if (nodes.length > 0) {
-      const items: Route[] = []
-      for (let i = 0; i < nodes.length; i++) {
-        nodes[i].children?.filter(filterMenuItem).sort(sortMenuItem).forEach(item => {
-          items.push(createMenuItem(item, nodes[i]))
-          if (item.group != 0 && item.group != 999) {
-            groups.add(item.group == undefined ? 1 : item.group)
-          }
-        })
-      }
-
-      if (items) {
-        menus.value = items.sort(sortMenuItem)
-        let match = 0
-        let mNode: Route | null = null
-        menus.value.forEach(item => {
-          if ($route.path.startsWith(item.path) && item.path.length > match) {
-            match = item.path.length
-            mNode = item
-          }
-        })
-        if (match > 0) {
-          cNode.value = mNode
-        } else {
-          cNode.value = menus.value.find(item => item.path == '') || menus.value[0]
-        }
-        // group
-        menus.value.filter(item => item.group === 0).forEach(item => {
-          topMenus.value.push(item)
-        })
-        menus.value.filter(item => item.group === 999).forEach(item => {
-          bottomMenus.value.push(item)
-        })
-        // 分组一级导航
-        Array.from(groups).sort().forEach(group => {
-          const ms: Route[] = []
-          menus.value.filter(item => item.group == group).forEach(item => {
-            ms.push(item)
-          })
-          groupMenus.value.push(ms)
-        })
-      }
-    }
+    initMenu()
+    watch(() => $route.path, detectiveActivateItem)
   }
 })
 </script>

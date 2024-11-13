@@ -4,7 +4,7 @@ import { useNProgress } from '@vueuse/integrations/useNProgress'
 
 import { TreeMgr } from '@/utils'
 import { notify } from '@/utils/msgbox'
-import { tsc } from '@/utils/i18n'
+import { ts, tsc } from '@/utils/i18n'
 import settings from '@/config/settings'
 
 import { useAppStore } from '@/stores/app'
@@ -30,6 +30,12 @@ const { isLoading } = useNProgress(0.1, {
 })
 
 const fromArg = settings.fromArg || 'from'
+
+export const sortRoute = (a: Route, b: Route): number => {
+  const s1 = typeof a.sort == 'function' ? a.sort({ data: a, t: ts }) : a.sort == undefined ? 9999 : a.sort
+  const s2 = typeof b.sort == 'function' ? b.sort({ data: b, t: ts }) : b.sort == undefined ? 9999 : b.sort
+  return s1 - s2
+}
 
 export const gotoPage = (page: string, from?: string | LocationQueryValue[], next?: NavigationGuardNext): boolean | void => {
   const pageUrl = settings[page] || null
@@ -61,6 +67,7 @@ export const gotoPage = (page: string, from?: string | LocationQueryValue[], nex
 export const gotoLoginPage = (url?: string, next?: NavigationGuardNext): boolean | void => {
   return gotoPage('loginUrl', url, next)
 }
+
 export const currentPage = ref<string>('/')
 
 router.beforeEach((to, from, next) => {
@@ -107,9 +114,10 @@ router.afterEach((to, from, failure) => {
   if (!failure) {
     currentPage.value = to.path
     showSucProgress()
-    if (to.meta && to.meta.title) {
+    if (to.meta && (to.meta.title || to.meta.name)) {
       const { setAppTitle } = useAppStore()
-      setAppTitle(tsc(to.meta.title, to))
+      //@ts-ignore
+      setAppTitle(tsc(to.meta.title || to.meta.name, to))
     }
   } else {
     showErrorProgress()

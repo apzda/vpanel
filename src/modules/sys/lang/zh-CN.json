@@ -1,9 +1,14 @@
 {
   "sys": {
+    "exitMsg": "您确定退出系统吗？",
     "settings": "系统设置",
     "audit": "审计日志",
+    "activities": "我的活动",
     "u": {
-      "profile": "【{0}】个人资料"
+      "profile": "【{0}】个人资料",
+      "tip": "管理您的账户信息与密码",
+      "mfa": "配置MFA",
+      "code": "授权码"
     }
   },
   "activity": {

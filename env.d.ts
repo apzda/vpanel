@@ -26,6 +26,8 @@ declare module 'vue-router' {
       ts: (text: string, defaultString?: string, args?: any) => string
     }) => string)
     click?: (arg: { context: Route }) => any
+    login?: false
+    header?: false
     tip?: string
   }
 }

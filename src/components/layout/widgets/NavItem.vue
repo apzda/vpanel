@@ -108,10 +108,6 @@ const itemTip = computed(() => {
 })
 // methods
 const onItemClick = () => {
-  if (cNode != null && props.menu) {
-    cNode.value = props.menu
-    console.log('cNode:', props.menu)
-  }
   if (typeof props.menu?.meta?.click == 'function') {
     props.menu.meta.click({ context: props.menu })
   } else if (props.menu?.path) {

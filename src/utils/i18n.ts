@@ -1,6 +1,7 @@
 import { nextTick } from 'vue'
 import { createI18n, type I18n, type I18nOptions } from 'vue-i18n'
 import { language } from '@/utils/lang'
+import { toArray } from '@/utils/index'
 
 type _I18n = I18n<{}, {}, {}, string, false>
 
@@ -38,8 +39,10 @@ export function t(msg: string, args?: any): string {
   return window.i18n.t(msg, args)
 }
 
-export function ts(message: string, defaultString?: string, args?: any): string {
-  const text = t(message, args)
+export function ts(message: string | string[], defaultString?: string, args?: any): string {
+  const texts = toArray(message)
+  const text = texts.map(msg => t(msg, args)).join('')
+
   if (text == message) {
     return defaultString || message
   }

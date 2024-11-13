@@ -37,7 +37,7 @@ export default defineRouter([{
     children: [
       {
         path: 'my-activities',
-        sort: 1,
+        sort: 0,
         component: () => import('~/sys/audit/MyActivities.vue'),
         meta: {
           name: () => '活动日志'
@@ -45,7 +45,6 @@ export default defineRouter([{
       },
       {
         path: 'logs',
-        sort: 0,
         component: () => import('~/sys/audit/MyActivities.vue'),
         authorities: 'r:auditlog',
         meta: {
