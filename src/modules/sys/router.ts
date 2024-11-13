@@ -40,7 +40,7 @@ export default defineRouter([{
         sort: 0,
         component: () => import('~/sys/audit/MyActivities.vue'),
         meta: {
-          name: () => '活动日志'
+          name: ({ ts }) => ts('sys.activities', 'Activities')
         }
       },
       {

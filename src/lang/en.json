@@ -32,6 +32,8 @@
   "-": " ",
   "(": "(",
   ")": ")",
+  "the": "the ",
+  "this": "this",
   "help": "Help",
   "Yes": "Yes",
   "No": "No",
@@ -63,5 +65,18 @@
   "login": "login",
   "time": "time",
   "date": "date",
-  "hello": "Hello"
+  "hello": "Hello",
+  "valid": {
+    "required": "is required",
+    "bad": "is malformed",
+    "min": "The minimum value is {0}",
+    "max": "The maximum value is {0}",
+    "range": "The value between {0} and {1}",
+    "rangelength": "The length between {0} and {1}",
+    "minlength": "The length of {0} is at least {1}",
+    "maxlength": "The maximum length of {0} is {1}",
+    "notSame": "The {0} cannot be same as the {1}",
+    "same": "The {0} must be same as the {1}",
+    "pwd": "The password needs to be composed of A-Z, a-z, 0-9, or Symbols"
+  }
 }

@@ -7,7 +7,8 @@
       "profile": "{0} Profile",
       "tip": "Manage your account profile and password",
       "mfa": "Setup MFA",
-      "code": "Switch Code"
+      "code": "Grant Code",
+      "grantMsg": "您的授权码是: {0}，请妥善保管。"
     }
   },
   "activity": {

@@ -172,7 +172,7 @@ import {
 } from '../api/account'
 import { type  AuditLog, getMyActivities } from '../api/audit'
 import SetupMfaDialog from '../components/SetupMfaDialog.vue'
-import { ts } from '@/utils/i18n'
+import { t, ts } from '@/utils/i18n'
 
 const $router = useRouter()
 
@@ -190,15 +190,15 @@ const updateAccountFormModel = reactive<UpdateMyAccountRequest>({
 })
 const updateAccountFormRules = reactive<FormRules<UpdateMyAccountRequest>>({
   displayName: [
-    { required: true, message: '用户昵称不能为空', trigger: 'blur' }
+    { required: true, message: () => ts(['Nickname', '-', 'valid.required']), trigger: 'blur' }
   ],
   phone: [
-    { pattern: /^1\d{10}$/, message: '手机号码格式不正确', trigger: 'blur' }
+    { pattern: /^1\d{10}$/, message: () => ts(['Phone', '-', 'valid.bad']), trigger: 'blur' }
   ],
   email: [
     {
       pattern: /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/,
-      message: '邮箱地址格式不正确',
+      message: () => ts(['Email', '-', 'valid.bad']),
       trigger: 'blur'
     }
   ]
@@ -243,21 +243,21 @@ const updatePasswordFormModel = reactive<UpdatePasswordRequest>({
 })
 const updatePasswordFormRules = reactive<FormRules<UpdatePasswordRequest>>({
   oldPassword: [
-    { required: true, message: '原密码不能为空', trigger: 'blur' }
+    { required: true, message: () => ts(['old', '-', 'Password', '-', 'valid.required']), trigger: 'blur' }
   ],
   newPassword: [
-    { required: true, message: '新密码不能为空', trigger: 'blur' },
+    { required: true, message: () => ts(['new', '-', 'Password', '-', 'valid.required']), trigger: 'blur' },
     {
       validator(rule: any, value: any, callback: any) {
         value = value.trim()
         if (value.length < 6) {
-          return callback('密码最少6位')
+          return callback(t('valid.minlength', [t('Password'), 6]))
         }
         if (value == updatePasswordFormModel.oldPassword) {
-          return callback('新密码不能与原密码相同')
+          return callback(t('valid.notSame', [ts(['new', '-', 'Password']), ts(['old', '-', 'Password'])]))
         }
         if (!/[0-9]/.test(value) || !/[a-z]/.test(value) || !/[A-Z]/.test(value)) {
-          return callback('密码需要由大小字母、数字或符号组成，且不少于6位')
+          return callback(t('valid.pwd'))
         }
         callback()
       },
@@ -265,13 +265,17 @@ const updatePasswordFormRules = reactive<FormRules<UpdatePasswordRequest>>({
     }
   ],
   confirmPassword: [
-    { required: true, message: '需要您确认新密码', trigger: 'blur' },
+    {
+      required: true,
+      message: () => ts(['the', 'new', '-', 'Password', '(', 'Confirm', ')', '-', 'valid.required']),
+      trigger: 'blur'
+    },
     {
       validator(rule: any, value: any, callback: any) {
         if (value == updatePasswordFormModel.newPassword) {
           callback()
         } else {
-          callback('两次输入的密码不一致')
+          callback(t('valid.same', [ts('Password').toLowerCase(), ts(['new', '-', 'Password'])]))
         }
       },
       trigger: 'blur'
@@ -307,10 +311,8 @@ const discardUpdatePassword = () => {
 const isShowLoading = ref(false)
 const showSwitchCode = () => {
   isShowLoading.value = true
-  getSwitchCode().then((data) => {
-    if (data.errCode == 0) {
-      alert({ title: '授权码', message: `您的授权码是: ${data.data.code}，请妥善保管。`, type: 'success' })
-    }
+  getSwitchCode().then(({ data }) => {
+    alert({ title: ts('sys.u.code'), message: t('sys.u.grantMsg', [data.code]), type: 'success' })
   }).finally(() => isShowLoading.value = false)
 }
 // === 获取多重认证配置
