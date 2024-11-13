@@ -248,7 +248,7 @@ const initMenu = (): Route[] => {
       menus.value = []
     }
   }
-  console.log('menus: ', menus.value)
+  // console.log('menus: ', menus.value)
   return items
 }
 // === computed ===
@@ -269,7 +269,6 @@ const cPage = computed(() => {
 })
 // === lifecycles ===
 onBeforeMount(() => {
-  console.debug('onBeforeMount: MainLayout')
   if (!user.value.login) {
     gotoLoginPage($route.path)
   } else {
