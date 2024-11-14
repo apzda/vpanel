@@ -38,6 +38,7 @@ export default defineRouter([{
       {
         path: 'my-activities',
         sort: 0,
+        name: 'my-activities',
         component: () => import('~/sys/audit/MyActivities.vue'),
         meta: {
           name: ({ ts }) => ts('sys.activities', 'Activities')

@@ -15,19 +15,19 @@ export interface Role {
 }
 
 export function createRole(data: Role) {
-  return axios.post('/role/create', { data })
+  return axios.post('/ucenter/role/create', { data })
 }
 
 export function updateRole(data: Role) {
-  return axios.post('/role/update', { data })
+  return axios.post('/ucenter/role/update', { data })
 }
 
 export function deleteRole(data: Role) {
-  return axios.post('/role/delete', { data: { id: data.id } })
+  return axios.post('/ucenter/role/delete', { data: { id: data.id } })
 }
 
 export const getRoleList = async (keyField?: string, disabled?: Role[]) => {
-  const { data } = await axios.post('/role/list', {
+  const { data } = await axios.post('/ucenter/role/list', {
     data: {
       current: 1,
       size: 1000

@@ -15,5 +15,33 @@
     "login": "Sign In",
     "logout": "Sign Out",
     "mfa": "MFA"
+  },
+  "role": {
+    "SuperAdministrator": "Super Administrator",
+    "SuperAdministratorDesc": "Super Administrator",
+    "Administrator": "Administrator",
+    "AdministratorDesc": "Administrator",
+    "AuthenticatedUser": "Authed User",
+    "AuthenticatedUserDesc": "A user who is authenticated successfully"
+  },
+  "resource": {
+    "AuditLog": "Audit Log",
+    "AuditLogDesc": "Audit Log",
+    "Messenger": "Messenger",
+    "MessengerDesc": "Messenger",
+    "Privilege": "Privilege",
+    "PrivilegeDesc": "Privilege",
+    "Role": "Role",
+    "RoleDesc": "Role",
+    "User": "User",
+    "UserDesc": "User",
+    "Resource": "Resource",
+    "ResourceDesc": "Resource"
+  },
+  "privilege": {
+    "RunAs": "Run As",
+    "RunAsDesc": "Run as a user whose grant code has been given to you",
+    "SimpleUser": "Simple User",
+    "SimpleUserDesc": "Can give his/her grant code to the user who is granted the 'Run As' perm"
   }
 }

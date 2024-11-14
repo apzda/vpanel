@@ -55,13 +55,19 @@ export function ts(message: string | string[], defaultString?: string, args?: an
 }
 
 export function tsc<T>(message: string | ((arg: {
-  context: T,
+  context?: T,
   ts: ((text: string, defaultString?: string, args?: any) => string)
-}) => string) | null | undefined, context: T): string {
+}) => string) | null | undefined, context?: T): string {
   if (typeof message == 'function') {
     return message({ context, ts })
   } else if (typeof message == 'string' && message.startsWith('{') && message.endsWith('}')) {
-    return ts(message.substring(1, message.length - 1))
+    const msg = message.substring(1, message.length - 1)
+    const chunks = msg.split('.')
+    chunks.shift()
+    const defaultStr = chunks.map(chunk => {
+      return chunk.replaceAll(/([A-Z])/g, ' $1').trim()
+    }).join(' ')
+    return ts(msg, defaultStr)
   } else if (typeof message == 'string') {
     return message
   }

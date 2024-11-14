@@ -1,6 +1,7 @@
 import { type Ref } from 'vue'
 import useAxios from '@/utils/axios'
 import type { CommonResponse } from '@/@types/request'
+import { ts } from '@/utils/i18n'
 
 const axios = useAxios()
 
@@ -47,7 +48,7 @@ const calculatePerm = (privilege: Privilege) => {
 
 const transformResource = (resources: Resource[], parent?: Resource) => {
   if (resources && resources.length > 0) {
-    resources.unshift({ id: '*', name: '全部', actions: mergeResourceActions(resources) })
+    resources.unshift({ id: '*', name: ts('All', 'All'), actions: mergeResourceActions(resources) })
     for (let i = 0; i < resources.length; i++) {
       const resource = resources[i]
       resource.value = resource.id
@@ -61,7 +62,7 @@ const transformResource = (resources: Resource[], parent?: Resource) => {
       }
     }
   } else if (Array.isArray(resources)) {
-    resources.unshift({ id: '*', value: '*', label: '全部', name: 'All' })
+    resources.unshift({ id: '*', value: '*', label: ts('All', 'All'), name: ts('All', 'All') })
     const pKey = (parent?.perm ? parent.perm + '.' : '') + '*'
     actionsMap.set(pKey, parent?.actions || '*')
     // console.debug('[1]set ', pKey, parent?.actions || '*')
@@ -84,7 +85,7 @@ const mergeResourceActions = (resources: Resource[]): string => {
 
 export async function getResource(pid: number): Promise<Resource[]> {
   try {
-    const { data } = await axios.post<{ resource: Resource[] }>('/privilege/resource', {
+    const { data } = await axios.post<{ resource: Resource[] }>('/ucenter/privilege/resource', {
       data: { pid: pid }
     })
     const resources = data.resource || []
@@ -96,15 +97,15 @@ export async function getResource(pid: number): Promise<Resource[]> {
 }
 
 export function createPrivilege(privilege: Privilege) {
-  return axios.post('/privilege/create', { data: privilege })
+  return axios.post('/ucenter/privilege/create', { data: privilege })
 }
 
 export function updatePrivilege(privilege: Privilege) {
-  return axios.post('/privilege/update', { data: privilege })
+  return axios.post('/ucenter/privilege/update', { data: privilege })
 }
 
 export function deletePrivilege(privilege: Privilege) {
-  return axios.post<CommonResponse>('/privilege/delete', {
+  return axios.post<CommonResponse>('/ucenter/privilege/delete', {
     data: { id: privilege.id }
   })
 }
@@ -123,7 +124,7 @@ export function onActionSelected(form: Privilege) {
 }
 
 export async function getPrivileges(privileges?: Privilege[]) {
-  const { data } = await axios.post('/privilege/query', {
+  const { data } = await axios.post('/ucenter/privilege/query', {
     data: {
       current: 1,
       size: 1000

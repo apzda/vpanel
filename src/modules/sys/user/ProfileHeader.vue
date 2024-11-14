@@ -65,7 +65,7 @@ const doLogout = async () => {
   }
   userLogout()
   setTimeout(() => {
-    $router.push(settings.loginUrl || '/login')
+    $router.push(settings.loginUrl || '/')
   }, 100)
 }
 </script>

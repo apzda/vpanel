@@ -63,6 +63,7 @@ export function getAuditLogs(query: PaginationQuery) {
 export function getMyActivities(query: PaginationQuery) {
   return axios.post<{ log: AuditLog[] }>('/audit-log/my-activities', {
     data: query,
+    showErrMsg: false,
     converter: (res) => {
       if (res.data.log && res.data.log.length > 0) {
         convertLocaleLog(res.data.log)

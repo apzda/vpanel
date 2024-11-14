@@ -65,6 +65,8 @@
   "login": "login",
   "time": "time",
   "date": "date",
+  "noData": "No Data",
+  "noData1": "No {0}",
   "hello": "Hello",
   "valid": {
     "required": "is required",

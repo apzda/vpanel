@@ -8,23 +8,21 @@
           </el-avatar>
           <span class="font-bold ml-1">{{ user.displayName }}</span>
           <div class="flex gap-5 mt-3.5">
-            <el-tag v-for="role in user.roles" :key="role.id">{{ role.name }}</el-tag>
+            <el-tag v-for="role in user.roles" :key="role.id">{{ tsc(role.name) }}</el-tag>
           </div>
           <div class="flex flex-wrap gap-5 mt-3.5 text-sm">
             <span>{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
-            <span>{{ fromUnixTimestamp(user.lastLoginTime || '') }}</span>
+            <span class="text-gray-400">{{ fromUnixTimestamp(user.lastLoginTime || '') }}</span>
           </div>
           <div class="flex flex-wrap gap-5 mt-1 text-sm">
             <span>{{ ts(['last', '-', 'login', '-']) }}IP: </span>
-            <span>{{ user.lastLoginIp }}</span>
+            <span class="text-gray-400">{{ user.lastLoginIp }}</span>
           </div>
           <template #footer>
-            <!--
-             v-if="!user.runAs"
-             v-has-authority="'SIMPLE_USER'"
-             -->
-            <div class="flex gap-5 justify-center items-center">
+            <div class="flex gap-5 justify-end items-center">
               <el-button
+                v-if="!user.runAs"
+                v-has-authority="'SIMPLE_USER'"
                 type="warning"
                 @click="showSwitchCode"
                 :icon="View"
@@ -36,31 +34,39 @@
             </div>
           </template>
         </el-card>
-        <el-card class="mt-10" style="--el-card-padding:10px">
+        <el-card class="mt-5" style="--el-card-padding:10px">
           <template #header>
             <div class="card-header">
               <span v-t="'sys.activities'" />
-              <span class="float-right text-blue-500 cursor-default" :title="ts('more')"
-                    @click="$router.push('/sys/audit/my-activities')">...</span>
+              <span class="float-right text-blue-500 cursor-default"
+                    :title="ts('more')"
+                    @click="$router.push({name:'my-activities'})">...</span>
             </div>
           </template>
           <el-scrollbar style="height: 500px;">
-            <el-timeline>
-              <el-timeline-item
-                v-for="activity in activities"
-                :key="activity.id"
-                :timestamp="fromUnixTimestamp(activity.timestamp)"
-                :type="activityType(activity)"
-                placement="top"
-                class="ml-1.5 mr-1.5"
-              >
-                <el-card style="--el-card-padding:10px">
-                  <h3 class="font-bold">{{ activity.activity }}</h3>
-                  <p class="mt-0.5">{{ activity.message }}</p>
-                  <p class="mt-0.5 text-orange-500" v-if="activity.runas">操作人: {{ activity.runas }}</p>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
+            <el-skeleton v-if="loading" :rows="10" animated />
+            <template v-else>
+              <el-empty
+                v-if="activities.length == 0"
+                :image-size="128"
+                :description="t('noData1', [t('sys.activities')])" />
+              <el-timeline v-else>
+                <el-timeline-item
+                  v-for="activity in activities"
+                  :key="activity.id"
+                  :timestamp="fromUnixTimestamp(activity.timestamp)"
+                  :type="activityType(activity)"
+                  placement="top"
+                  class="ml-1.5 mr-1.5"
+                >
+                  <el-card style="--el-card-padding:10px">
+                    <h3 class="font-bold">{{ activity.activity }}</h3>
+                    <p class="mt-0.5">{{ activity.message }}</p>
+                    <p class="mt-0.5 text-orange-500" v-if="activity.runas">操作人: {{ activity.runas }}</p>
+                  </el-card>
+                </el-timeline-item>
+              </el-timeline>
+            </template>
           </el-scrollbar>
         </el-card>
       </el-col>
@@ -103,7 +109,7 @@
             </div>
           </template>
         </el-card>
-        <el-card class="mt-10">
+        <el-card class="mt-5">
           <template #header>
             <div class="card-header">
               <span>{{ ts(['Change', '-', 'Password']) }}</span>
@@ -172,7 +178,7 @@ import {
 } from '../api/account'
 import { type  AuditLog, getMyActivities } from '../api/audit'
 import SetupMfaDialog from '../components/SetupMfaDialog.vue'
-import { t, ts } from '@/utils/i18n'
+import { t, ts, tsc } from '@/utils/i18n'
 
 const $router = useRouter()
 
@@ -309,6 +315,7 @@ const discardUpdatePassword = () => {
 
 // === 查看授权码
 const isShowLoading = ref(false)
+const loading = ref(true)
 const showSwitchCode = () => {
   isShowLoading.value = true
   getSwitchCode().then(({ data }) => {
@@ -353,7 +360,7 @@ const loadActivities = (query: PaginationQuery) => {
         activities.value.push(log)
       })
     }
-  })
+  }).finally(() => loading.value = false)
 }
 onMounted(() => loadActivities(query))
 </script>

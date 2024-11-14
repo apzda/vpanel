@@ -71,6 +71,8 @@
   "login": "登录",
   "time": "时间",
   "date": "日期",
+  "noData": "暂无数据",
+  "noData1": "暂无{0}",
   "layout": {
     "collapse": "折叠侧边栏"
   },

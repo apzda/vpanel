@@ -27,7 +27,7 @@ export interface UpdateMyAccountRequest {
 }
 
 export function updateAccountInfo(data: UpdateMyAccountRequest) {
-  return axios.post('/account/updateMyAccount', { data })
+  return axios.post('/ucenter/account/updateMyAccount', { data })
 }
 
 // 修改用户密码
@@ -47,7 +47,7 @@ export interface UpdatePasswordRequest {
 }
 
 export function updatePassword(data: UpdatePasswordRequest) {
-  return axios.post('/account/updatePassword', { data })
+  return axios.post('/ucenter/account/updatePassword', { data })
 }
 
 // 账户
@@ -66,27 +66,27 @@ export interface Account {
 
 // 新增账户
 export function createAccount(data: Account) {
-  return axios.post('/account/createAccount', { data })
+  return axios.post('/ucenter/account/createAccount', { data })
 }
 
 // 修改账户
 export function updateAccount(data: Account) {
-  return axios.post('/account/updateAccount', { data })
+  return axios.post('/ucenter/account/updateAccount', { data })
 }
 
 // 删除用户
 export function deleteAccount(data: Account) {
-  return axios.post('/account/deleteAccount', { data: { id: data.id } })
+  return axios.post('/ucenter/account/deleteAccount', { data: { id: data.id } })
 }
 
 // 踢下线
 export function kickOff(data: Account) {
-  return axios.post('/account/kickoff', { data: { username: data.username } })
+  return axios.post('/ucenter/account/kickoff', { data: { username: data.username } })
 }
 
 // 获取账户当前的授权码
 export function getSwitchCode() {
-  return axios.post<{ code: string }>('/account/switchCode')
+  return axios.post<{ code: string }>('/ucenter/account/switchCode')
 }
 
 export interface MfaConfig {
@@ -98,13 +98,13 @@ export interface MfaConfig {
 
 // 获取多重认证配置
 export const getMfaConfig = () => {
-  return axios.post<MfaConfig>('/account/mfaConfig')
+  return axios.post<MfaConfig>('/ucenter/account/mfaConfig')
 }
 
 export const setupMfa = (data: { code: string, password: string }) => {
-  return axios.post('/account/setupMfa', { data })
+  return axios.post('/ucenter/account/setupMfa', { data })
 }
 
 export const resetMfa = () => {
-  return axios.post<MfaConfig>('/account/resetMfa')
+  return axios.post<MfaConfig>('/ucenter/account/resetMfa')
 }

@@ -42,5 +42,5 @@ export const login = (data: {
 }
 
 export const verifyMfa = (data: { code: string, type: string }) => {
-  return axios.post('account/verifyMfa', { data, showErrMsg: false })
+  return axios.post('ucenter/account/verifyMfa', { data, showErrMsg: false })
 }
