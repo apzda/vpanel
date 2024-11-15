@@ -15,13 +15,13 @@
       <div class="w-full p-3 pb-0 border-t hover:text-blue-500 dark:border-gray-500">
         <router-link :to="{name:'MyProfile'}">
           <div class="flex items-center justify-start w-full gap-2">
-            <span class="icon-[ep--user] w-[24px] h-[24px] text-blue-500" />
+            <span class="icon-[ep--avatar] w-[1.375rem] h-[1.375rem] text-blue-500" />
             <span>{{ ts('Profile', 'Profile') }}</span>
           </div>
         </router-link>
       </div>
       <div class="w-full p-3 pb-0 border-t hover:text-red-600 dark:border-gray-500">
-        <logout-button :text="t('Logout')" />
+        <logout-button :width="22" :height="22" :text="t('Logout')" />
       </div>
       <div class="w-full p-3 pb-0 border-t dark:border-gray-500">
         <div class="flex items-center justify-start w-full gap-2 text-sm text-gray-400">

@@ -11,7 +11,7 @@
   >
     <template #reference>
       <div class="flex items-center justify-start w-full gap-2 cursor-pointer">
-        <span class="icon-[mdi--sign-out-variant] w-[24px] h-[24px] text-red-600"></span>
+        <span class="icon-[mdi--sign-out-variant] text-red-600" :style="style"></span>
         <div v-if="text">
           {{ text }}
         </div>
@@ -26,18 +26,28 @@ import { notify } from '@/utils/msgbox'
 import settings from '@/config/settings'
 import useAxios from '@/utils/axios'
 import { useRoute, useRouter } from 'vue-router'
+import { computed } from 'vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   text?: string
+  width?: number,
+  height?: number
 }>(), {
-  text: ''
+  text: '',
+  width: 24,
+  height: 24
 })
 
 const axios = useAxios()
 const $route = useRoute()
 const $router = useRouter()
 const fromArg = settings.fromArg || 'from'
-
+const style = computed(() => {
+  return {
+    width: props.width / 16 + 'rem',
+    height: props.height / 16 + 'rem'
+  }
+})
 const logout = () => {
   if (user.value.runAs) {
     switchBack().then((res) => {
