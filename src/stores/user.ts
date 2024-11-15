@@ -222,3 +222,11 @@ export const hasPermission = (
   return authority != undefined
 }
 
+export const avatar = () => {
+  if (user.value.avatar) {
+    return user.value.avatar
+  } else if (user.value.displayName) {
+    return user.value.displayName.substring(0, 1).toUpperCase()
+  }
+  return 'U'
+}

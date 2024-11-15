@@ -1,5 +1,7 @@
 import { defineRouter } from '@/@types'
-import { user } from '@/stores/user'
+import { avatar, user } from '@/stores/user'
+import Profile from '~/sys/components/Profile.vue'
+import { h, markRaw } from 'vue'
 
 export default defineRouter([{
   path: '/sys',
@@ -8,6 +10,7 @@ export default defineRouter([{
     path: 'user/profile',
     group: 999,
     sort: Infinity,
+    name: 'MyProfile',
     components: {
       default: () => import('~/sys/user/Profile.vue'),
       header: () => import('~/sys/user/ProfileHeader.vue')
@@ -16,14 +19,12 @@ export default defineRouter([{
       title: ({ ts }) => {
         return ts('sys.u.profile', 'Profile', [user.value.displayName || ''])
       },
-      avatar: () => {
-        if (user.value.avatar) {
-          return user.value.avatar
-        } else if (user.value.displayName) {
-          return user.value.displayName.substring(0, 1).toUpperCase()
-        }
-        return 'U'
+      vNode: (navItem) => h(markRaw(Profile), {
+        navItem
+      }),
+      click() {
       },
+      avatar: () => avatar(),
       name: () => {
         return user.value.displayName || ''
       }
@@ -46,7 +47,7 @@ export default defineRouter([{
       },
       {
         path: 'logs',
-        component: () => import('~/sys/audit/MyActivities.vue'),
+        component: () => import('~/sys/audit/AuditLog.vue'),
         authorities: 'r:auditlog',
         meta: {
           name: ({ ts }) => ts('sys.audit', 'Audit Log')

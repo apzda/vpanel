@@ -3,23 +3,27 @@
     class="flex-shrink-0 h-full px-3 flex flex-col justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
     :class="itemCls"
     :style="itemStyle"
+    ref="navItem"
     @click="onItemClick">
     <el-badge v-if="badge>0" :value="badge" :offset="[5, -5]" class="cursor-default">
       <a class="text-md">{{ itemText }}</a>
     </el-badge>
     <a v-else class="text-md cursor-default">{{ itemText }}</a>
   </div>
+  <component :is="vNode" />
 </template>
 
 <script lang="ts" setup>
-import { type Route } from '@/@types'
-import { computed } from 'vue'
+import { type MenuItemElement, type Route } from '@/@types'
+import { computed, useTemplateRef } from 'vue'
 import { ts, tsc } from '@/utils/i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 // hooks
 const router = useRouter()
 const route = useRoute()
+// refs
+const subNavItem = useTemplateRef('navItem')
 // properties
 const props = withDefaults(defineProps<{
   menu?: Route
@@ -28,11 +32,11 @@ const props = withDefaults(defineProps<{
   color?: string
   tip?: string
 }>(), {})
+const vNode = typeof props.menu?.meta?.vNode == 'function' ? props.menu.meta.vNode(subNavItem) : props.menu?.meta?.vNode
 // events
 const emits = defineEmits<{
-  (event: 'click', value: any): void
+  (event: 'click', value: { context: Route, menu: MenuItemElement }): void
 }>()
-
 // computed
 const itemText = computed(() => {
   if (props.menu && props.menu.meta?.name) {
@@ -73,11 +77,11 @@ const badge = computed(() => {
 // methods
 const onItemClick = () => {
   if (typeof props.menu?.meta?.click == 'function') {
-    props.menu.meta.click({ context: props.menu })
+    props.menu.meta.click({ context: props.menu, menu: subNavItem })
   } else if (props.menu?.path) {
     router.push(props.menu.path)
-  } else {
-    emits('click', props.menu)
+  } else if (props.menu) {
+    emits('click', { context: props.menu, menu: subNavItem })
   }
 }
 </script>

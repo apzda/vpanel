@@ -113,7 +113,7 @@ import { gotoLoginPage, routerMgr, sortRoute as sortMenuItem } from '@/router'
 import { CURRENT_MENU_NODE, type Route } from '@/@types'
 import { ts, tsc } from '@/utils/i18n'
 import { useAppStore } from '@/stores/app'
-import { assets, deepClone, toArray } from '@/utils'
+import { assets, toArray } from '@/utils'
 import { language as locale } from '@/utils/lang'
 import settings from '@/config/settings'
 import NavItem from '@/components/layout/widgets/NavItem.vue'
@@ -182,7 +182,8 @@ const filterMenuItem = (menu: Route) => {
 }
 // 创建子菜单
 const createMenuItem = (menu: Route, parent: Route): Route => {
-  const m = deepClone(menu)
+  // const m = deepClone(menu)
+  const m = menu
   if (!m.path.startsWith('/')) {
     m.path = parent.path + (parent.path == '/' || !m.path ? '' : '/') + m.path
   }

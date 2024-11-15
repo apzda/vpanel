@@ -3,6 +3,7 @@
     "exitMsg": "Are you sure you want to log out of the system?",
     "settings": "Settings",
     "activities": "Activities",
+    "version": "Version",
     "u": {
       "profile": "{0} Profile",
       "tip": "Manage your account profile and password",

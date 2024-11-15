@@ -1,4 +1,4 @@
-import type { InjectionKey, Ref } from 'vue'
+import type { InjectionKey, Ref, ShallowRef } from 'vue'
 import type { RouteMeta, RouteRecordRaw } from 'vue-router'
 import type { AxiosRequestConfig } from 'axios'
 import type { CommonResponse, ErrorEvent } from '@/@types/request'
@@ -110,6 +110,7 @@ export type Route = MenuItem &
   RouteRecordRaw & {
   children?: Route[]
 }
+export type MenuItemElement = Readonly<ShallowRef<HTMLDivElement | null>>
 
 // 排序
 export interface Order {

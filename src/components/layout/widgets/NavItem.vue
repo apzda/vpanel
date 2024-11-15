@@ -1,13 +1,12 @@
 <template>
-  <div class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 menu"
+  <div ref="navItem" class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 menu"
        :class="itemCls"
        :style="itemStyle"
        @click="onItemClick">
-
     <el-tooltip placement="right" :content="itemText" effect="light" :disabled="expand">
       <span v-if="!avatar" class="menu-item" :class="icon" />
-      <el-avatar v-else-if="avatar.startsWith('http')" :src="avatar" class="menu-item" />
-      <el-avatar v-else size="small" class="menu-item">{{ avatar }}</el-avatar>
+      <el-avatar v-else-if="avatar.startsWith('http')" :src="avatar" class="menu-item bg-cyan-600" />
+      <el-avatar v-else size="small" class="menu-item bg-cyan-600">{{ avatar }}</el-avatar>
     </el-tooltip>
 
     <el-badge class="expand flex-grow" v-if="badge>0" :value="badge" :offset="[-30, 12]">
@@ -17,17 +16,19 @@
 
     <span v-if="itemTip" class="expand text-sm text-gray-300 pr-1">{{ itemTip }}</span>
   </div>
+  <component :is="vNode" />
 </template>
 
 <script lang="ts" setup>
-import { CURRENT_MENU_NODE, type Route } from '@/@types'
-import { computed, inject } from 'vue'
+import { CURRENT_MENU_NODE, type MenuItemElement, type Route } from '@/@types'
+import { computed, inject, useTemplateRef } from 'vue'
 import { ts, tsc } from '@/utils/i18n'
 import { useRouter } from 'vue-router'
 
 // hooks
 const router = useRouter()
 // properties
+const navItem = useTemplateRef('navItem')
 const props = withDefaults(defineProps<{
   menu?: Route
   avatar?: string
@@ -36,9 +37,10 @@ const props = withDefaults(defineProps<{
   color?: string
   tip?: string
 }>(), {})
+const vNode = typeof props.menu?.meta?.vNode == 'function' ? props.menu.meta.vNode(navItem) : props.menu?.meta?.vNode
 // events
 const emits = defineEmits<{
-  (event: 'click', value: any): void
+  (event: 'click', value: { context: Route, menu: MenuItemElement }): void
 }>()
 // data bindings
 const cNode = inject(CURRENT_MENU_NODE, null)
@@ -63,7 +65,7 @@ const avatar = computed(() => {
 })
 const itemText = computed(() => {
   if (props.menu && props.menu.meta?.name) {
-    return tsc(props.menu.meta?.name, props.menu)
+    return tsc(props.menu.meta.name, props.menu)
   }
   return props.text || ''
 })
@@ -109,11 +111,12 @@ const itemTip = computed(() => {
 // methods
 const onItemClick = () => {
   if (typeof props.menu?.meta?.click == 'function') {
-    props.menu.meta.click({ context: props.menu })
+    props.menu.meta.click({ context: props.menu, menu: navItem })
   } else if (props.menu?.path) {
     router.push(props.menu.path)
-  } else {
-    emits('click', props.menu)
+  } else if (props.menu) {
+    // never goes here
+    emits('click', { context: props.menu, menu: navItem })
   }
 }
 </script>

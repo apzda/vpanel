@@ -1,9 +1,10 @@
 {
   "sys": {
     "exitMsg": "您确定退出系统吗？",
-    "settings": "系统设置",
+    "settings": "配置中心",
     "audit": "审计日志",
     "activities": "活动",
+    "version": "当前版本",
     "u": {
       "profile": "【{0}】个人资料",
       "tip": "管理您的账户信息与密码",

@@ -3,19 +3,19 @@
     <el-row :gutter="30" class="mt-5">
       <el-col :span="8">
         <el-card style="--el-card-padding:10px">
-          <el-avatar class="font-bold text-lg text-blue-500">
-            {{ user.displayName?.substring(0, 1) || '' }}
-          </el-avatar>
-          <span class="font-bold ml-1">{{ user.displayName }}</span>
+          <div class="flex flex-col items-center justify-start gap-1">
+            <u-avatar class="bg-cyan-600" />
+            <span class="font-bold">{{ user.displayName }}</span>
+          </div>
           <div class="flex gap-5 mt-3.5">
             <el-tag v-for="role in user.roles" :key="role.id">{{ tsc(role.name) }}</el-tag>
           </div>
-          <div class="flex flex-wrap gap-5 mt-3.5 text-sm">
-            <span>{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
+          <div class="flex justify-between items-center mt-3.5 text-sm">
+            <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
             <span class="text-gray-400">{{ fromUnixTimestamp(user.lastLoginTime || '') }}</span>
           </div>
-          <div class="flex flex-wrap gap-5 mt-1 text-sm">
-            <span>{{ ts(['last', '-', 'login', '-']) }}IP: </span>
+          <div class="flex justify-between items-center mt-1 text-sm">
+            <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-']) }}IP: </span>
             <span class="text-gray-400">{{ user.lastLoginIp }}</span>
           </div>
           <template #footer>
@@ -43,7 +43,7 @@
                     @click="$router.push({name:'my-activities'})">...</span>
             </div>
           </template>
-          <el-scrollbar style="height: 500px;">
+          <el-scrollbar style="height: 480px;">
             <el-skeleton v-if="loading" :rows="10" animated />
             <template v-else>
               <el-empty
@@ -179,6 +179,7 @@ import {
 import { type  AuditLog, getMyActivities } from '../api/audit'
 import SetupMfaDialog from '../components/SetupMfaDialog.vue'
 import { t, ts, tsc } from '@/utils/i18n'
+import UAvatar from '@/components/UAvatar.vue'
 
 const $router = useRouter()
 
