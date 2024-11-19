@@ -121,7 +121,12 @@ export const user = useStorage<UserInfo>(storagePrefix + '::userData', {}, local
 
 export const refresh = (data: UserInfo, event: ErrorEvent) => {
   data.login = true
+  if (!data.lastLoginTime) {
+    data.lastLoginTime = user.value?.lastLoginTime
+    data.lastLoginIp = user.value?.lastLoginIp
+  }
   user.value = data
+
   if (!data.uid || data.uid == 0) {
     if (typeof handlers['onErr808'] === 'function') {
       handlers['onErr808'](event)
@@ -140,7 +145,7 @@ export const refresh = (data: UserInfo, event: ErrorEvent) => {
 export const logout = (): void => {
   user.value = {
     login: false,
-    uuid: user.value.uuid
+    uuid: user.value?.uuid
   }
 }
 
