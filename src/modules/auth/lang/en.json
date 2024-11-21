@@ -11,7 +11,7 @@
     "codeHolder": "Enter the Captcha Code.",
     "securityHolder": "Enter the Security Code",
     "drag": {
-      "prompt": "Sliding to the right to log in.",
+      "prompt": "Please slide to log in.",
       "success": "Validating ...",
       "login": "Login ..."
     },
