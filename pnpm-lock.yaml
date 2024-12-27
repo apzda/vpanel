@@ -148,17 +148,17 @@ importers:
         specifier: ~5.6.3
         version: 5.6.3
       unplugin-auto-import:
-        specifier: ^0.18.6
-        version: 0.18.6(@vueuse/core@11.3.0(vue@3.5.13(typescript@5.6.3)))(rollup@4.29.1)
+        specifier: ^0.19.0
+        version: 0.19.0(@vueuse/core@11.3.0(vue@3.5.13(typescript@5.6.3)))(rollup@4.29.1)
       unplugin-element-plus:
         specifier: ^0.8.0
         version: 0.8.0(rollup@4.29.1)
       unplugin-icons:
-        specifier: ^0.20.2
-        version: 0.20.2(@vue/compiler-sfc@3.5.13)
+        specifier: ^0.22.0
+        version: 0.22.0(@vue/compiler-sfc@3.5.13)
       unplugin-vue-components:
-        specifier: ^0.27.5
-        version: 0.27.5(@babel/parser@7.26.3)(rollup@4.29.1)(vue@3.5.13(typescript@5.6.3))
+        specifier: ^0.28.0
+        version: 0.28.0(@babel/parser@7.26.3)(rollup@4.29.1)(vue@3.5.13(typescript@5.6.3))
       vite:
         specifier: ^5.4.11
         version: 5.4.11(@types/node@22.10.2)(sass@1.83.0)
@@ -2898,8 +2898,8 @@ packages:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
 
-  unplugin-auto-import@0.18.6:
-    resolution: {integrity: sha512-LMFzX5DtkTj/3wZuyG5bgKBoJ7WSgzqSGJ8ppDRdlvPh45mx6t6w3OcbExQi53n3xF5MYkNGPNR/HYOL95KL2A==}
+  unplugin-auto-import@0.19.0:
+    resolution: {integrity: sha512-W97gTDEWu/L1EcKCXY5Ni8bsMW1E9kv12wYQv3mYpd7zcFctXYlLKsqeva6sbCQbzS8t9AG/XdU5/WkEJKPlFw==}
     engines: {node: '>=14'}
     peerDependencies:
       '@nuxt/kit': ^3.2.2
@@ -2914,8 +2914,8 @@ packages:
     resolution: {integrity: sha512-jByUGY3FG2B8RJKFryqxx4eNtSTj+Hjlo8edcOdJymewndDQjThZ1pRUQHRjQsbKhTV2jEctJV7t7RJ405UL4g==}
     engines: {node: '>=14.19.0'}
 
-  unplugin-icons@0.20.2:
-    resolution: {integrity: sha512-Ak6TKAiO812aIUrCelrBSTQbYC4FiqawnFrAusP/hjmB8f9cAug9jr381ItvLl+Asi4IVcjoOiPbpy9CfFGKvQ==}
+  unplugin-icons@0.22.0:
+    resolution: {integrity: sha512-CP+iZq5U7doOifer5bcM0jQ9t3Is7EGybIYt3myVxceI8Zuk8EZEpe1NPtJvh7iqMs1VdbK0L41t9+um9VuuLw==}
     peerDependencies:
       '@svgr/core': '>=7.0.0'
       '@svgx/core': ^1.0.1
@@ -2937,8 +2937,8 @@ packages:
       vue-template-es2015-compiler:
         optional: true
 
-  unplugin-vue-components@0.27.5:
-    resolution: {integrity: sha512-m9j4goBeNwXyNN8oZHHxvIIYiG8FQ9UfmKWeNllpDvhU7btKNNELGPt+o3mckQKuPwrE7e0PvCsx+IWuDSD9Vg==}
+  unplugin-vue-components@0.28.0:
+    resolution: {integrity: sha512-jiTGtJ3JsRFBjgvyilfrX7yUoGKScFgbdNw+6p6kEXU+Spf/rhxzgvdfuMcvhCcLmflB/dY3pGQshYBVGOUx7Q==}
     engines: {node: '>=14'}
     peerDependencies:
       '@babel/parser': ^7.15.8
@@ -2953,6 +2953,10 @@ packages:
   unplugin@1.16.0:
     resolution: {integrity: sha512-5liCNPuJW8dqh3+DM6uNM2EI3MLLpCKp/KY+9pB5M2S2SR2qvvDHhKgBOaTWEbZTAws3CXfB0rKTIolWKL05VQ==}
     engines: {node: '>=14.0.0'}
+
+  unplugin@2.1.0:
+    resolution: {integrity: sha512-us4j03/499KhbGP8BU7Hrzrgseo+KdfJYWcbcajCOqsAyb8Gk0Yn2kiUIcZISYCb1JFaZfIuG3b42HmguVOKCQ==}
+    engines: {node: '>=18.12.0'}
 
   untildify@4.0.0:
     resolution: {integrity: sha512-KK8xQ1mkzZeg9inewmFVDNkg3l5LUhoq9kN6iWYB/CC9YMG8HA+c1Q8HwDe6dEX7kErrEVNVBO3fWsVq5iDgtw==}
@@ -5985,16 +5989,15 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unplugin-auto-import@0.18.6(@vueuse/core@11.3.0(vue@3.5.13(typescript@5.6.3)))(rollup@4.29.1):
+  unplugin-auto-import@0.19.0(@vueuse/core@11.3.0(vue@3.5.13(typescript@5.6.3)))(rollup@4.29.1):
     dependencies:
       '@antfu/utils': 0.7.10
       '@rollup/pluginutils': 5.1.4(rollup@4.29.1)
-      fast-glob: 3.3.2
       local-pkg: 0.5.1
       magic-string: 0.30.17
-      minimatch: 9.0.5
+      picomatch: 4.0.2
       unimport: 3.14.5(rollup@4.29.1)
-      unplugin: 1.16.0
+      unplugin: 2.1.0
     optionalDependencies:
       '@vueuse/core': 11.3.0(vue@3.5.13(typescript@5.6.3))
     transitivePeerDependencies:
@@ -6009,7 +6012,7 @@ snapshots:
     transitivePeerDependencies:
       - rollup
 
-  unplugin-icons@0.20.2(@vue/compiler-sfc@3.5.13):
+  unplugin-icons@0.22.0(@vue/compiler-sfc@3.5.13):
     dependencies:
       '@antfu/install-pkg': 0.5.0
       '@antfu/utils': 0.7.10
@@ -6017,13 +6020,13 @@ snapshots:
       debug: 4.4.0(supports-color@8.1.1)
       kolorist: 1.8.0
       local-pkg: 0.5.1
-      unplugin: 1.16.0
+      unplugin: 2.1.0
     optionalDependencies:
       '@vue/compiler-sfc': 3.5.13
     transitivePeerDependencies:
       - supports-color
 
-  unplugin-vue-components@0.27.5(@babel/parser@7.26.3)(rollup@4.29.1)(vue@3.5.13(typescript@5.6.3)):
+  unplugin-vue-components@0.28.0(@babel/parser@7.26.3)(rollup@4.29.1)(vue@3.5.13(typescript@5.6.3)):
     dependencies:
       '@antfu/utils': 0.7.10
       '@rollup/pluginutils': 5.1.4(rollup@4.29.1)
@@ -6034,7 +6037,7 @@ snapshots:
       magic-string: 0.30.17
       minimatch: 9.0.5
       mlly: 1.7.3
-      unplugin: 1.16.0
+      unplugin: 2.1.0
       vue: 3.5.13(typescript@5.6.3)
     optionalDependencies:
       '@babel/parser': 7.26.3
@@ -6043,6 +6046,11 @@ snapshots:
       - supports-color
 
   unplugin@1.16.0:
+    dependencies:
+      acorn: 8.14.0
+      webpack-virtual-modules: 0.6.2
+
+  unplugin@2.1.0:
     dependencies:
       acorn: 8.14.0
       webpack-virtual-modules: 0.6.2
