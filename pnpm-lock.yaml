@@ -12,11 +12,11 @@ importers:
         specifier: ^2.3.1
         version: 2.3.1(vue@3.5.13(typescript@5.6.3))
       '@vueuse/core':
-        specifier: ^11.3.0
-        version: 11.3.0(vue@3.5.13(typescript@5.6.3))
+        specifier: ^12.2.0
+        version: 12.2.0(typescript@5.6.3)
       '@vueuse/integrations':
-        specifier: ^11.3.0
-        version: 11.3.0(async-validator@4.2.5)(axios@1.7.9)(nprogress@0.2.0)(vue@3.5.13(typescript@5.6.3))
+        specifier: ^12.2.0
+        version: 12.2.0(async-validator@4.2.5)(axios@1.7.9)(nprogress@0.2.0)(typescript@5.6.3)
       axios:
         specifier: ^1.7.9
         version: 1.7.9(debug@4.4.0)
@@ -149,7 +149,7 @@ importers:
         version: 5.6.3
       unplugin-auto-import:
         specifier: ^0.19.0
-        version: 0.19.0(@vueuse/core@11.3.0(vue@3.5.13(typescript@5.6.3)))(rollup@4.29.1)
+        version: 0.19.0(@vueuse/core@12.2.0(typescript@5.6.3))(rollup@4.29.1)
       unplugin-element-plus:
         specifier: ^0.8.0
         version: 0.8.0(rollup@4.29.1)
@@ -1054,14 +1054,14 @@ packages:
   '@vue/tsconfig@0.5.1':
     resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
 
-  '@vueuse/core@11.3.0':
-    resolution: {integrity: sha512-7OC4Rl1f9G8IT6rUfi9JrKiXy4bfmHhZ5x2Ceojy0jnd3mHNEvV4JaRygH362ror6/NZ+Nl+n13LPzGiPN8cKA==}
+  '@vueuse/core@12.2.0':
+    resolution: {integrity: sha512-jksyNu+5EGwggNkRWd6xX+8qBkYbmrwdFQMgCABsz+wq8bKF6w3soPFLB8vocFp3wFIzn0OYkSPM9JP+AFKwsg==}
 
   '@vueuse/core@9.13.0':
     resolution: {integrity: sha512-pujnclbeHWxxPRqXWmdkKV5OX4Wk4YeK7wusHqRwU0Q7EFusHoqNA/aPhB6KCh9hEqJkLAJo7bb0Lh9b+OIVzw==}
 
-  '@vueuse/integrations@11.3.0':
-    resolution: {integrity: sha512-5fzRl0apQWrDezmobchoiGTkGw238VWESxZHazfhP3RM7pDSiyXy18QbfYkILoYNTd23HPAfQTJpkUc5QbkwTw==}
+  '@vueuse/integrations@12.2.0':
+    resolution: {integrity: sha512-Bc0unXiGNZ0w7xqSvzCuP7AflBRKcZX6ib7tGi7vAjOxhLd6GtN3J8qizIbSPnI62XyPy5fauOkq2i2HUPq6MQ==}
     peerDependencies:
       async-validator: ^4
       axios: ^1
@@ -1101,14 +1101,14 @@ packages:
       universal-cookie:
         optional: true
 
-  '@vueuse/metadata@11.3.0':
-    resolution: {integrity: sha512-pwDnDspTqtTo2HwfLw4Rp6yywuuBdYnPYDq+mO38ZYKGebCUQC/nVj/PXSiK9HX5otxLz8Fn7ECPbjiRz2CC3g==}
+  '@vueuse/metadata@12.2.0':
+    resolution: {integrity: sha512-x6zynZtTh1l52m0y8d/EgzpshnMjg8cNZ2KWoncJ62Z5qPSGoc4FUunmMVrrRM/I/5542rTEY89CGftngZvrkQ==}
 
   '@vueuse/metadata@9.13.0':
     resolution: {integrity: sha512-gdU7TKNAUVlXXLbaF+ZCfte8BjRJQWPCa2J55+7/h+yDtzw3vOoGQDRXzI6pyKyo6bXFT5/QoPE4hAknExjRLQ==}
 
-  '@vueuse/shared@11.3.0':
-    resolution: {integrity: sha512-P8gSSWQeucH5821ek2mn/ciCk+MS/zoRKqdQIM3bHq6p7GXDAJLmnRRKmF5F65sAVJIfzQlwR3aDzwCn10s8hA==}
+  '@vueuse/shared@12.2.0':
+    resolution: {integrity: sha512-SRr4AZwv/giS+EmyA1ZIzn3/iALjjnWAGaBNmoDTMEob9JwQaevAocuaMDnPAvU7Z35Y5g3CFRusCWgp1gVJ3Q==}
 
   '@vueuse/shared@9.13.0':
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
@@ -4105,15 +4105,14 @@ snapshots:
 
   '@vue/tsconfig@0.5.1': {}
 
-  '@vueuse/core@11.3.0(vue@3.5.13(typescript@5.6.3))':
+  '@vueuse/core@12.2.0(typescript@5.6.3)':
     dependencies:
       '@types/web-bluetooth': 0.0.20
-      '@vueuse/metadata': 11.3.0
-      '@vueuse/shared': 11.3.0(vue@3.5.13(typescript@5.6.3))
-      vue-demi: 0.14.10(vue@3.5.13(typescript@5.6.3))
+      '@vueuse/metadata': 12.2.0
+      '@vueuse/shared': 12.2.0(typescript@5.6.3)
+      vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
+      - typescript
 
   '@vueuse/core@9.13.0(vue@3.5.13(typescript@5.6.3))':
     dependencies:
@@ -4125,29 +4124,27 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@vueuse/integrations@11.3.0(async-validator@4.2.5)(axios@1.7.9)(nprogress@0.2.0)(vue@3.5.13(typescript@5.6.3))':
+  '@vueuse/integrations@12.2.0(async-validator@4.2.5)(axios@1.7.9)(nprogress@0.2.0)(typescript@5.6.3)':
     dependencies:
-      '@vueuse/core': 11.3.0(vue@3.5.13(typescript@5.6.3))
-      '@vueuse/shared': 11.3.0(vue@3.5.13(typescript@5.6.3))
-      vue-demi: 0.14.10(vue@3.5.13(typescript@5.6.3))
+      '@vueuse/core': 12.2.0(typescript@5.6.3)
+      '@vueuse/shared': 12.2.0(typescript@5.6.3)
+      vue: 3.5.13(typescript@5.6.3)
     optionalDependencies:
       async-validator: 4.2.5
       axios: 1.7.9(debug@4.4.0)
       nprogress: 0.2.0
     transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
+      - typescript
 
-  '@vueuse/metadata@11.3.0': {}
+  '@vueuse/metadata@12.2.0': {}
 
   '@vueuse/metadata@9.13.0': {}
 
-  '@vueuse/shared@11.3.0(vue@3.5.13(typescript@5.6.3))':
+  '@vueuse/shared@12.2.0(typescript@5.6.3)':
     dependencies:
-      vue-demi: 0.14.10(vue@3.5.13(typescript@5.6.3))
+      vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
+      - typescript
 
   '@vueuse/shared@9.13.0(vue@3.5.13(typescript@5.6.3))':
     dependencies:
@@ -5989,7 +5986,7 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unplugin-auto-import@0.19.0(@vueuse/core@11.3.0(vue@3.5.13(typescript@5.6.3)))(rollup@4.29.1):
+  unplugin-auto-import@0.19.0(@vueuse/core@12.2.0(typescript@5.6.3))(rollup@4.29.1):
     dependencies:
       '@antfu/utils': 0.7.10
       '@rollup/pluginutils': 5.1.4(rollup@4.29.1)
@@ -5999,7 +5996,7 @@ snapshots:
       unimport: 3.14.5(rollup@4.29.1)
       unplugin: 2.1.0
     optionalDependencies:
-      '@vueuse/core': 11.3.0(vue@3.5.13(typescript@5.6.3))
+      '@vueuse/core': 12.2.0(typescript@5.6.3)
     transitivePeerDependencies:
       - rollup
 
