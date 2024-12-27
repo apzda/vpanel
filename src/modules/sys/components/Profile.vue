@@ -1,5 +1,6 @@
 <template>
   <el-popover
+    ref="popover"
     :width="300"
     :virtual-ref="navItem"
     trigger="click"
@@ -13,7 +14,7 @@
       <div v-if="user.organization" class="font-semibold">{{ user.organization.name }}</div>
       <div v-if="user.email" class="font-semibold">{{ user.email }}</div>
       <div class="w-full p-3 pb-0 border-t hover:text-blue-500 dark:border-gray-500">
-        <router-link :to="{name:'MyProfile'}">
+        <router-link :to="{name:'MyProfile'}" @click="hide">
           <div class="flex items-center justify-start w-full gap-2">
             <span class="icon-[ep--avatar] w-[1.375rem] h-[1.375rem] text-blue-500" />
             <span>{{ ts('Profile', 'Profile') }}</span>
@@ -35,6 +36,7 @@
 <script setup lang="ts">
 import { version } from '../../../../package.json'
 import { ref, type VNodeRef } from 'vue'
+import { ElPopover } from 'element-plus'
 import UAvatar from '@/components/UAvatar.vue'
 import { user } from '@/stores/user'
 import { t, ts } from '@/utils/i18n'
@@ -44,4 +46,10 @@ defineProps<{
   navItem: VNodeRef
 }>()
 const ver = ref(version || '1.0.0')
+
+const popover = ref<InstanceType<typeof ElPopover> | null>(null)
+
+const hide = () => {
+  popover.value?.hide()
+}
 </script>
