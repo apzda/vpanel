@@ -37,7 +37,7 @@
         <el-card class="mt-5" style="--el-card-padding:10px">
           <template #header>
             <div class="card-header">
-              <span v-t="'sys.activities'" />
+              <span>{{ $t('sys.activities') }}</span>
               <span class="float-right text-blue-500 cursor-default"
                     :title="ts('more')"
                     @click="$router.push({name:'my-activities'})">...</span>
