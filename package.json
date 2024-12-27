@@ -52,7 +52,7 @@
     "@vue/eslint-config-prettier": "^10.1.0",
     "@vue/eslint-config-typescript": "^14.2.0",
     "@vue/test-utils": "^2.4.6",
-    "@vue/tsconfig": "^0.5.1",
+    "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.20",
     "browserslist": "^4.24.3",
     "cypress": "^13.17.0",
@@ -72,7 +72,7 @@
     "unplugin-element-plus": "^0.8.0",
     "unplugin-icons": "^0.22.0",
     "unplugin-vue-components": "^0.28.0",
-    "vite": "^5.4.11",
+    "vite": "^6.0.6",
     "vitest": "^2.1.8",
     "vue-tsc": "^2.2.0"
   },
