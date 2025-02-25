@@ -1,74 +1,79 @@
 <template>
-  <div class="m-5">
-    <el-row :gutter="30" class="mt-5">
-      <el-col :span="8">
-        <el-card style="--el-card-padding:10px">
-          <div class="flex flex-col items-center justify-start gap-1">
-            <u-avatar class="bg-cyan-600" />
-            <span class="font-bold">{{ user.displayName }}</span>
-          </div>
-          <div class="flex gap-5 mt-3.5">
-            <el-tag v-for="role in user.roles" :key="role.id">{{ tsc(role.name) }}</el-tag>
-          </div>
-          <div class="flex justify-between items-center mt-3.5 text-sm">
-            <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
-            <span class="text-gray-400">{{ fromUnixTimestamp(user.lastLoginTime || '') }}</span>
-          </div>
-          <div class="flex justify-between items-center mt-1 text-sm">
-            <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-']) }}IP: </span>
-            <span class="text-gray-400">{{ user.lastLoginIp }}</span>
-          </div>
-          <template #footer>
-            <div class="flex gap-5 justify-end items-center">
-              <el-button
-                v-if="!user.runAs"
-                v-has-authority="'SIMPLE_USER'"
-                type="warning"
-                @click="showSwitchCode"
-                :icon="View"
-                :loading="isShowLoading"
-                :disabled="isShowLoading">{{ ts(['View', '-', 'sys.u.code']) }}
-              </el-button>
-              <el-button type="primary" v-if="!user.runAs" @click="setupMfa" :icon="Unlock">{{ ts('sys.u.mfa') }}
-              </el-button>
+  <div class="p-5 pb-0 h-full">
+    <el-row :gutter="30" class="h-full">
+      <el-col :span="8" class="h-full">
+        <div class="flex flex-col h-full">
+          <el-card class="mb-5 shrink-0" style="--el-card-padding:10px">
+            <div class="flex flex-col items-center justify-start gap-1">
+              <u-avatar class="bg-cyan-600" />
+              <span class="font-bold">{{ user.displayName }}</span>
             </div>
-          </template>
-        </el-card>
-        <el-card class="mt-5" style="--el-card-padding:10px">
-          <template #header>
-            <div class="card-header">
-              <span>{{ $t('sys.activities') }}</span>
-              <span class="float-right text-blue-500 cursor-default"
-                    :title="ts('more')"
-                    @click="$router.push({name:'my-activities'})">...</span>
+            <div class="flex gap-5 mt-3.5">
+              <span class="flex-shrink-0">{{ ts('Role') }}: </span>
+              <div class="flex-1 flex flex-wrap justify-end gap-2">
+                <el-tag type="info" v-for="role in user.roles" :key="role.id">{{ tsc(role.name) }}</el-tag>
+              </div>
             </div>
-          </template>
-          <el-scrollbar style="height: 480px;">
-            <el-skeleton v-if="loading" :rows="10" animated />
-            <template v-else>
-              <el-empty
-                v-if="activities.length == 0"
-                :image-size="128"
-                :description="t('noData1', [t('sys.activities')])" />
-              <el-timeline v-else>
-                <el-timeline-item
-                  v-for="activity in activities"
-                  :key="activity.id"
-                  :timestamp="fromUnixTimestamp(activity.timestamp)"
-                  :type="activityType(activity)"
-                  placement="top"
-                  class="ml-1.5 mr-1.5"
-                >
-                  <el-card style="--el-card-padding:10px">
-                    <h3 class="font-bold">{{ activity.activity }}</h3>
-                    <p class="mt-0.5">{{ activity.message }}</p>
-                    <p class="mt-0.5 text-orange-500" v-if="activity.runas">操作人: {{ activity.runas }}</p>
-                  </el-card>
-                </el-timeline-item>
-              </el-timeline>
+            <div class="flex justify-between items-center mt-3.5 text-base">
+              <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
+              <span class="text-gray-400">{{ fromUnixTimestamp(user.lastLoginTime || '') }}</span>
+            </div>
+            <div class="flex justify-between items-center mt-1 text-base">
+              <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-']) }}IP: </span>
+              <span class="text-gray-400">{{ user.lastLoginIp }}</span>
+            </div>
+            <template #footer>
+              <div class="flex gap-5 justify-end items-center">
+                <el-button
+                  v-if="!user.runAs"
+                  v-has-authority="'SIMPLE_USER'"
+                  type="warning"
+                  @click="showSwitchCode"
+                  :icon="View"
+                  :loading="isShowLoading"
+                  :disabled="isShowLoading">{{ ts(['View', '-', 'sys.u.code']) }}
+                </el-button>
+                <el-button type="primary" v-if="!user.runAs" @click="setupMfa" :icon="Unlock">{{ ts('sys.u.mfa') }}
+                </el-button>
+              </div>
             </template>
-          </el-scrollbar>
-        </el-card>
+          </el-card>
+          <el-card class="mb-5 flex-auto card-body-h-full" style="--el-card-padding:10px">
+            <template #header>
+              <div class="card-header">
+                <span>{{ $t('sys.activities') }}</span>
+                <span class="float-right text-blue-500 cursor-pointer"
+                      :title="ts(['View','-','more'])"
+                      @click="$router.push({name:'my-activities'})">...</span>
+              </div>
+            </template>
+            <el-scrollbar>
+              <el-skeleton v-if="loading" :rows="10" animated />
+              <template v-else>
+                <el-empty
+                  v-if="activities.length == 0"
+                  :image-size="128"
+                  :description="t('noData1', [t('sys.activities')])" />
+                <el-timeline v-else>
+                  <el-timeline-item
+                    v-for="activity in activities"
+                    :key="activity.id"
+                    :timestamp="fromUnixTimestamp(activity.timestamp)"
+                    :type="activityType(activity)"
+                    placement="top"
+                    class="ml-1.5 mr-1.5"
+                  >
+                    <el-card style="--el-card-padding:10px">
+                      <h3 class="font-bold">{{ activity.activity }}</h3>
+                      <p class="mt-0.5">{{ activity.message }}</p>
+                      <p class="mt-0.5 text-orange-500" v-if="activity.runas">操作人: {{ activity.runas }}</p>
+                    </el-card>
+                  </el-timeline-item>
+                </el-timeline>
+              </template>
+            </el-scrollbar>
+          </el-card>
+        </div>
       </el-col>
       <el-col :span="16">
         <el-card>

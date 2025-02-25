@@ -34,7 +34,7 @@
             <span class="w-6 h-6 cursor-pointer"
                   :class="{'icon-[mdi--chevron-double-left]':expand,'icon-[mdi--chevron-double-right]':!expand}"
                   @click="toggleExpand"></span>
-            <span class="expand text-sm cursor-pointer flex-grow"
+            <span class="expand text-base cursor-pointer flex-grow"
                   @click="toggleExpand">{{ ts('layout.collapse', 'Collapse Sidebar') }}</span>
             <!-- 语言切换 -->
             <el-dropdown class="expand" placement="bottom-end" @command="languageChanged">
@@ -65,13 +65,13 @@
             <div v-else
                  class="h-full flex justify-start items-center gap-1 text-gray-700 dark:text-white">
               <span v-if="cIcon" class="flex-shrink-0 w-[20px] h-[20px]" :class="cIcon" />
-              <div v-if="cName" class="flex-shrink-0 font-semibold text-md mr-2" :class="{'':cNode?.children}">
+              <div v-if="cName" class="flex-shrink-0 font-semibold text-base mr-2" :class="{'':cNode?.children}">
                 {{ cName }}
               </div>
               <div v-if="cNode?.children"
                    class="flex-shrink-0 border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-1"></div>
               <el-scrollbar v-if="cNode?.children" class="flex-grow">
-                <div class="h-[--el-header-height] text-sm flex justify-start items-center gap-0.5">
+                <div class="h-[--el-header-height] text-base flex justify-start items-center gap-0.5">
                   <sub-nav-item v-for="(sub,idx) in cNode.children" :menu="sub" :key="idx" />
                 </div>
               </el-scrollbar>
@@ -84,10 +84,8 @@
             </div>
           </el-header>
           <!-- 工作区 -->
-          <el-main style="--el-main-padding: 10px">
-            <el-scrollbar height="100%" :noresize="true" aria-orientation="vertical">
-              <router-view></router-view>
-            </el-scrollbar>
+          <el-main style="--el-main-padding: 0; overflow:hidden">
+            <router-view />
           </el-main>
         </el-container>
       </slot>
@@ -285,11 +283,11 @@ onBeforeMount(() => {
 }
 
 .aside-expand {
-  --el-aside-width: 264px
+  --el-aside-width: 18.5rem;
 }
 
 .aside-collapse {
-  --el-aside-width: 68px;
+  --el-aside-width: 4.5rem;
 
   .expand {
     display: none;

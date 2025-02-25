@@ -1,5 +1,5 @@
 <template>
-  <div ref="navItem" class="flex justify-start items-center gap-2 h-[24px] hover:bg-sky-800 menu"
+  <div ref="navItem" class="flex justify-start items-center gap-2 h-[1.714285rem] hover:bg-sky-800 menu"
        :class="itemCls"
        :style="itemStyle"
        @click="onItemClick">
@@ -10,11 +10,11 @@
     </el-tooltip>
 
     <el-badge class="expand flex-grow" v-if="badge>0" :value="badge" :offset="[-30, 12]">
-      <a class="text-sm cursor-default">{{ itemText }}</a>
+      <a class="text-base cursor-default">{{ itemText }}</a>
     </el-badge>
-    <a v-else class="expand flex-grow text-sm cursor-default">{{ itemText }}</a>
+    <a v-else class="expand flex-grow text-base cursor-default">{{ itemText }}</a>
 
-    <span v-if="itemTip" class="expand text-sm text-gray-300 pr-1">{{ itemTip }}</span>
+    <span v-if="itemTip" class="expand text-base text-gray-300 pr-1">{{ itemTip }}</span>
   </div>
   <component :is="vNode" />
 </template>
@@ -123,12 +123,12 @@ const onItemClick = () => {
 
 <style scoped>
 .menu {
-  @apply my-1 py-3.5 pl-[3px] rounded;
+  @apply my-1 py-3.5 pl-[0.21428rem] rounded;
 }
 
 .menu-item {
-  width: 22px;
-  height: 22px;
+  width: 1.57142rem;
+  height: 1.57142rem;
   cursor: default;
 }
 </style>

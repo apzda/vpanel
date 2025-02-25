@@ -7,7 +7,7 @@
       <!-- verify form -->
       <div class="rounded shadow shadow-gray-300 dark:shadow-gray-600 p-4 md:p-10">
         <h1 class="mb-2 font-bold text-2xl">{{ ts('auth.login') }}</h1>
-        <p class="mb-5 text-sm text-gray-400">{{ ts('auth.tip', 'Welcome back to your account.') }}</p>
+        <p class="mb-5 text-base text-gray-400">{{ ts('auth.tip', 'Welcome back to your account.') }}</p>
         <el-form
           ref="verifyMfaForm"
           :model="formModel"
@@ -21,6 +21,9 @@
             prop="code"
             :error="verifyMfaErr"
             :validate-status="codeStatus">
+            <template #label="{label}">
+              <span class="font-bold text-base flex-grow">{{ label }}</span>
+            </template>
             <el-input
               v-model="formModel.code"
               :placeholder="ts('auth.securityHolder')"

@@ -11,8 +11,8 @@
   >
     <template #reference>
       <div class="flex items-center justify-start w-full gap-2 cursor-pointer">
-        <span class="icon-[mdi--sign-out-variant] text-red-600" :style="style"></span>
-        <div v-if="text">
+        <span class="icon-[mdi--sign-out-variant] text-red-600" :style="style" />
+        <div class="text-base" v-if="text">
           {{ text }}
         </div>
       </div>

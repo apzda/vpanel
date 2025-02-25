@@ -7,7 +7,7 @@
       <!-- login form -->
       <div class="rounded shadow shadow-gray-300 dark:shadow-gray-600 p-4 md:p-10">
         <h1 class="mb-2 font-bold text-2xl">{{ ts('auth.login') }}</h1>
-        <p class="mb-5 text-sm text-gray-400">{{ ts('auth.tip', 'Welcome back to your account.') }}</p>
+        <p class="mb-5 text-base text-gray-400">{{ ts('auth.tip', 'Welcome back to your account.') }}</p>
         <el-form
           ref="formRef"
           size="large"
@@ -23,7 +23,7 @@
             :validate-status="formOpts.username.status"
           >
             <template #label="{label}">
-              <span class="font-bold text-sm">{{ label }}</span>
+              <span class="font-bold text-base">{{ label }}</span>
             </template>
             <el-input
               v-model="formModel.username"
@@ -38,7 +38,7 @@
             prop="password"
           >
             <template #label="{label}">
-              <span class="font-bold text-sm flex-grow">{{ label }}</span>
+              <span class="font-bold text-base flex-grow">{{ label }}</span>
             </template>
             <el-input
               type="password"
@@ -83,7 +83,7 @@
               :validate-status="formOpts.code.status"
               prop="code">
               <template #label="{label}">
-                <span class="font-bold text-sm flex-grow">{{ label }}</span>
+                <span class="font-bold text-base flex-grow">{{ label }}</span>
               </template>
               <el-input
                 v-model="formModel.code"
@@ -114,7 +114,7 @@
         </el-form>
       </div>
       <!-- extra actions -->
-      <div class="mt-2 text-center text-gray-400 text-sm align-middle">
+      <div class="mt-2 text-center text-gray-400 text-base align-middle">
         <el-text size="small" type="info">
           <span class="el-icon icon-[ep--help-filled]"></span>
           POWERED BY <a target="_blank" href="https://github.com/orgs/apzda/repositories">APZDA</a>

@@ -6,9 +6,9 @@
     ref="navItem"
     @click="onItemClick">
     <el-badge v-if="badge>0" :value="badge" :offset="[5, -5]" class="cursor-default">
-      <a class="text-md">{{ itemText }}</a>
+      <a class="text-base">{{ itemText }}</a>
     </el-badge>
-    <a v-else class="text-md cursor-default">{{ itemText }}</a>
+    <a v-else class="text-base cursor-default">{{ itemText }}</a>
   </div>
   <component :is="vNode" />
 </template>
