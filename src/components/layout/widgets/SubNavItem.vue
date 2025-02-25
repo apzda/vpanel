@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex-shrink-0 h-full px-3 flex flex-col justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
+    class="shrink-0 h-full px-3 flex flex-col justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
     :class="itemCls"
     :style="itemStyle"
     ref="navItem"

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog class="max-w-[600px] min-w-[400px]">
+  <el-dialog class="max-w-[800px] min-w-[600px]">
     <div>
       <el-input
         v-model="q"

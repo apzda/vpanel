@@ -9,17 +9,17 @@
               <span class="font-bold">{{ user.displayName }}</span>
             </div>
             <div class="flex gap-5 mt-3.5">
-              <span class="flex-shrink-0">{{ ts('Role') }}: </span>
+              <span class="shrink-0">{{ ts('Role') }}: </span>
               <div class="flex-1 flex flex-wrap justify-end gap-2">
                 <el-tag type="info" v-for="role in user.roles" :key="role.id">{{ tsc(role.name) }}</el-tag>
               </div>
             </div>
             <div class="flex justify-between items-center mt-3.5 text-base">
-              <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
+              <span class="shrink-0">{{ ts(['last', '-', 'login', '-', 'time']) }}: </span>
               <span class="text-gray-400">{{ fromUnixTimestamp(user.lastLoginTime || '') }}</span>
             </div>
             <div class="flex justify-between items-center mt-1 text-base">
-              <span class="flex-shrink-0">{{ ts(['last', '-', 'login', '-']) }}IP: </span>
+              <span class="shrink-0">{{ ts(['last', '-', 'login', '-']) }}IP: </span>
               <span class="text-gray-400">{{ user.lastLoginIp }}</span>
             </div>
             <template #footer>

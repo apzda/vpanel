@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end border-b border-b-gray-300 dark:border-b-gray-600 gap-3 pl-[32px] pr-[12px]">
+  <div class="flex justify-end border-b border-b-gray-300 dark:border-b-gray-600 gap-3 pl-[2.28571rem] pr-[0.85714rem]">
     <div class="item">
       <el-switch
         v-model="dark"

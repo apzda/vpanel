@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-stretch h-full">
     <div class="mb-5 shrink-0 border-b border-red-500" style="height: 130px">aaaa</div>
-    <div class="flex-auto border border-blue-500" ref="habc">
+    <div class="mb-1 flex-1 border border-blue-500" ref="habc">
 
     </div>
   </div>

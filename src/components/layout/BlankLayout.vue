@@ -1,6 +1,6 @@
 <template>
   <MainLayout>
-    <el-container class="flex-grow">
+    <el-container class="grow">
       <div class="w-full">
         <router-view />
       </div>

@@ -5,17 +5,17 @@
       <el-aside class="bg-sky-900 dark:bg-gray-900 text-white"
                 :class="{'aside-expand':expand,'aside-collapse':!expand}">
         <div class="px-5 py-2 h-full overflow-hidden flex flex-col justify-between">
-          <div class="flex-initial flex-shrink-0 flex justify-start items-center gap-3 pt-2 mb-5 h-[36px]">
-            <img :src="assets('logo.svg')" alt="" class="expand w-[32px] h-[32px] flex-shrink-0">
-            <h1 class="expand text-2xl font-bold flex-grow">{{ settings.appName || 'VPANEL' }}</h1>
-            <span class="icon-[mdi--search] w-6 h-6 flex-shrink-0 cursor-pointer" @click="showSearchDlg=true"></span>
+          <div class="flex-initial shrink-0 flex justify-start items-center gap-3 pt-2 mb-5 h-[2.57142rem]">
+            <img :src="assets('logo.svg')" alt="" class="expand w-[2.28571rem] h-[2.28571rem] shrink-0">
+            <h1 class="expand text-2xl font-bold grow">{{ settings.appName || 'VPANEL' }}</h1>
+            <span class="icon-[mdi--search] w-6 h-6 shrink-0 cursor-pointer" @click="showSearchDlg=true"></span>
           </div>
           <!-- 顶部固定导航: group = 0 -->
-          <div class="flex-initial flex-shrink-0 border-b border-gray-500 dark:border-gray-800">
+          <div class="flex-initial shrink-0 border-b border-gray-500 dark:border-gray-800">
             <nav-item v-for="(menu,idx) in topMenus" :menu="menu" :key="idx" />
           </div>
           <!-- 导航: 0 < group < 999 -->
-          <div class="flex-grow border-b border-gray-500 dark:border-gray-800 py-1 overflow-hidden">
+          <div class="grow border-b border-gray-500 dark:border-gray-800 py-1 overflow-hidden">
             <el-scrollbar class="h-full">
               <template v-for="(items,idx) in groupMenus" :key="idx">
                 <template v-for="(item,idx1) in items" :key="idx1">
@@ -27,14 +27,14 @@
             </el-scrollbar>
           </div>
           <!-- 底部固定导航: group = 999 -->
-          <div class="flex-initial flex-shrink-0">
+          <div class="flex-initial shrink-0">
             <nav-item v-for="(menu,idx) in bottomMenus" :menu="menu" :key="idx" />
           </div>
-          <div class="flex-initial flex-shrink-0 flex justify-between gap-2 items-center h-[30px]">
-            <span class="w-6 h-6 cursor-pointer"
+          <div class="flex-initial shrink-0 flex justify-between gap-2 items-center h-[2.14285rem]">
+            <span class="w-6 h-6 ml-[0.285714rem] cursor-pointer"
                   :class="{'icon-[mdi--chevron-double-left]':expand,'icon-[mdi--chevron-double-right]':!expand}"
                   @click="toggleExpand"></span>
-            <span class="expand text-base cursor-pointer flex-grow"
+            <span class="expand text-base cursor-pointer grow"
                   @click="toggleExpand">{{ ts('layout.collapse', 'Collapse Sidebar') }}</span>
             <!-- 语言切换 -->
             <el-dropdown class="expand" placement="bottom-end" @command="languageChanged">
@@ -64,13 +64,13 @@
             <!-- 默认头部:二级导致 -->
             <div v-else
                  class="h-full flex justify-start items-center gap-1 text-gray-700 dark:text-white">
-              <span v-if="cIcon" class="flex-shrink-0 w-[20px] h-[20px]" :class="cIcon" />
-              <div v-if="cName" class="flex-shrink-0 font-semibold text-base mr-2" :class="{'':cNode?.children}">
+              <span v-if="cIcon" class="shrink-0 w-[1.57142rem] h-[1.57142rem]" :class="cIcon" />
+              <div v-if="cName" class="shrink-0 font-semibold text-lg mr-2" :class="{'':cNode?.children}">
                 {{ cName }}
               </div>
               <div v-if="cNode?.children"
-                   class="flex-shrink-0 border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-1"></div>
-              <el-scrollbar v-if="cNode?.children" class="flex-grow">
+                   class="shrink-0 border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-1"></div>
+              <el-scrollbar v-if="cNode?.children" class="grow">
                 <div class="h-[--el-header-height] text-base flex justify-start items-center gap-0.5">
                   <sub-nav-item v-for="(sub,idx) in cNode.children" :menu="sub" :key="idx" />
                 </div>
@@ -78,7 +78,7 @@
               <!-- 右部菜单 -->
               <router-view name="right"></router-view>
               <!-- 帮助按钮 -->
-              <div v-if="cPage.components?.help" class="flex-shrink-0 ml-1 flex flex-col h-full justify-center">
+              <div v-if="cPage.components?.help" class="shrink-0 ml-1 flex flex-col h-full justify-center">
                 <span class="icon-[mdi--help-circle-outline] w-5 h-5 cursor-help" @click="drawer=true"></span>
               </div>
             </div>

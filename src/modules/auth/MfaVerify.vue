@@ -22,7 +22,7 @@
             :error="verifyMfaErr"
             :validate-status="codeStatus">
             <template #label="{label}">
-              <span class="font-bold text-base flex-grow">{{ label }}</span>
+              <span class="font-bold text-base grow">{{ label }}</span>
             </template>
             <el-input
               v-model="formModel.code"
