@@ -17,6 +17,9 @@
   --el-component-size-small: 1.7142rem;
 
   --el-font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --az-card-head-height: 1.5rem;
+  --az-card-foot-height: 1.5rem;
 }
 
 div.el-form-item {
@@ -32,7 +35,7 @@ div.el-form-item {
 }
 
 span.el-tag {
-  --el-tag-font-size: .9rem;
+  --el-tag-font-size: .85rem;
 }
 
 /** end rest element ui *-size*/
@@ -69,25 +72,40 @@ html {
   }
 }
 
-.card-body-h-full {
-  .el-card__body {
-    height: calc(100% - 40px);
+.el-card {
+  &.az-body-full {
+    --az-card-header-height: 0px;
+    --az-card-footer-height: 0px;
 
-    .el-scrollbar {
-      height: 100%;
+    &.az-has-header {
+      --az-card-header-height: calc(var(--az-card-head-height) + 1px + calc(var(--el-card-padding) - 2px) * 2)
     }
-  }
-}
 
-@media screen and (width >= 1536px) {
-  html {
-    font-size: 16px;
+    &.az-has-footer {
+      --az-card-footer-height: calc(var(--az-card-foot-height) + 1px + calc(var(--el-card-padding) - 2px) * 2)
+    }
+
+    .el-card__body {
+      height: calc(100% - var(--az-card-header-height) - var(--az-card-footer-height));
+
+      .el-scrollbar {
+        height: 100%;
+      }
+    }
+
+    .el-card__header {
+      height: var(--az-card-header-height)
+    }
+
+    .el-card__footer {
+      height: var(--az-card-footer-height);
+    }
   }
 }
 
 @media screen and (width >= 1920px) {
   html {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 

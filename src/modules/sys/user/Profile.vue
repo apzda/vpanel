@@ -1,7 +1,7 @@
 <template>
   <div class="p-5 pb-0 h-full">
     <el-row :gutter="30" class="h-full">
-      <el-col :span="8" class="h-full">
+      <el-col :span="10" class="h-full">
         <div class="flex flex-col h-full">
           <el-card class="mb-5 shrink-0" style="--el-card-padding:10px">
             <div class="flex flex-col items-center justify-start gap-1">
@@ -38,10 +38,10 @@
               </div>
             </template>
           </el-card>
-          <el-card class="mb-5 flex-auto card-body-h-full" style="--el-card-padding:10px">
+          <el-card class="mb-5 flex-auto az-body-full az-has-header" style="--el-card-padding:10px">
             <template #header>
               <div class="card-header">
-                <span>{{ $t('sys.activities') }}</span>
+                <span>{{ ts('sys.activities') }}</span>
                 <span class="float-right text-blue-500 cursor-pointer"
                       :title="ts(['View','-','more'])"
                       @click="$router.push({name:'my-activities'})">...</span>
@@ -75,83 +75,89 @@
           </el-card>
         </div>
       </el-col>
-      <el-col :span="16">
-        <el-card>
-          <template #header>
-            <div class="card-header">
-              <span>{{ ts(['Base', '-', 'Profile']) }}</span>
-            </div>
-          </template>
-          <el-form
-            ref="updateAccountForm"
-            label-position="left"
-            require-asterisk-position="right"
-            label-width="auto"
-            :rules="updateAccountFormRules"
-            :model="updateAccountFormModel"
-            size="large"
-          >
-            <el-form-item :label="ts('Account')">
-              <el-input :model-value="user.name" disabled />
-            </el-form-item>
-            <el-form-item :label="ts('Nickname')" prop="displayName">
-              <el-input v-model="updateAccountFormModel.displayName" :disabled="!canBeUpdated" clearable />
-            </el-form-item>
-            <el-form-item :label="ts('Phone')" prop="phone">
-              <el-input v-model="updateAccountFormModel.phone" :disabled="!canBeUpdated" clearable />
-            </el-form-item>
-            <el-form-item :label="ts('Email')" prop="email">
-              <el-input v-model="updateAccountFormModel.email" :disabled="!canBeUpdated" clearable />
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <el-alert class="mb-10" v-if="updateAccountErr" :title="updateAccountErr" type="error" />
-            <div class="text-right">
-              <el-button @click="discardUpdateAccount">{{ ts('Cancel') }}</el-button>
-              <el-button type="success" @click="updateAccount" :disabled="!canBeUpdated || isUpdatingAccount"
-                         :loading="isUpdatingAccount">{{ ts('Save') }}
-              </el-button>
-            </div>
-          </template>
-        </el-card>
-        <el-card class="mt-5">
-          <template #header>
-            <div class="card-header">
-              <span>{{ ts(['Change', '-', 'Password']) }}</span>
-            </div>
-          </template>
-          <el-form
-            ref="updatePasswordForm"
-            label-position="left"
-            require-asterisk-position="right"
-            label-width="auto"
-            :rules="updatePasswordFormRules"
-            :model="updatePasswordFormModel"
-            size="large"
-          >
-            <el-form-item :label="ts(['old','-','Password'])" prop="oldPassword">
-              <el-input type="password" v-model="updatePasswordFormModel.oldPassword" :disabled="!canBeUpdated"
-                        clearable />
-            </el-form-item>
-            <el-form-item :label="ts(['new','-','Password'])" prop="newPassword">
-              <el-input v-model="updatePasswordFormModel.newPassword" type="password" :disabled="!canBeUpdated"
-                        clearable />
-            </el-form-item>
-            <el-form-item :label="ts(['new','-','Password','(','Confirm',')'])" prop="confirmPassword">
-              <el-input v-model="updatePasswordFormModel.confirmPassword" type="password" :disabled="!canBeUpdated"
-                        clearable />
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <el-alert class="mb-10" v-if="updatePasswordErr" :title="updatePasswordErr" type="error" />
-            <div class="text-right">
-              <el-button @click="discardUpdatePassword">{{ ts('Cancel') }}</el-button>
-              <el-button type="success" :disabled="!canBeUpdated" @click="updatePassword" :loading="isUpdatingPassword">
-                {{ ts('Confirm') }}
-              </el-button>
-            </div>
-          </template>
-        </el-card>
+      <el-col :span="14" class="h-full">
+        <div class="flex flex-col h-full">
+          <el-card class="mb-5 shrink-0">
+            <template #header>
+              <div class="card-header">
+                <span>{{ ts(['Base', '-', 'Profile']) }}</span>
+              </div>
+            </template>
+            <el-form
+              ref="updateAccountForm"
+              label-position="left"
+              require-asterisk-position="right"
+              label-width="auto"
+              :rules="updateAccountFormRules"
+              :model="updateAccountFormModel"
+              size="large"
+            >
+              <el-form-item :label="ts('Account')">
+                <el-input :model-value="user.name" disabled />
+              </el-form-item>
+              <el-form-item :label="ts('Nickname')" prop="displayName">
+                <el-input v-model="updateAccountFormModel.displayName" :disabled="!canBeUpdated" clearable />
+              </el-form-item>
+              <el-form-item :label="ts('Phone')" prop="phone">
+                <el-input v-model="updateAccountFormModel.phone" :disabled="!canBeUpdated" clearable />
+              </el-form-item>
+              <el-form-item :label="ts('Email')" prop="email">
+                <el-input v-model="updateAccountFormModel.email" :disabled="!canBeUpdated" clearable />
+              </el-form-item>
+            </el-form>
+            <template #footer>
+              <el-alert class="mb-10" v-if="updateAccountErr" :title="updateAccountErr" type="error" />
+              <div class="text-right">
+                <el-button @click="discardUpdateAccount">{{ ts('Cancel') }}</el-button>
+                <el-button type="success" @click="updateAccount" :disabled="!canBeUpdated || isUpdatingAccount"
+                           :loading="isUpdatingAccount">{{ ts('Save') }}
+                </el-button>
+              </div>
+            </template>
+          </el-card>
+          <el-card class="mb-5 shrink az-body-full az-has-header az-has-footer"
+                   style="--az-card-foot-height:2rem">
+            <template #header>
+              <div class="card-header">
+                <span>{{ ts(['Change', '-', 'Password']) }}</span>
+              </div>
+            </template>
+            <el-scrollbar>
+              <el-form
+                ref="updatePasswordForm"
+                label-position="left"
+                require-asterisk-position="right"
+                label-width="auto"
+                :rules="updatePasswordFormRules"
+                :model="updatePasswordFormModel"
+                size="large"
+              >
+                <el-form-item :label="ts(['old','-','Password'])" prop="oldPassword">
+                  <el-input type="password" v-model="updatePasswordFormModel.oldPassword" :disabled="!canBeUpdated"
+                            clearable />
+                </el-form-item>
+                <el-form-item :label="ts(['new','-','Password'])" prop="newPassword">
+                  <el-input v-model="updatePasswordFormModel.newPassword" type="password" :disabled="!canBeUpdated"
+                            clearable />
+                </el-form-item>
+                <el-form-item :label="ts(['new','-','Password','(','Confirm',')'])" prop="confirmPassword">
+                  <el-input v-model="updatePasswordFormModel.confirmPassword" type="password" :disabled="!canBeUpdated"
+                            clearable />
+                </el-form-item>
+              </el-form>
+            </el-scrollbar>
+            <template #footer>
+              <el-alert class="mb-10" v-if="updatePasswordErr" :title="updatePasswordErr" type="error" />
+              <div class="text-right">
+                <el-button @click="discardUpdatePassword">{{ ts('Cancel') }}</el-button>
+                <el-button type="success" :disabled="!canBeUpdated" @click="updatePassword"
+                           :loading="isUpdatingPassword">
+                  {{ ts('Confirm') }}
+                </el-button>
+              </div>
+            </template>
+          </el-card>
+        </div>
       </el-col>
     </el-row>
     <setup-mfa-dialog
