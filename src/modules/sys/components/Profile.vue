@@ -25,7 +25,7 @@
         <logout-button :width="22" :height="22" :text="t('Logout')" />
       </div>
       <div class="w-full p-3 pb-0 border-t dark:border-gray-500">
-        <div class="flex items-center justify-start w-full gap-2 text-base text-gray-400">
+        <div class="flex items-center justify-start w-full gap-2 text-sm text-gray-400">
           <span>{{ ts('sys.version', 'Version') }}:</span>
           <span>{{ ver }}</span>
         </div>

@@ -16,7 +16,7 @@
   --el-component-size: 2.2857rem;
   --el-component-size-small: 1.7142rem;
 
-  --el-font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --el-font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC, Helvetica Neue, Noto Sans, Noto Sans CJK SC, Microsoft Yahei, Arial, Hiragino Sans GB, sans-serif;
 
   --az-card-head-height: 1.5rem;
   --az-card-foot-height: 1.5rem;
@@ -40,7 +40,9 @@ span.el-tag {
 
 /** end rest element ui *-size*/
 
-html {
+html, :host {
+  line-height: 1.15;
+  font-family: var(--el-font-family), sans-serif;
   font-size: 14px;
 
   &.dark {
@@ -111,6 +113,6 @@ html {
 
 @media screen and (width>= 2560px) {
   html {
-    font-size: 22px;
+    font-size: 17px;
   }
 }
