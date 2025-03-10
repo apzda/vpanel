@@ -43,6 +43,7 @@ export default defineConfig(({ mode }) => {
       Icons({
         autoInstall: true
       })
+      //vueDevTools()
     ],
     resolve: {
       alias: {

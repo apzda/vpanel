@@ -291,7 +291,7 @@ const verifyImageCaptcha = () => {
  * @param verified
  * @param results
  */
-const captchaVerified = async (verified: boolean, results: any) => {
+const captchaVerified = async (verified: boolean, results: {}) => {
   if (verified) {
     successText.value = ts('auth.drag.success', '...')
     await validateForm()

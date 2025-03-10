@@ -18,6 +18,7 @@ components.d.ts
 
 /cypress/videos/
 /cypress/screenshots/
+/cypress/downloads/
 # /src/modules/*
 # Editor directories and files
 .vscode/*

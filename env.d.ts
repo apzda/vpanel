@@ -20,13 +20,13 @@ declare module 'vue-router' {
   interface RouteMeta {
     title?: string | ((arg: {
       context?: RouteLocationNormalized,
-      ts: (text: string, defaultString?: string, args?: any) => string
+      ts: (text: string, defaultString?: string, args?: (string | number | boolean)[]) => string
     }) => string)
     name?: string | ((arg: {
       context?: Route,
-      ts: (text: string, defaultString?: string, args?: any) => string
+      ts: (text: string, defaultString?: string, args?: (string | number | boolean)[]) => string
     }) => string)
-    click?: (arg: { context: Route, menu: MenuItemElement }) => any
+    click?: (arg: { context: Route, menu: MenuItemElement }) => unknown
     login?: false
     header?: false
     tip?: string

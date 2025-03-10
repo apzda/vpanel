@@ -7,7 +7,9 @@
       </div>
       <div class="mt-2">
         <h3 class="text-xl font-bold">{{ ts('error.not_found', 'We couldn\'t find that page') }}</h3>
-        <p class="mt-2 text-gray-400">{{ ts('error.message', 'Looks like we couldn\'t find that page. Please try again or contact an administrator if the problem persists.')}}</p>
+        <p class="mt-2 text-gray-400">
+          {{ ts('error.message', 'Looks like we couldn\'t find that page. Please try again or contact an administrator if the problem persists.')
+          }}</p>
         <p class="mt-2">
           <el-button type="primary" @click="$router.back()">
             {{ ts('error.take_me_back', 'Take me Back') }}
