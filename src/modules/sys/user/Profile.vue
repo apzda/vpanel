@@ -5,7 +5,7 @@
         <div class="flex flex-col h-full">
           <el-card class="mb-5 shrink-0" style="--el-card-padding:10px">
             <div class="flex flex-col items-center justify-start gap-1">
-              <u-avatar class="bg-cyan-600" />
+              <u-avatar class="avatar" size="large" style="font-size: 2.2rem" />
               <span class="font-bold">{{ user.displayName }}</span>
             </div>
             <div class="flex gap-5 mt-3.5">

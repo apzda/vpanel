@@ -9,7 +9,7 @@
     style="--el-popover-padding: 12px 0"
   >
     <div class="flex flex-col w-full items-center justify-center gap-2">
-      <u-avatar class="bg-cyan-600" />
+      <u-avatar class="avatar" style="font-size: 1.5rem" />
       <div class="font-bold">{{ user.displayName }}</div>
       <div v-if="user.organization" class="font-semibold">{{ user.organization.name }}</div>
       <div v-if="user.email" class="font-semibold">{{ user.email }}</div>

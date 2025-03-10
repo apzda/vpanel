@@ -1,8 +1,10 @@
 @use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@plugin "@iconify/tailwind4";
 
 /** reset element ui *-size and font-family **/
 :root {
@@ -22,7 +24,7 @@
   --az-card-foot-height: 1.5rem;
 }
 
-div.el-form-item {
+div .el-form-item {
   --font-size: 1rem;
 
   .el-form-item--large {
@@ -34,7 +36,7 @@ div.el-form-item {
   }
 }
 
-span.el-tag {
+span .el-tag {
   --el-tag-font-size: .85rem;
 }
 
@@ -105,14 +107,14 @@ html, :host {
   }
 }
 
-@media screen and (width >= 1920px) {
-  html {
+@media (width >= 1536px) {
+  html, :host {
     font-size: 16px;
   }
 }
 
-@media screen and (width>= 2560px) {
-  html {
-    font-size: 17px;
+@media (width>= 2560px) {
+  html, :host {
+    font-size: 18px;
   }
 }

@@ -8,3 +8,11 @@ import { computed } from 'vue'
 
 const avatar = computed(() => userAvatar())
 </script>
+<style lang="scss" scoped>
+@reference "../styles/main.scss";
+.el-avatar {
+  &.avatar {
+    @apply bg-cyan-600;
+  }
+}
+</style>

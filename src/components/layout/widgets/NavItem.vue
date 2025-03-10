@@ -5,8 +5,8 @@
        @click="onItemClick">
     <el-tooltip placement="right" :content="itemText" effect="light" :disabled="expand">
       <span v-if="!avatar" class="menu-item" :class="icon" />
-      <el-avatar v-else-if="avatar.startsWith('http')" :src="avatar" class="menu-item bg-cyan-600" />
-      <el-avatar v-else size="small" class="menu-item bg-cyan-600">{{ avatar }}</el-avatar>
+      <el-avatar v-else-if="avatar.startsWith('http')" :src="avatar" class="menu-item avatar" />
+      <el-avatar v-else size="small" class="menu-item avatar">{{ avatar }}</el-avatar>
     </el-tooltip>
 
     <el-badge class="expand grow" v-if="badge>0" :value="badge" :offset="[-30, 12]">
@@ -28,7 +28,7 @@ import { useRouter } from 'vue-router'
 // hooks
 const router = useRouter()
 // properties
-const navItem = useTemplateRef('navItem')
+const navItem = useTemplateRef<HTMLDivElement>('navItem')
 const props = withDefaults(defineProps<{
   menu?: Route
   avatar?: string
@@ -122,6 +122,8 @@ const onItemClick = () => {
 </script>
 
 <style scoped>
+@reference "../../../styles/main.scss";
+
 .menu {
   @apply my-1 py-3.5 pl-[0.21428rem] rounded;
 }
@@ -130,5 +132,11 @@ const onItemClick = () => {
   width: 1.57142rem;
   height: 1.57142rem;
   cursor: default;
+
+  &.avatar {
+    @apply bg-cyan-600;
+    font-size: 1rem;
+  }
 }
+
 </style>

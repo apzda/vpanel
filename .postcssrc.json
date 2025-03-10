@@ -1,6 +1,15 @@
 {
   "plugins": {
-    "tailwindcss": {},
-    "autoprefixer": {}
+    "@tailwindcss/postcss": {},
+    "postcss-pxtorem": {
+      "rootValue": 14,
+      "propList": [
+        "*"
+      ],
+      "selectorBlackList": [],
+      "replace": true,
+      "mediaQuery": true,
+      "minPixelValue": 0
+    }
   }
 }

@@ -6,7 +6,7 @@
                 :class="{'aside-expand':expand,'aside-collapse':!expand}">
         <div class="px-5 py-2 h-full overflow-hidden flex flex-col justify-between">
           <div class="flex-initial shrink-0 flex justify-start items-center gap-3 pt-2 mb-5 h-[2.57142rem]">
-            <img :src="assets('logo.svg')" alt="" class="expand w-[2.28571rem] h-[2.28571rem] shrink-0">
+            <img src="../../assets/logo.svg" alt="" class="expand w-[2.28571rem] h-[2.28571rem] shrink-0">
             <h1 class="expand text-2xl font-bold grow">{{ settings.appName || 'VPANEL' }}</h1>
             <span class="icon-[mdi--search] w-6 h-6 shrink-0 cursor-pointer" @click="showSearchDlg=true"></span>
           </div>
@@ -71,7 +71,7 @@
               <div v-if="cNode?.children"
                    class="shrink-0 border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-1"></div>
               <el-scrollbar v-if="cNode?.children" class="grow">
-                <div class="h-[--el-header-height] text-base flex justify-start items-center gap-0.5">
+                <div class="h-[var(--el-header-height)] text-base flex justify-start items-center">
                   <sub-nav-item v-for="(sub,idx) in cNode.children" :menu="sub" :key="idx" />
                 </div>
               </el-scrollbar>
@@ -111,7 +111,7 @@ import { gotoLoginPage, routerMgr, sortRoute as sortMenuItem } from '@/router'
 import { CURRENT_MENU_NODE, type Route } from '@/@types'
 import { ts, tsc } from '@/utils/i18n'
 import { useAppStore } from '@/stores/app'
-import { assets, toArray } from '@/utils'
+import { toArray } from '@/utils'
 import { language as locale } from '@/utils/lang'
 import settings from '@/config/settings'
 import NavItem from '@/components/layout/widgets/NavItem.vue'

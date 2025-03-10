@@ -99,7 +99,7 @@ export const toArray = (args: string | string[]): string[] => {
   }
 }
 
-export const isObject = (data: any) => {
+export const isObject = (data: unknown) => {
   return typeof data == 'object' && !Array.isArray(data)
 }
 
@@ -171,4 +171,8 @@ export function encodeBase64Str(str: string): string {
 
 export function assets(url: string) {
   return new URL('../assets/' + url, import.meta.url).href
+}
+
+export function pxToRem(pxValue: number, rootValue = 14) {
+  return `${pxValue / rootValue}rem`
 }
