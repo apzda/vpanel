@@ -1,0 +1,70 @@
+:root {
+  --az-card-head-height: 1.5rem;
+  --az-card-foot-height: 1.5rem;
+}
+
+html, :host {
+  line-height: 1.15;
+  font-family: var(--el-font-family), sans-serif;
+  font-size: 14px;
+
+  &.dark {
+    body {
+      background-color: var(--el-bg-color);
+    }
+  }
+
+  #nprogress {
+    .bar {
+      z-index: 9999999;
+    }
+  }
+
+  &.rt-suc {
+    #nprogress {
+      .bar {
+        background-color: var(--el-color-success);
+      }
+    }
+  }
+
+  &.rt-err {
+    #nprogress {
+      .bar {
+        background-color: var(--el-color-danger);
+      }
+    }
+  }
+}
+
+// 卡
+.el-card {
+  &.az-body-full {
+    --az-card-header-height: 0.01px;
+    --az-card-footer-height: 0.01px;
+
+    &.az-has-header {
+      --az-card-header-height: calc(var(--az-card-head-height) + 1px + calc(var(--el-card-padding) - 2px) * 2)
+    }
+
+    &.az-has-footer {
+      --az-card-footer-height: calc(var(--az-card-foot-height) + 1px + calc(var(--el-card-padding) - 2px) * 2)
+    }
+
+    > .el-card__body {
+      height: calc(100% - var(--az-card-header-height) - var(--az-card-footer-height));
+
+      .el-scrollbar {
+        height: 100%;
+      }
+    }
+
+    .el-card__header {
+      height: var(--az-card-header-height)
+    }
+
+    .el-card__footer {
+      height: var(--az-card-footer-height);
+    }
+  }
+}

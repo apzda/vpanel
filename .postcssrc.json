@@ -11,7 +11,7 @@
         ":host"
       ],
       "replace": true,
-      "mediaQuery": true,
+      "mediaQuery": false,
       "minPixelValue": 0
     }
   }

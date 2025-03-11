@@ -9,7 +9,7 @@
       <el-avatar v-else size="small" class="menu-item avatar">{{ avatar }}</el-avatar>
     </el-tooltip>
 
-    <el-badge class="expand grow" v-if="badge>0" :value="badge" :offset="[-30, 12]">
+    <el-badge v-if="badge>0" class="expand grow" :value="badge" :offset="[-30, 12]">
       <a class="text-base cursor-default">{{ itemText }}</a>
     </el-badge>
     <a v-else class="expand grow text-base cursor-default">{{ itemText }}</a>
