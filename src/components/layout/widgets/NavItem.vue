@@ -1,5 +1,5 @@
 <template>
-  <div ref="navItem" class="flex justify-start items-center gap-2 h-[1.714285rem] hover:bg-sky-800 menu"
+  <div ref="navItem" class="flex justify-start items-center gap-2 h-[2.25rem] hover:bg-sky-800 menu"
        :class="itemCls"
        :style="itemStyle"
        @click="onItemClick">
@@ -122,10 +122,11 @@ const onItemClick = () => {
 </script>
 
 <style scoped>
-@reference "../../../styles/main.scss";
-
 .menu {
-  @apply my-1 py-3.5 pl-[0.21428rem] rounded;
+  margin-block: calc(var(--spacing, 0.25rem) * 1);
+  border-radius: var(--radius-sm, 0.25rem);
+  padding-block: calc(var(--spacing, 0.25rem) * 3.5);
+  padding-left: 0.21428rem;
 }
 
 .menu-item {
@@ -134,8 +135,8 @@ const onItemClick = () => {
   cursor: default;
 
   &.avatar {
-    @apply bg-cyan-600;
-    font-size: 1rem;
+    --el-avatar-bg-color: var(--color-cyan-600, oklch(0.609 0.126 221.723));
+    font-size: 1.25rem;
   }
 }
 

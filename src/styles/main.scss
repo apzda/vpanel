@@ -24,7 +24,7 @@
   --az-card-foot-height: 1.5rem;
 }
 
-div .el-form-item {
+div.el-form-item {
   --font-size: 1rem;
 
   .el-form-item--large {
@@ -36,7 +36,7 @@ div .el-form-item {
   }
 }
 
-span .el-tag {
+span.el-tag {
   --el-tag-font-size: .85rem;
 }
 
@@ -78,8 +78,8 @@ html, :host {
 
 .el-card {
   &.az-body-full {
-    --az-card-header-height: 0px;
-    --az-card-footer-height: 0px;
+    --az-card-header-height: 0.01px;
+    --az-card-footer-height: 0.01px;
 
     &.az-has-header {
       --az-card-header-height: calc(var(--az-card-head-height) + 1px + calc(var(--el-card-padding) - 2px) * 2)
@@ -89,7 +89,7 @@ html, :host {
       --az-card-footer-height: calc(var(--az-card-foot-height) + 1px + calc(var(--el-card-padding) - 2px) * 2)
     }
 
-    .el-card__body {
+    > .el-card__body {
       height: calc(100% - var(--az-card-header-height) - var(--az-card-footer-height));
 
       .el-scrollbar {
@@ -107,7 +107,7 @@ html, :host {
   }
 }
 
-@media (width >= 1536px) {
+@media (width >= 1920px) {
   html, :host {
     font-size: 16px;
   }

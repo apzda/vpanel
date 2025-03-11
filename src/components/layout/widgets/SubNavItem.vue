@@ -1,11 +1,11 @@
 <template>
   <div
+    ref="navItem"
     class="shrink-0 h-full px-3 flex flex-col justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
     :class="itemCls"
     :style="itemStyle"
-    ref="navItem"
     @click="onItemClick">
-    <el-badge v-if="badge>0" :value="badge" :offset="[5, -5]" class="cursor-default">
+    <el-badge v-if="badge>0" :value="badge" :offset="[3, 10]" class="cursor-default">
       <a class="text-base">{{ itemText }}</a>
     </el-badge>
     <a v-else class="text-base cursor-default">{{ itemText }}</a>

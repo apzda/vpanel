@@ -6,7 +6,10 @@
       "propList": [
         "*"
       ],
-      "selectorBlackList": [],
+      "selectorBlackList": [
+        "html",
+        ":host"
+      ],
       "replace": true,
       "mediaQuery": true,
       "minPixelValue": 0

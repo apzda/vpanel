@@ -37,6 +37,7 @@ const eslintConfigs: TSESLint.FlatConfig.Config[] = defineConfigWithVueTs(
     },
     rules: {
       'vue/multi-word-component-names': 0,
+      'vue/first-attribute-linebreak': 0,
       '@typescript-eslint/ban-ts-comment': 0,
       '@typescript-eslint/no-explicit-any': 1
     }

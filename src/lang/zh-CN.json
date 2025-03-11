@@ -74,6 +74,7 @@
   "date": "日期",
   "noData": "暂无数据",
   "noData1": "暂无{0}",
+  "vpanel": "管理工作台",
   "layout": {
     "collapse": "折叠侧边栏"
   },

@@ -1,7 +1,7 @@
 import { defineSetting } from '@/@types'
 
 export default defineSetting({
-  appName: 'VPANEL',
+  appName: 'vpanel',
   languages: {
     'zh-CN': { name: '中文' },
     en: { name: 'English' }

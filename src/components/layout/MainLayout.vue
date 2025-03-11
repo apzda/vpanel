@@ -6,9 +6,13 @@
                 :class="{'aside-expand':expand,'aside-collapse':!expand}">
         <div class="px-5 py-2 h-full overflow-hidden flex flex-col justify-between">
           <div class="flex-initial shrink-0 flex justify-start items-center gap-3 pt-2 mb-5 h-[2.57142rem]">
-            <img src="../../assets/logo.svg" alt="" class="expand w-[2.28571rem] h-[2.28571rem] shrink-0">
-            <h1 class="expand text-2xl font-bold grow">{{ settings.appName || 'VPANEL' }}</h1>
-            <span class="icon-[mdi--search] w-6 h-6 shrink-0 cursor-pointer" @click="showSearchDlg=true"></span>
+            <img src="../../assets/logo.svg" alt="" class="expand w-[2.57143rem] h-[2.57143rem] shrink-0">
+            <el-tooltip placement="bottom" :content="appName" effect="light">
+              <h1 class="expand text-xl font-bold grow text-ellipsis overflow-hidden text-nowrap">
+                {{ appName }}
+              </h1>
+            </el-tooltip>
+            <span class="icon-[mdi--search] w-6 h-6 shrink-0 cursor-pointer search" @click="showSearchDlg=true"></span>
           </div>
           <!-- 顶部固定导航: group = 0 -->
           <div class="flex-initial shrink-0 border-b border-gray-500 dark:border-gray-800">
@@ -55,7 +59,7 @@
       </el-aside>
       <!-- 主工作区 -->
       <slot>
-        <el-container>
+        <el-container class="workspace">
           <!-- 头部 -->
           <el-header v-if="cPage.meta?.header!==false" class="shadow-md shadow-gray-200 dark:shadow-gray-950"
                      style="--el-header-padding:0 10px">
@@ -71,8 +75,8 @@
               <div v-if="cNode?.children"
                    class="shrink-0 border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-1"></div>
               <el-scrollbar v-if="cNode?.children" class="grow">
-                <div class="h-[var(--el-header-height)] text-base flex justify-start items-center">
-                  <sub-nav-item v-for="(sub,idx) in cNode.children" :menu="sub" :key="idx" />
+                <div class="head-bar text-base flex justify-start items-center">
+                  <sub-nav-item v-for="(sub,idx) in cNode.children" :key="idx" :menu="sub" />
                 </div>
               </el-scrollbar>
               <!-- 右部菜单 -->
@@ -266,6 +270,9 @@ const cName = computed(() => {
 const cPage = computed(() => {
   return $route.matched[$route.matched.length - 1]
 })
+const appName = computed(() => {
+  return ts(settings.appName || 'vpanel')
+})
 // === lifecycles ===
 onBeforeMount(() => {
   if (!user.value.login) {
@@ -283,7 +290,7 @@ onBeforeMount(() => {
 }
 
 .aside-expand {
-  --el-aside-width: 18.5rem;
+  --el-aside-width: 230px;
 }
 
 .aside-collapse {
@@ -292,5 +299,18 @@ onBeforeMount(() => {
   .expand {
     display: none;
   }
+
+  .search {
+    margin-left: 0.31428rem;
+  }
+}
+
+.head-bar {
+  height: 52px;
+  line-height: 52px;
+}
+
+.workspace .el-header {
+  --el-header-height: 52px;
 }
 </style>
