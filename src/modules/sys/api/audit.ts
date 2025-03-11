@@ -32,7 +32,7 @@ export function convertLocaleLog(logs: AuditLog[]) {
     log.activity = text == key ? activity : text
     if (log.template) {
       const message = log.message
-      const mKey = 'activity.@.' + message.toLowerCase().replaceAll('{}', '0').replace(/\W+/g, '_')
+      const mKey = 'activity.@.' + message.toLowerCase().replace(/\{}/g, '0').replace(/\W+/g, '_')
       const args = log.arg.map(arg => arg.value)
       const mText = t(mKey, args)
       if (mKey == mText) {

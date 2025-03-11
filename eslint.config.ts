@@ -1,6 +1,7 @@
 import { TSESLint } from '@typescript-eslint/utils'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVue from 'eslint-plugin-vue'
+import globals from 'globals'
 import oxlint from 'eslint-plugin-oxlint'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
@@ -19,7 +20,7 @@ const eslintConfigs: TSESLint.FlatConfig.Config[] = defineConfigWithVueTs(
     name: 'app/files-to-ignore',
     ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '**/.vscode/**']
   },
-  pluginVue.configs['flat/essential'],
+  pluginVue.configs['flat/recommended'],
   vueTsConfigs.recommended,
   ...oxlint.configs['flat/recommended'],
   skipFormatting,
@@ -28,8 +29,9 @@ const eslintConfigs: TSESLint.FlatConfig.Config[] = defineConfigWithVueTs(
     languageOptions: {
       parserOptions: {
         ecmaVersion: 'latest',
+        sourceType: 'module',
         globals: {
-          module: 'writable'
+          ...globals.browser
         }
       }
     },
