@@ -16,7 +16,7 @@
           </div>
           <!-- 顶部固定导航: group = 0 -->
           <div class="flex-initial shrink-0 border-b border-gray-500 dark:border-gray-800">
-            <nav-item v-for="(menu,idx) in topMenus" :menu="menu" :key="idx" />
+            <nav-item v-for="(menu,idx) in topMenus" :key="idx" :menu="menu" />
           </div>
           <!-- 导航: 0 < group < 999 -->
           <div class="grow border-b border-gray-500 dark:border-gray-800 py-1 overflow-hidden">
@@ -32,7 +32,7 @@
           </div>
           <!-- 底部固定导航: group = 999 -->
           <div class="flex-initial shrink-0">
-            <nav-item v-for="(menu,idx) in bottomMenus" :menu="menu" :key="idx" />
+            <nav-item v-for="(menu,idx) in bottomMenus" :key="idx" :menu="menu" />
           </div>
           <div class="flex-initial shrink-0 flex justify-between gap-2 items-center h-[2.14285rem]">
             <span class="w-6 h-6 ml-[0.285714rem] cursor-pointer"

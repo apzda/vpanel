@@ -21,7 +21,7 @@
 
 <script lang="ts" setup>
 import { CURRENT_MENU_NODE, type MenuItemElement, type Route } from '@/@types'
-import { computed, inject, useTemplateRef } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
 import { ts, tsc } from '@/utils/i18n'
 import { useRouter } from 'vue-router'
 
@@ -119,6 +119,17 @@ const onItemClick = () => {
     emits('click', { context: props.menu, menu: navItem })
   }
 }
+
+onMounted(() => {
+  if (props.menu && props.menu.meta && props.menu.meta.install) {
+    props.menu.meta.install()
+  }
+})
+onBeforeUnmount(() => {
+  if (props.menu && props.menu.meta && props.menu.meta.uninstall) {
+    props.menu.meta.uninstall()
+  }
+})
 </script>
 
 <style scoped>

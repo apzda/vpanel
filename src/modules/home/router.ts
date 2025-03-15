@@ -1,4 +1,12 @@
 import { defineRouter } from '@/@types'
+import router from '@/router'
+
+const onKeyup = async (event: any) => {
+  if (event.ctrlKey && (event.key === 'd' || event.key === 'D')) {
+    event.preventDefault()
+    await router.push('/')
+  }
+}
 
 export default defineRouter([
   {
@@ -36,7 +44,13 @@ export default defineRouter([
         ],
         meta: {
           name: '{home.dashboard}',
-          tip: 'Ctr+J'
+          tip: 'Ctr+d',
+          install() {
+            window.addEventListener('keydown', onKeyup)
+          },
+          uninstall() {
+            window.removeEventListener('keydown', onKeyup)
+          }
         }
       }
     ]

@@ -87,7 +87,9 @@ export interface MenuItem {
   authorities?: string[] | string
   roles?: string[] | string
   meta?: RouteMeta & {
-    login?: false
+    login?: false,
+    install?: () => void
+    uninstall?: () => void
   }
 }
 

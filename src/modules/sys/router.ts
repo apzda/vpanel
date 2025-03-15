@@ -2,7 +2,19 @@ import { defineRouter } from '@/@types'
 import { avatar, user } from '@/stores/user'
 import Profile from '~/sys/components/Profile.vue'
 import { h, markRaw } from 'vue'
+import router from '@/router'
 
+const onKeyup = async (event: any) => {
+  if (event.ctrlKey) {
+    if ((event.key === 's' || event.key === 'S')) {
+      event.preventDefault()
+      await router.push('/sys/setting/base')
+    } else if ((event.key === '.')) {
+      event.preventDefault()
+      await router.push('/sys/user/profile')
+    }
+  }
+}
 export default defineRouter([{
   path: '/sys',
   component: () => import('@/components/layout/MainLayout.vue'),
@@ -16,6 +28,7 @@ export default defineRouter([{
       header: () => import('~/sys/user/ProfileHeader.vue')
     },
     meta: {
+      tip: 'Ctr+.',
       title: ({ ts }) => {
         return ts('sys.u.profile', 'Profile', [user.value.displayName || ''])
       },
@@ -84,6 +97,13 @@ export default defineRouter([{
     meta: {
       name: ({ ts }) => {
         return ts('sys.settings', 'Settings')
+      },
+      tip: 'Ctr+S',
+      install() {
+        window.addEventListener('keydown', onKeyup)
+      },
+      uninstall() {
+        window.removeEventListener('keydown', onKeyup)
       }
     }
   }]
