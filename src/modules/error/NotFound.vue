@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { assets } from '@/utils'
-import { useAppStore } from '@/stores/app'
+import useAppStore from '@/stores/app'
 import { ts } from '@/utils/i18n'
 
 const { isDark } = useAppStore()

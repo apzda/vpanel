@@ -1,7 +1,7 @@
 <template>
   <div
     ref="navItem"
-    class="shrink-0 h-full px-3 flex flex-col justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
+    class="nav-item shrink-0 h-full px-3 border-b-2 flex flex-col items-center justify-center hover:bg-gray-300 hover:dark:bg-gray-800"
     :class="itemCls"
     :style="itemStyle"
     @click="onItemClick">
@@ -55,7 +55,7 @@ const itemStyle = computed(() => {
 const itemCls = computed(() => {
   let cls = ''
   if (props.menu && props.menu.path == route.path) {
-    cls = 'bg-gray-200 text-sky-500 dark:bg-gray-800'
+    cls = 'active bg-gray-200 dark:bg-gray-800'
   }
 
   if (props.menu && props.menu.cls) {
@@ -85,3 +85,19 @@ const onItemClick = () => {
   }
 }
 </script>
+<style lang="scss">
+.nav-item {
+  height: 52px;
+  line-height: 52px;
+  border-color: var(--el-bg-color);
+
+  &.active {
+    color: var(--color-sky-500);
+    border-color: var(--color-sky-500);
+  }
+
+  &:hover {
+    border-color: var(--color-sky-500);
+  }
+}
+</style>

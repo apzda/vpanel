@@ -61,7 +61,7 @@
       <slot>
         <el-container class="workspace">
           <!-- 头部 -->
-          <el-header v-if="cPage.meta?.header!==false" class="shadow-md shadow-gray-200 dark:shadow-gray-950"
+          <el-header v-if="cPage.meta?.header!==false" class="shadow-sm shadow-gray-200 dark:shadow-gray-950"
                      style="--el-header-padding:0 10px">
             <!-- 自定义头部 -->
             <router-view v-if="cPage.components?.header" name="header" />
@@ -73,7 +73,7 @@
                 {{ cName }}
               </div>
               <div v-if="cNode?.children"
-                   class="shrink-0 border-r-2 border-gray-200 dark:border-gray-800 h-2/5 mr-1"></div>
+                   class="flex-initial border-r-2 border-gray-200 dark:border-gray-800 h-3/5 mr-1" />
               <el-scrollbar v-if="cNode?.children" class="grow">
                 <div class="head-bar text-base flex justify-start items-center">
                   <sub-nav-item v-for="(sub,idx) in cNode.children" :key="idx" :menu="sub" />
@@ -88,7 +88,7 @@
             </div>
           </el-header>
           <!-- 工作区 -->
-          <el-main style="--el-main-padding: 0; overflow:hidden">
+          <el-main style="--el-main-padding: 0; overflow:hidden;z-index: 99">
             <router-view />
           </el-main>
         </el-container>
@@ -114,7 +114,7 @@ import { hasPermission, hasRole, user } from '@/stores/user'
 import { gotoLoginPage, routerMgr, sortRoute as sortMenuItem } from '@/router'
 import { CURRENT_MENU_NODE, type Route } from '@/@types'
 import { ts, tsc } from '@/utils/i18n'
-import { useAppStore } from '@/stores/app'
+import useAppStore from '@/stores/app'
 import { toArray } from '@/utils'
 import { language as locale } from '@/utils/lang'
 import settings from '@/config/settings'
@@ -310,7 +310,8 @@ onBeforeMount(() => {
   line-height: 52px;
 }
 
-.workspace .el-header {
+.workspace > .el-header {
   --el-header-height: 52px;
+  z-index: 100;
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
-  <el-scrollbar class="apz-scrollbar">
+  <el-scrollbar class="az-scrollbar">
     <slot />
   </el-scrollbar>
 </template>
 
 <style lang="scss" scoped>
-.apz-scrollbar :deep(.el-scrollbar__view) {
+.az-scrollbar :deep(.el-scrollbar__view) {
   min-height: 100% !important;
 }
 </style>

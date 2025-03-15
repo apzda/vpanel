@@ -4,7 +4,7 @@ import { name, version } from './../../package.json'
 import { useDark, useStorage, useTitle, useToggle } from '@vueuse/core'
 
 const storagePrefix = name || ''
-export const useAppStore = defineStore(storagePrefix + '::application', () => {
+const useAppStore = defineStore(storagePrefix + '::application', () => {
   const title = ref('Dashboard')
 
   const appTitle = computed(
@@ -24,13 +24,25 @@ export const useAppStore = defineStore(storagePrefix + '::application', () => {
 
   const appCfg = useStorage<{
     [key: string]: any
+
     asideExpand: boolean
+    tableColumns: Record<string, Record<string, { hidden: boolean, order: number }>>
   }>(storagePrefix + '::appData', {
     asideExpand: true,
-    path: '/'
+    path: '/',
+    tableColumns: {
+      'home-t-1': {
+        'age-503': {
+          hidden: true,
+          order: 503
+        }
+      }
+    }
   }, localStorage, {
     mergeDefaults: true
   })
 
   return { appTitle, setAppTitle, title, isDark, toggleDark, appCfg }
 })
+
+export default useAppStore

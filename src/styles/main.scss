@@ -1,12 +1,12 @@
 @use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
 @use "tailwindcss";
-@use "./apz/index.scss";
+@use "az/index.scss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @plugin "@iconify/tailwind4";
 
-@media (width >= 1920px) {
+@media (width >= 1280px) {
   html, :host {
     font-size: 16px;
   }

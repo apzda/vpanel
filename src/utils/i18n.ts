@@ -58,6 +58,7 @@ export function tsc<T>(message: string | ((arg: {
   context?: T,
   ts: ((text: string, defaultString?: string, args?: any) => string)
 }) => string) | null | undefined, context?: T): string {
+  if (!message) return ''
   if (typeof message == 'function') {
     return message({ context, ts })
   } else if (typeof message == 'string' && message.startsWith('{') && message.endsWith('}')) {

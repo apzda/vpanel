@@ -27,7 +27,7 @@
 import { ref, watch } from 'vue'
 import { Moon, Sunny } from '@element-plus/icons-vue'
 import { language as locale } from '@/utils/lang'
-import { useAppStore } from '@/stores/app'
+import useAppStore from '@/stores/app'
 import settings from '@/config/settings'
 
 const languages = ref<{

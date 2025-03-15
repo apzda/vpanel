@@ -1,14 +1,13 @@
 import { ref } from 'vue'
 import { createRouter, createWebHistory, type LocationQueryValue, type NavigationGuardNext } from 'vue-router'
-import { useNProgress } from '@vueuse/integrations/useNProgress'
 
 import { TreeMgr } from '@/utils'
 import { notify } from '@/utils/msgbox'
 import { ts, tsc } from '@/utils/i18n'
 import settings from '@/config/settings'
 
-import { useAppStore } from '@/stores/app'
-import { hasAuthority, hasRole, user } from '@/stores/user'
+import useAppStore from '@/stores/app'
+import { permit, user } from '@/stores/user'
 import type { Route } from '@/@types'
 
 // all routers
@@ -25,9 +24,10 @@ const router = createRouter({
   routes: routerMgr.nodes
 })
 
-const { isLoading } = useNProgress(0.1, {
-  showSpinner: false
-})
+const isLoading = ref<boolean>(false)
+// const { isLoading } = useNProgress(0.1, {
+//   showSpinner: false
+// })
 
 const fromArg = settings.fromArg || 'from'
 
@@ -38,10 +38,12 @@ export const sortRoute = (a: Route, b: Route): number => {
 }
 
 export const gotoPage = (page: string, from?: string | LocationQueryValue[], next?: NavigationGuardNext): boolean | void => {
+  console.debug('gotoPage', page)
   const pageUrl = settings[page] || null
   from = from === settings.loginUrl ? '/' : from
   if (pageUrl?.match(/^https?:\/\/.+/)) {
     window.location.href = pageUrl + `?${fromArg}=` + encodeURI(location.href)
+    isLoading.value = false
     return false
   } else if (pageUrl && pageUrl != location.pathname) {
     from = from || location.pathname + location.search
@@ -72,45 +74,45 @@ export const currentPage = ref<string>('/')
 
 router.beforeEach((to, from, next) => {
   isLoading.value = true
+  console.debug('beforeEach', to.fullPath)
   // @ts-ignore
   const t = window.i18n.t as (str: string) => string
   // @ts-ignore
   if (to.meta?.login === false || to.login === false || !settings.loginUrl || settings.whiteList.indexOf(to.path) !== -1) {
+    console.debug('不需要登录', to.fullPath)
     next()
   } else if (user.value.login) {
+    console.debug('需要认证', to.fullPath)
     if (user.value.credentialsExpired && settings.resetPwdUrl) {
+      console.debug('密码过期', to.fullPath)
       return gotoPage('resetPwdUrl', to.path)
     } else if (user.value.locked && settings.activeUrl) {
+      console.debug('账号锁定', to.fullPath)
       return gotoPage('activeUrl', to.path)
     } else if (user.value.mfa == 'UNSET' && settings.mfaSetupUrl) {
+      console.debug('MFA SETUP', to.fullPath)
       return gotoPage('mfaSetupUrl', to.path)
     } else if (user.value.mfa == 'PENDING' && settings.mfaVerifyUrl) {
+      console.debug('MFA Verify', to.fullPath)
       return gotoPage('mfaVerifyUrl', to.path)
     }
-    let hasA = true
-    let hasR = true
     //@ts-ignore
-    if (to.authorities) {
-      //@ts-ignore
-      hasA = hasAuthority(to.authorities as string[])
-    }
-    //@ts-ignore
-    if (to.roles) {
-      //@ts-ignore
-      hasR = hasRole(to.roles as string[], { or: true })
-    }
-    if (hasR && hasA) {
+    if (permit(to.roles, to.authorities)) {
+      console.debug('鉴权通过', to.fullPath)
       next()
     } else {
+      console.error('鉴权失败', to.fullPath)
       notify({ title: t('network.403'), message: t('alert.error'), type: 'error' })
       next({ ...from })
     }
   } else {
+    console.error('跳到认证页', to.fullPath)
     return gotoLoginPage(to.path, next)
   }
 })
 
 router.afterEach((to, from, failure) => {
+  console.debug('afterEach', to.fullPath)
   if (!failure) {
     currentPage.value = to.path
     showSucProgress()
@@ -126,7 +128,7 @@ router.afterEach((to, from, failure) => {
 })
 
 router.onError((err: Error) => {
-  console.error('router error:', err)
+  console.error('Router Error:', err)
   hideProgress()
 })
 

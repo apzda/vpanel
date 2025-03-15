@@ -11,7 +11,7 @@
             <div class="flex gap-5 mt-3.5">
               <span class="shrink-0">{{ ts('Role') }}: </span>
               <div class="flex-1 flex flex-wrap justify-end gap-2">
-                <el-tag type="info" v-for="role in user.roles" :key="role.id">{{ tsc(role.name) }}</el-tag>
+                <el-tag v-for="role in user.roles" :key="role.id" type="info">{{ tsc(role.name) }}</el-tag>
               </div>
             </div>
             <div class="flex justify-between items-center mt-3.5 text-base">
@@ -66,7 +66,7 @@
                     <el-card style="--el-card-padding:10px">
                       <h3 class="font-bold">{{ activity.activity }}</h3>
                       <p class="mt-0.5">{{ activity.message }}</p>
-                      <p class="mt-0.5 text-orange-500" v-if="activity.runas">操作人: {{ activity.runas }}</p>
+                      <p v-if="activity.runas" class="mt-0.5 text-orange-500">操作人: {{ activity.runas }}</p>
                     </el-card>
                   </el-timeline-item>
                 </el-timeline>

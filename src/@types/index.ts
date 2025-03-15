@@ -3,6 +3,13 @@ import type { RouteMeta, RouteRecordRaw } from 'vue-router'
 import type { AxiosRequestConfig } from 'axios'
 import type { CommonResponse, ErrorEvent } from '@/@types/request'
 
+export interface TV {
+  text: string,
+  value: string | number
+}
+
+export type TVS = TV[]
+
 // 网关选项
 export interface GtwOptions {
   baseURL: string

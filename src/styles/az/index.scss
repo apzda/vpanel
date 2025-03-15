@@ -1,12 +1,17 @@
 :root {
   --az-card-head-height: 1.5rem;
   --az-card-foot-height: 1.5rem;
+  --az-pager-height: 50px;
 }
 
 html, :host {
   line-height: 1.15;
   font-family: var(--el-font-family), sans-serif;
   font-size: 14px;
+
+  body {
+    overflow: hidden;
+  }
 
   &.dark {
     body {
@@ -16,7 +21,7 @@ html, :host {
 
   #nprogress {
     .bar {
-      z-index: 9999999;
+      z-index: 5005;
     }
   }
 

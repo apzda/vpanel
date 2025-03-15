@@ -25,15 +25,15 @@ const getPattern = (authority: string): RegExp | undefined => {
     suffix = true
   }
   key = key
-    .replaceAll(/([a-z0-9_-]+)(,[a-z0-9_-]+)+/gi, (m) => {
-      return '(' + m.replaceAll(',', '|') + ')'
+    .replace(/([a-z0-9_-]+)(,[a-z0-9_-]+)+/gi, (m: string) => {
+      return '(' + m.replace(/,/g, '|') + ')'
     })
-    .replaceAll('.', '\\.')
-    .replaceAll('*', '(.+?)')
+    .replace(/\./g, '\\.')
+    .replace(/\*/g, '(.+?)')
   if (suffix) {
     key += '.*'
   }
-  // console.debug('pattern:', authority, ' => ', key)
+  console.debug('pattern:', authority, ' => ', key)
   patterns.set(authority, new RegExp('^' + key + '$'))
   return patterns.get(authority)
 }
@@ -227,6 +227,17 @@ export const hasPermission = (
   return authority != undefined
 }
 
+export const permit = (roles: string | string[] | undefined, authorities: string | string[] | undefined) => {
+  let hasA = true
+  let hasR = true
+  if (authorities) {
+    hasA = hasAuthority(authorities)
+  }
+  if (roles) {
+    hasR = hasRole(roles, { or: true })
+  }
+  return hasA && hasR
+}
 export const avatar = () => {
   if (user.value.avatar) {
     return user.value.avatar
