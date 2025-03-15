@@ -4,7 +4,6 @@ import type { TVS } from '@/@types'
 import useAppStore from '@/stores/app.ts'
 import { permit } from '@/stores/user'
 
-// AzTable
 export interface TableColumn {
   cid?: string,
   order?: number,
@@ -162,7 +161,6 @@ export class AzTableHelper {
       const cols = appCfg.tableColumns[this.id] || {}
       for (const col in cols) {
         const cfg = cols[col]
-        console.log(col, cols[col])
         for (const c in this.columns) {
           if (this.columns[c].cid == col) {
             this.columns[c].hidden = cfg.hidden
@@ -178,5 +176,3 @@ export class AzTableHelper {
       .sort((a, b) => (a.order || 0) - (b.order || 0))
   }
 }
-
-// end AzTable

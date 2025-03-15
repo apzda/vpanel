@@ -30,8 +30,8 @@
 <script setup lang="ts">
 import { markRaw, onMounted, ref, useTemplateRef } from 'vue'
 import { Operation } from '@element-plus/icons-vue'
-import AzTable from '@/components/AzTable.vue'
-import type { TableAction, TableColumn } from '@/components/components.ts'
+import AzTable from '@/components/table/AzTable.vue'
+import type { TableAction, TableColumn } from '@/components/table'
 
 // refs
 const azTableRef = useTemplateRef<typeof AzTable>('azTable')

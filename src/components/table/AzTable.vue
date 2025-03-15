@@ -99,7 +99,7 @@
       </div>
     </div>
   </div>
-
+  <az-table-column-cfg-dlg />
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, useTemplateRef } from 'vue'
@@ -107,7 +107,8 @@ import { ElTable } from 'element-plus'
 import { ArrowDown, Operation } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
 import { ts, tsc } from '@/utils/i18n.ts'
-import { AzTableHelper, type AzTableProps, type TableAction, type TableColumn } from '@/components/components.ts'
+import { AzTableHelper, type AzTableProps, type TableAction, type TableColumn } from '.'
+import AzTableColumnCfgDlg from './widgets/AzTableColumnCfgDlg.vue'
 
 defineOptions({
   inheritAttrs: false
