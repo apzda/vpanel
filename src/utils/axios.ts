@@ -52,7 +52,7 @@ if (Object.keys(instances).length == 0) {
   const gateways = settings.gtw
   for (const gtw in gateways) {
     const cfg = mergeCfg(gateways[gtw], settings.transformResponse)
-    console.debug('Gateway:', gtw, cfg)
+    // console.debug('Gateway:', gtw, cfg)
     instances[gtw] = axios.create(cfg)
     const interceptors = instances[gtw].interceptors
     //@ts-ignore
@@ -129,7 +129,7 @@ export class RequestProxy implements IAxios {
   // 发起查询
   request<T = any>(api: string, method: string, options?: RequestConfig): Promise<CommonResponse<T>> {
     const that = this
-    options = options || {} as RequestConfig
+    options = options || ({} as RequestConfig)
     options.headers = options.headers || {}
 
     if (!options.headers['Content-Type'] || !options.headers['content-type']) {
@@ -142,33 +142,35 @@ export class RequestProxy implements IAxios {
     }
 
     return new Promise<CommonResponse<T>>((resolve, reject) => {
-      this.doRequest<CommonResponse<T>>(api, method, options).then(response => {
-        showMessage(response, options, true)
-        if (options.converter) {
-          resolve(options.converter(response))
-        } else {
-          resolve(response)
-        }
-      }).catch(err => {
-        // console.debug('request.failure: ', err)
-        {
-          // redo config ==>
-          err.url = api
-          err.axios = that
-          err.options = options
-          err.resolve = resolve
-          err.reject = reject
-        }
-        const errCode = ('onErr' + Math.abs(err.errCode)) as ErrHandlerName
-        const errHandler = handler[errCode] || emptyHandler
-        const handled = errHandler(err)
-        if (err.suppress !== true) {
-          showMessage(err, options, false)
-        }
-        if (handled !== true) {
-          reject(err)
-        }
-      })
+      this.doRequest<CommonResponse<T>>(api, method, options)
+        .then((response) => {
+          showMessage(response, options, true)
+          if (options.converter) {
+            resolve(options.converter(response))
+          } else {
+            resolve(response)
+          }
+        })
+        .catch((err) => {
+          // console.debug('request.failure: ', err)
+          {
+            // redo config ==>
+            err.url = api
+            err.axios = that
+            err.options = options
+            err.resolve = resolve
+            err.reject = reject
+          }
+          const errCode = ('onErr' + Math.abs(err.errCode)) as ErrHandlerName
+          const errHandler = handler[errCode] || emptyHandler
+          const handled = errHandler(err)
+          if (err.suppress !== true) {
+            showMessage(err, options, false)
+          }
+          if (handled !== true) {
+            reject(err)
+          }
+        })
     })
   }
 
@@ -210,25 +212,39 @@ export class RequestProxy implements IAxios {
       options = handler.beforeRequest(options)
       //@ts-ignore
       const config = getDefaultOptions(resolve, reject, options)
-      this.axios.request(config).then(response => {
-        if (response.status == 200) {
-          responseHandler(response, resolve, reject)
-        } else {
-          const err = new AxiosError('response status is not 200', AxiosError.ERR_BAD_RESPONSE, config, response.request, response)
-          responseErrorHandler(extractResponseData(err), reject)
-        }
-      }).catch(err => {
-        const data = extractResponseData(err)
-        responseErrorHandler(data, reject)
-      }).finally(() => {
-        this.debounceMap.delete(url)
-      })
+      this.axios
+        .request(config)
+        .then((response) => {
+          if (response.status == 200) {
+            responseHandler(response, resolve, reject)
+          } else {
+            const err = new AxiosError(
+              'response status is not 200',
+              AxiosError.ERR_BAD_RESPONSE,
+              config,
+              response.request,
+              response
+            )
+            responseErrorHandler(extractResponseData(err), reject)
+          }
+        })
+        .catch((err) => {
+          const data = extractResponseData(err)
+          responseErrorHandler(data, reject)
+        })
+        .finally(() => {
+          this.debounceMap.delete(url)
+        })
     })
   }
 }
 
 // 获取默认配置
-function getDefaultOptions<T>(resolve: SuccessHandler<T>, reject: RejectHandler, options?: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
+function getDefaultOptions<T>(
+  resolve: SuccessHandler<T>,
+  reject: RejectHandler,
+  options?: InternalAxiosRequestConfig
+): InternalAxiosRequestConfig {
   return (options || {}) as InternalAxiosRequestConfig
 }
 
@@ -265,7 +281,8 @@ function responseHandler<T>(res: AxiosResponse, resolve: SuccessHandler<T>, reje
       res.data.errCode = res.data.errCode || 500
       reject(res.data)
     }
-  } else {// 其它类型错误
+  } else {
+    // 其它类型错误
     if (handler.transformResponse) {
       res.data = handler.transformResponse(res.data)
     }

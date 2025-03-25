@@ -25,7 +25,7 @@ export async function loadLocaleMessages(i18n: _I18n, locale: string, callback?:
   // set locale and locale message
   i18n.global.setLocaleMessage(locale, messages.default)
   i18n.global.locale.value = locale
-  console.debug('Language files loaded: ', locale)
+  // console.debug('Language files loaded: ', locale)
 
   return nextTick(() => {
     if (typeof callback == 'function') {
@@ -46,7 +46,7 @@ export function cap(msg: string): string {
 
 export function ts(message: string | string[], defaultString?: string, args?: any): string {
   const texts = toArray(message)
-  const text = texts.map(msg => t(msg, args)).join('')
+  const text = texts.map((msg) => t(msg, args)).join('')
 
   if (text == message) {
     return defaultString || message
@@ -54,22 +54,24 @@ export function ts(message: string | string[], defaultString?: string, args?: an
   return text
 }
 
-export function tsc<T>(message: string | ((arg: {
-  context?: T,
-  ts: ((text: string, defaultString?: string, args?: any) => string)
-}) => string) | null | undefined, context?: T): string {
+export function tsc<T>(
+  message:
+    | string
+    | ((arg: { context?: T; ts: (text: string, defaultString?: string, args?: any) => string }) => string)
+    | null
+    | undefined,
+  context?: T
+): string {
   if (!message) return ''
   if (typeof message == 'function') {
     return message({ context, ts })
-  } else if (typeof message == 'string' && message.startsWith('{') && message.endsWith('}')) {
+  } else if (typeof message === 'string' && message.startsWith('{') && message.endsWith('}')) {
     const msg = message.substring(1, message.length - 1)
     const chunks = msg.split('.')
     chunks.shift()
-    const defaultStr = chunks.map(chunk => {
-      return chunk.replaceAll(/([A-Z])/g, ' $1').trim()
-    }).join(' ')
+    const defaultStr = chunks.map((chunk) => chunk.replace(/([A-Z])/g, ' $1').trim()).join(' ')
     return ts(msg, defaultStr)
-  } else if (typeof message == 'string') {
+  } else if (typeof message === 'string') {
     return message
   }
 

@@ -14,12 +14,10 @@
       <div v-if="user.organization" class="font-semibold">{{ user.organization.name }}</div>
       <div v-if="user.email" class="font-semibold">{{ user.email }}</div>
       <div class="w-full p-3 pb-0 border-t hover:text-blue-500 dark:border-gray-500">
-        <router-link :to="{name:'MyProfile'}" @click="hide">
-          <div class="flex items-center justify-start w-full gap-2">
-            <span class="icon-[ep--avatar] w-[1.375rem] h-[1.375rem] text-blue-500" />
-            <span class="text-base">{{ ts('Profile', 'Profile') }}</span>
-          </div>
-        </router-link>
+        <div class="flex items-center justify-start w-full gap-2 cursor-pointer" @click="hide">
+          <span class="icon-[ep--avatar] w-[1.375rem] h-[1.375rem] text-blue-500" />
+          <span class="text-base">{{ ts('Profile', 'Profile') }}</span>
+        </div>
       </div>
       <div class="w-full p-3 pb-0 border-t hover:text-red-600 dark:border-gray-500">
         <logout-button :width="22" :height="22" :text="t('Logout')" />
@@ -36,6 +34,7 @@
 <script setup lang="ts">
 import { version } from '../../../../package.json'
 import { ref, type VNodeRef } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElPopover } from 'element-plus'
 import UAvatar from '@/components/UAvatar.vue'
 import { user } from '@/stores/user'
@@ -45,11 +44,15 @@ import LogoutButton from '~/sys/components/LogoutButton.vue'
 defineProps<{
   navItem: VNodeRef
 }>()
-const ver = ref(version || '1.0.0')
 
+const ver = ref(version || '1.0.0')
+const router = useRouter()
 const popover = ref<InstanceType<typeof ElPopover> | null>(null)
 
 const hide = () => {
-  popover.value?.hide()
+  router
+    .push({ name: 'MyProfile' })
+    .catch((err) => console.error(err))
+    .finally(() => popover.value?.hide())
 }
 </script>

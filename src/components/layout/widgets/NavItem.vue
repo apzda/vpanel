@@ -1,15 +1,18 @@
 <template>
-  <div ref="navItem" class="flex justify-start items-center gap-2 h-[2.25rem] hover:bg-sky-800 menu"
-       :class="itemCls"
-       :style="itemStyle"
-       @click="onItemClick">
+  <div
+    ref="navItem"
+    class="flex justify-start items-center gap-2 h-[2.25rem] hover:bg-sky-800 menu"
+    :class="itemCls"
+    :style="itemStyle"
+    @click="onItemClick"
+  >
     <el-tooltip placement="right" :content="itemText" effect="light" :disabled="expand">
       <span v-if="!avatar" class="menu-item" :class="icon" />
       <el-avatar v-else-if="avatar.startsWith('http')" :src="avatar" class="menu-item avatar" />
       <el-avatar v-else size="small" class="menu-item avatar">{{ avatar }}</el-avatar>
     </el-tooltip>
 
-    <el-badge v-if="badge>0" class="expand grow" :value="badge" :offset="[-30, 12]">
+    <el-badge v-if="badge > 0" class="expand grow" :value="badge" :offset="[-30, 12]">
       <a class="text-base cursor-default">{{ itemText }}</a>
     </el-badge>
     <a v-else class="expand grow text-base cursor-default">{{ itemText }}</a>
@@ -29,18 +32,21 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 // properties
 const navItem = useTemplateRef<HTMLDivElement>('navItem')
-const props = withDefaults(defineProps<{
-  menu?: Route
-  avatar?: string
-  text?: string
-  cls?: string
-  color?: string
-  tip?: string
-}>(), {})
+const props = withDefaults(
+  defineProps<{
+    menu?: Route
+    avatar?: string
+    text?: string
+    cls?: string
+    color?: string
+    tip?: string
+  }>(),
+  {}
+)
 const vNode = typeof props.menu?.meta?.vNode == 'function' ? props.menu.meta.vNode(navItem) : props.menu?.meta?.vNode
 // events
 const emits = defineEmits<{
-  (event: 'click', value: { context: Route, menu: MenuItemElement }): void
+  (event: 'click', value: { context: Route; menu: MenuItemElement }): void
 }>()
 // data bindings
 const cNode = inject(CURRENT_MENU_NODE, null)
@@ -113,7 +119,8 @@ const onItemClick = () => {
   if (typeof props.menu?.meta?.click == 'function') {
     props.menu.meta.click({ context: props.menu, menu: navItem })
   } else if (props.menu?.path) {
-    router.push(props.menu.path)
+    // console.debug('goto: ', props.menu.path)
+    router.push({ path: props.menu.path }).catch((err) => console.log(err))
   } else if (props.menu) {
     // never goes here
     emits('click', { context: props.menu, menu: navItem })
@@ -150,5 +157,4 @@ onBeforeUnmount(() => {
     font-size: 1.25rem;
   }
 }
-
 </style>

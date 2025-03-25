@@ -33,7 +33,6 @@ const getPattern = (authority: string): RegExp | undefined => {
   if (suffix) {
     key += '.*'
   }
-  console.debug('pattern:', authority, ' => ', key)
   patterns.set(authority, new RegExp('^' + key + '$'))
   return patterns.get(authority)
 }

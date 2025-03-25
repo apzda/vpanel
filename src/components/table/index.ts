@@ -4,9 +4,11 @@ import type { TVS } from '@/@types'
 import useAppStore from '@/stores/app.ts'
 import { permit } from '@/stores/user'
 
+export type OrderStr = 'ascending' | 'descending' | null
+
 export interface TableColumn {
-  cid?: string,
-  order?: number,
+  cid?: string
+  order?: number
   type?: 'default' | 'selection' | 'index' | 'expand' | 'action'
   index?: number | ((index: number) => number)
   label?: string
@@ -17,7 +19,7 @@ export interface TableColumn {
   minWidth?: string | number
   fixed?: boolean | 'left' | 'right'
   sortable?: boolean | 'custom'
-  sortMethod?: (<T = any>(a: T, b: T) => number)
+  sortMethod?: <T = any>(a: T, b: T) => number
   sortBy?: ((row: any, index: number) => string) | string | string[]
   sortOrders?: ('ascending' | 'descending' | null)[]
   resizable?: boolean
@@ -30,12 +32,24 @@ export interface TableColumn {
   selectable?: (row: any, index: number) => boolean
   reserveSelection?: boolean
   filters?: TVS
-  filterPlacement?: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
+  filterPlacement?:
+    | 'top'
+    | 'top-start'
+    | 'top-end'
+    | 'bottom'
+    | 'bottom-start'
+    | 'bottom-end'
+    | 'left'
+    | 'left-start'
+    | 'left-end'
+    | 'right'
+    | 'right-start'
+    | 'right-end'
   filterClassName?: string
   filterMultiple?: boolean
   filterMethod?: (value: any, row: any, column: any) => void
   filteredValue?: string[]
-  tooltipFormatter?: (data: { row: any, column: any, cellValue: any }) => VNode | string
+  tooltipFormatter?: (data: { row: any; column: any; cellValue: any }) => VNode | string
   hidden?: boolean
   slot?: string
   headerSlot?: string
@@ -47,19 +61,19 @@ export interface TableAction {
   label?: string
   slot?: string
   multi?: boolean // 可以操作多条记录
-  onClick?: (row: any[]) => void,
-  more?: boolean,
-  type?: 'primary' | 'success' | 'warning' | 'danger' | 'info',
-  plain?: boolean,
-  text?: boolean,
-  bg?: boolean,
-  link?: boolean,
-  round?: boolean,
-  circle?: boolean,
-  loading?: boolean,
-  disabled?: boolean,
+  onClick?: (row: any[]) => void
+  more?: boolean
+  type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
+  plain?: boolean
+  text?: boolean
+  bg?: boolean
+  link?: boolean
+  round?: boolean
+  circle?: boolean
+  loading?: boolean
+  disabled?: boolean
   icon?: string | Component
-  color?: string,
+  color?: string
   divided?: boolean
   authorities?: string[] | string
   roles?: string[] | string
@@ -76,8 +90,8 @@ interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   pagerLayout?: string
   defaultPageSize?: number
   defaultCurrentPage?: number
-  pageSizes?: number[],
-  columns: TableColumn[],
+  pageSizes?: number[]
+  columns: TableColumn[]
   actions?: TableAction[]
 }
 
@@ -87,12 +101,14 @@ export class AzTableHelper {
   private id?: string
   private columnsRef?: Ref<TableColumn[]>
   private columns: TableColumn[] = []
-  private defaultColumns: Record<string, { hidden: boolean, order: number }> = {}
+  private defaultColumns: Record<string, { hidden: boolean; order: number; fixed?: boolean | 'left' | 'right' }> = {}
 
   public init(props: AzTableProps, columnsRef: Ref<TableColumn[]>, actions: [TableAction[], TableAction[]]) {
     this.id = props.tid || ''
     let order = 500
-    this.columns = props.columns.map(col => {
+    let index = 0
+    this.columns = props.columns.map((col) => {
+      index++
       if (col.type == 'expand') {
         col.order = -10010
         col.hidden = false
@@ -105,16 +121,17 @@ export class AzTableHelper {
         col.order = 10010
         col.hidden = false
       } else if (col.order == undefined) {
-        col.order = order++
+        col.order = ++order
       } else {
         order = col.order
       }
       if (!col.cid) {
-        col.cid = (col.prop || '@') + '-' + String(col.order)
+        col.cid = (col.prop || '@') + '-' + String(index)
       }
       this.defaultColumns[col.cid] = {
         hidden: col.hidden || false,
-        order: col.order
+        order: col.order,
+        fixed: col.fixed
       }
       return col
     })
@@ -142,11 +159,12 @@ export class AzTableHelper {
     if (this.columnsRef) {
       for (const col in this.defaultColumns) {
         const cfg = this.defaultColumns[col]
-        console.log(col, cfg)
+        // console.log(col, cfg)
         for (const c in this.columns) {
           if (this.columns[c].cid == col) {
             this.columns[c].hidden = cfg.hidden
             this.columns[c].order = cfg.order
+            this.columns[c].fixed = cfg.fixed
             break
           }
         }
@@ -155,7 +173,17 @@ export class AzTableHelper {
     }
   }
 
-  private getColumns(): TableColumn[] {
+  public reloadColumns(): void {
+    if (this.columnsRef) {
+      this.columnsRef.value = this.getColumns()
+    }
+  }
+
+  public getAllColumns(): TableColumn[] {
+    return this.columns.sort((a, b) => (a.order || 0) - (b.order || 0))
+  }
+
+  public getColumns(): TableColumn[] {
     if (this.id) {
       const { appCfg } = useAppStore()
       const cols = appCfg.tableColumns[this.id] || {}
@@ -165,14 +193,13 @@ export class AzTableHelper {
           if (this.columns[c].cid == col) {
             this.columns[c].hidden = cfg.hidden
             this.columns[c].order = cfg.order
+            this.columns[c].fixed = cfg.fixed
             break
           }
         }
       }
     }
 
-    return this.columns
-      .filter(col => col.hidden !== true)
-      .sort((a, b) => (a.order || 0) - (b.order || 0))
+    return this.columns.filter((col) => col.hidden !== true).sort((a, b) => (a.order || 0) - (b.order || 0))
   }
 }

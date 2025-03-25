@@ -9,23 +9,27 @@
         </div>
       </slot>
     </div>
-    <div class="az-table flex flex-col justify-between"
-         :class="{'no-pager':pagerSize==null,'big-pager':pagerSize=='large','small-pager': pagerSize=='small'}">
+    <div
+      class="az-table flex flex-col justify-between"
+      :class="{ 'no-pager': pagerSize == null, 'big-pager': pagerSize == 'large', 'small-pager': pagerSize == 'small' }"
+    >
       <div class="az-table__wrapper">
         <div class="absolute top-0 left-0 right-0 bottom-0 overflow-hidden">
           <!-- 表格 -->
-          <el-table ref="azTableIns" v-bind="props" :data="dataSource" height="100%">
-            <template v-for="(col,idx) in columns" :key="idx">
+          <el-table ref="azTableIns" v-bind="props" :data="dataSource" height="100%" v-on="eventHandlers">
+            <template v-for="(col, idx) in columns" :key="idx">
               <el-table-column v-bind="col" :label="tsLabel(col.label)">
-                <template v-if="col.headerSlot" #header="{column,$index}">
-                  <slot :name="col.headerSlot" v-bind="{column,$index}" />
+                <template v-if="col.headerSlot" #header="{ column, $index }">
+                  <slot :name="col.headerSlot" v-bind="{ column, $index }" />
                 </template>
-                <template v-if="col.filterSlot" #filter-icon="{filterOpened}">
-                  <slot :name="col.filterSlot" v-bind="{filterOpened}" />
+                <template v-if="col.filterSlot" #filter-icon="{ filterOpened }">
+                  <slot :name="col.filterSlot" v-bind="{ filterOpened }" />
                 </template>
-                <template v-if="col.slot || col.type == 'expand' || col.type == 'action'"
-                          #default="{row,column,$index}">
-                  <slot :name="col.slot || col.type" v-bind="{row,column,$index}" />
+                <template
+                  v-if="col.slot || col.type == 'expand' || col.type == 'action'"
+                  #default="{ row, column, $index }"
+                >
+                  <slot :name="col.slot || col.type" v-bind="{ row, column, $index }" />
                 </template>
               </el-table-column>
             </template>
@@ -34,28 +38,26 @@
           <span
             v-if="tid"
             class="absolute top-3 right-2 z-10 cursor-pointer text-[var(--el-text-color-secondary)] hover:text-sky-500"
-            @click="showColumnConfigDialog">
+            @click="showColumnConfigDialog"
+          >
             <el-icon size="1.3rem"><Operation /></el-icon>
           </span>
         </div>
       </div>
       <!-- 底部工具条 -->
-      <div v-if="pagerSize!=null" class="flex-initial pager flex items-center justify-between">
+      <div v-if="pagerSize != null" class="flex-initial pager flex items-center justify-between">
         <!-- 动作条 -->
         <div class="overflow-hidden flex items-center justify-start gap-2">
           <slot name="actionBar">
-            <template v-for="(action,idx) in tableActions[1]" :key="idx">
+            <template v-for="(action, idx) in tableActions[1]" :key="idx">
               <template v-if="action.slot">
                 <slot :name="action.slot"></slot>
               </template>
-              <el-button
-                v-else
-                v-bind="action"
-                :size="pagerSize">
+              <el-button v-else v-bind="action" :size="pagerSize">
                 {{ tsc(action.label || '') }}
               </el-button>
             </template>
-            <el-dropdown v-if="tableActions[0].length>0" :size="pagerSize" trigger="click">
+            <el-dropdown v-if="tableActions[0].length > 0" :size="pagerSize" trigger="click">
               <el-button type="primary">
                 {{ ts(['more', '...']) }}
                 <el-icon class="el-icon--right">
@@ -64,14 +66,12 @@
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item
-                    v-for="(action,idx) in tableActions[0]"
-                    :key="idx" v-bind="action">
+                  <el-dropdown-item v-for="(action, idx) in tableActions[0]" :key="idx" v-bind="action">
                     <template v-if="action.slot">
                       <slot :name="action.slot"></slot>
                     </template>
                     <template v-else>
-                      {{ tsc(action.label || '') }}
+                      {{ ts(action.label || '') }}
                     </template>
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -99,15 +99,15 @@
       </div>
     </div>
   </div>
-  <az-table-column-cfg-dlg />
+  <az-table-column-cfg-dlg ref="azTableColumnCfgDlg" :tid="tid" />
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, useTemplateRef } from 'vue'
+import { computed, onMounted, ref, useTemplateRef } from 'vue'
 import { ElTable } from 'element-plus'
 import { ArrowDown, Operation } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
 import { ts, tsc } from '@/utils/i18n.ts'
-import { AzTableHelper, type AzTableProps, type TableAction, type TableColumn } from '.'
+import { AzTableHelper, type AzTableProps, type OrderStr, type TableAction, type TableColumn } from '.'
 import AzTableColumnCfgDlg from './widgets/AzTableColumnCfgDlg.vue'
 
 defineOptions({
@@ -147,17 +147,43 @@ const props = withDefaults(defineProps<AzTableProps>(), {
     return []
   }
 })
+
+const $emits = defineEmits<{
+  (e: 'select', selection: any[], row: any): void
+  (e: 'selectAll', selection: any[]): void
+  (e: 'selectionChange', newSelection: any[]): void
+  (e: 'cellMouseEnter', row: any, column: any, cell: HTMLTableCellElement, event: Event): void
+  (e: 'cellMouseLeave', row: any, column: any, cell: HTMLTableCellElement, event: Event): void
+  (e: 'cellClick', row: any, column: any, cell: HTMLTableCellElement, event: Event): void
+  (e: 'cellDblclick', row: any, column: any, cell: HTMLTableCellElement, event: Event): void
+  (e: 'cellContextmenu', row: any, column: any, cell: HTMLTableCellElement, event: Event): void
+  (e: 'rowClick', row: any, column: any, event: Event): void
+  (e: 'rowContextmenu', row: any, column: any, event: Event): void
+  (e: 'rowDblclick', row: any, column: any, event: Event): void
+  (e: 'headerClick', column: any, event: Event): void
+  (e: 'headerContextmenu', column: any, event: Event): void
+  (e: 'sortChange', data: { column: any; prop: string; order: OrderStr }): void
+  (e: 'filterChange', newFilters: any): void
+  (e: 'currentChange', currentRow: any, oldCurrentRow: any): void
+  (e: 'headerDragend', newWidth: number, oldWidth: number, column: any, event: MouseEvent): void
+  (e: 'expandChange', row: any, expandedRows: any[] | boolean): void
+  (e: 'scroll', scroll: { scrollLeft: number; scrollTop: number }): void
+}>()
 // consts
 const helper = new AzTableHelper()
 const tableActions: [TableAction[], TableAction[]] = [[], []]
 // refs
 const azTableIns = useTemplateRef<typeof ElTable>('azTableIns')
+const azTableColumnCfgDlg = useTemplateRef<typeof AzTableColumnCfgDlg>('azTableColumnCfgDlg')
 // bind
 const columns = ref<TableColumn[]>([])
 const dataSource = ref<unknown[]>([])
 const pageSize = ref(props.defaultPageSize)
 const currentPage = ref(props.defaultCurrentPage)
 const total = ref(0)
+const selectedRows = ref<any[]>([])
+// computed
+const selectedSize = computed<number>(() => selectedRows.value.length)
 // methods
 const tsLabel = (label?: string | string[]) => {
   return typeof label == 'string' ? tsc(label) : ts(label || '')
@@ -179,8 +205,69 @@ const getData = (data: any[]): any[] => {
 }
 
 // event-handlers
+const eventHandlers = {
+  select(selection: any[], row: any) {
+    $emits('select', selection, row)
+  },
+  selectAll(selection: any[]) {
+    $emits('selectAll', selection)
+  },
+  selectionChange(newSelection: any[]) {
+    selectedRows.value = newSelection
+    $emits('selectionChange', newSelection)
+  },
+  cellMouseEnter(row: any, column: any, cell: HTMLTableCellElement, event: Event) {
+    $emits('cellMouseEnter', row, column, cell, event)
+  },
+  cellMouseLeave(row: any, column: any, cell: HTMLTableCellElement, event: Event) {
+    $emits('cellMouseLeave', row, column, cell, event)
+  },
+  cellClick(row: any, column: any, cell: HTMLTableCellElement, event: Event) {
+    $emits('cellClick', row, column, cell, event)
+  },
+  cellDblclick(row: any, column: any, cell: HTMLTableCellElement, event: Event) {
+    $emits('cellDblclick', row, column, cell, event)
+  },
+  cellContextmenu(row: any, column: any, cell: HTMLTableCellElement, event: Event) {
+    $emits('cellContextmenu', row, column, cell, event)
+  },
+  rowClick(row: any, column: any, event: Event) {
+    $emits('rowClick', row, column, event)
+  },
+  rowContextmenu(row: any, column: any, event: Event) {
+    $emits('rowContextmenu', row, column, event)
+  },
+  rowDblclick(row: any, column: any, event: Event) {
+    $emits('rowDblclick', row, column, event)
+  },
+  headerClick(column: any, event: Event) {
+    $emits('headerClick', column, event)
+  },
+  headerContextmenu(column: any, event: Event) {
+    $emits('headerContextmenu', column, event)
+  },
+  sortChange(data: { column: any; prop: string; order: OrderStr }) {
+    $emits('sortChange', data)
+  },
+  filterChange(newFilters: any) {
+    $emits('filterChange', newFilters)
+  },
+  currentChange(currentRow: any, oldCurrentRow: any) {
+    $emits('currentChange', currentRow, oldCurrentRow)
+  },
+  headerDragend(newWidth: number, oldWidth: number, column: any, event: MouseEvent) {
+    $emits('headerDragend', newWidth, oldWidth, column, event)
+  },
+  expandChange(row: any, expandedRows: any[] | boolean) {
+    $emits('expandChange', row, expandedRows)
+  },
+  scroll(scroll: { scrollLeft: number; scrollTop: number }) {
+    $emits('scroll', scroll)
+  }
+}
+
 const showColumnConfigDialog = () => {
-  console.log('showColumnConfigDialog')
+  azTableColumnCfgDlg.value?.config(helper)
 }
 // exposes
 const load = async () => {
@@ -233,7 +320,9 @@ defineExpose({
       console.warn('azTableIns not found!')
     }
   },
-  reload
+  reload,
+  selectedSize,
+  selectedRows
 })
 </script>
 

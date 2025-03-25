@@ -7,9 +7,7 @@ const storagePrefix = name || ''
 const useAppStore = defineStore(storagePrefix + '::application', () => {
   const title = ref('Dashboard')
 
-  const appTitle = computed(
-    () => title.value + ' - ' + import.meta.env.VITE_APP_NAME + ' [' + version + ']'
-  )
+  const appTitle = computed(() => title.value + ' - ' + import.meta.env.VITE_APP_NAME + ' [' + version + ']')
 
   function setAppTitle(titleStr: string) {
     title.value = titleStr
@@ -26,21 +24,19 @@ const useAppStore = defineStore(storagePrefix + '::application', () => {
     [key: string]: any
 
     asideExpand: boolean
-    tableColumns: Record<string, Record<string, { hidden: boolean, order: number }>>
-  }>(storagePrefix + '::appData', {
-    asideExpand: true,
-    path: '/',
-    tableColumns: {
-      'home-t-1': {
-        'age-503': {
-          hidden: true,
-          order: 503
-        }
-      }
+    tableColumns: Record<string, Record<string, { hidden: boolean; order: number; fixed?: 'left' | 'right' }>>
+  }>(
+    storagePrefix + '::appData',
+    {
+      asideExpand: true,
+      path: '/',
+      tableColumns: {}
+    },
+    localStorage,
+    {
+      mergeDefaults: true
     }
-  }, localStorage, {
-    mergeDefaults: true
-  })
+  )
 
   return { appTitle, setAppTitle, title, isDark, toggleDark, appCfg }
 })

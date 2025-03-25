@@ -9,19 +9,14 @@
         :data="data"
         :columns="columns"
         :actions="actions"
+        @selection-change="onSelectionChanged"
       >
-        <template #expand="{$index,row}">
-          展开行: {{ $index }}: {{ row.name }}
-        </template>
+        <template #expand="{ $index, row }"> 展开行: {{ $index }}: {{ row.name }}</template>
         <template #action>
-          <el-button link type="primary" size="small">
-            Detail
-          </el-button>
+          <el-button link type="primary" size="small"> Detail</el-button>
           <el-button link type="primary" size="small">Edit</el-button>
         </template>
-        <template #act1>
-          a1
-        </template>
+        <template #act1> a1</template>
       </az-table>
     </div>
   </div>
@@ -36,73 +31,98 @@ import type { TableAction, TableColumn } from '@/components/table'
 // refs
 const azTableRef = useTemplateRef<typeof AzTable>('azTable')
 // actions
-const actions: TableAction[] = [{
-  label: 'A1',
-  slot: 'act1'
-}, {
-  label: 'A2',
-  type: 'primary',
-  plain: true,
-  icon: markRaw(Operation),
-  onClick() {
-    console.log('你点A2了')
+const actions: TableAction[] = [
+  {
+    label: 'A1',
+    slot: 'act1'
+  },
+  {
+    label: 'A2',
+    type: 'primary',
+    plain: true,
+    icon: markRaw(Operation),
+    onClick() {
+      console.log('你点A2了')
+    }
+  },
+  {
+    label: 'A3',
+    icon: markRaw(Operation),
+    more: true
+  },
+  {
+    label: 'Op4',
+    icon: markRaw(Operation),
+    more: true,
+    divided: true
   }
-}, {
-  label: 'A3',
-  icon: markRaw(Operation),
-  more: true
-}, {
-  label: 'Op4',
-  icon: markRaw(Operation),
-  more: true,
-  divided: true
-}
 ]
 // binds
 const columns: TableColumn[] = [
   {
+    cid: 's',
     label: '#',
     type: 'selection',
     reserveSelection: true
   },
   {
+    cid: 'e',
     label: '',
     type: 'expand'
-  }, {
+  },
+  {
+    cid: 'n1',
     label: 'Name',
     prop: 'name'
-  }, {
+  },
+  {
+    cid: 'n2',
     label: '姓名',
     prop: 'name'
-  }, {
+  },
+  {
+    cid: 'age',
     label: '年龄',
     prop: 'age',
+    sortable: true,
     order: 503
-  }, {
+  },
+  {
+    cid: 'date',
     label: '{Phone}',
     prop: 'date',
     showOverflowTooltip: true,
     sortable: true,
-    filters: [{ text: '1', value: 1 }, { text: '2', value: '2' }],
-    hidden: true
-  }, {
+    filters: [
+      { text: '1', value: 1 },
+      { text: '2', value: '2' }
+    ]
+  },
+  {
+    cid: 'act',
     label: '',
     type: 'action',
     width: '200px',
     fixed: 'right'
   }
 ]
-const data = ref([{ name: 'aaa', date: '8', age: 18 }, {
-  name: 'bbb',
-  date: '9asdfa asdfa asdfasdfa asdfasdfasdfasdf asdfasdfaf ',
-  age: 28
-}])
+const data = ref([
+  { name: 'aaa', date: '8', age: 18 },
+  {
+    name: 'bbb',
+    date: '9asdfa asdfa asdfasdfa asdfasdfasdfasdf asdfasdfaf ',
+    age: 28
+  }
+])
 for (let i = 0; i < 100; i++) {
   data.value.push({
     name: `后加的 - ${i}`,
     date: '2019-02-10',
     age: 18
   })
+}
+const onSelectionChanged = () => {
+  console.log('onSelectionChanged xxx')
 }
 onMounted(() => {
   //azTableRef.value?.reload()

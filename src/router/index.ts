@@ -37,7 +37,11 @@ export const sortRoute = (a: Route, b: Route): number => {
   return s1 - s2
 }
 
-export const gotoPage = (page: string, from?: string | LocationQueryValue[], next?: NavigationGuardNext): boolean | void => {
+export const gotoPage = (
+  page: string,
+  from?: string | LocationQueryValue[],
+  next?: NavigationGuardNext
+): boolean | void => {
   console.debug('gotoPage', page)
   const pageUrl = settings[page] || null
   from = from === settings.loginUrl ? '/' : from
@@ -54,11 +58,12 @@ export const gotoPage = (page: string, from?: string | LocationQueryValue[], nex
         query: from === '/' ? {} : { [fromArg]: from }
       })
     } else {
-      router.push({
-        path: pageUrl,
-        query: from === '/' ? {} : { [fromArg]: from }
-      }).then(() => {
-      })
+      router
+        .push({
+          path: pageUrl,
+          query: from === '/' ? {} : { [fromArg]: from }
+        })
+        .then(() => {})
     }
   } else if (pageUrl == location.pathname) {
     isLoading.value = false
@@ -74,45 +79,39 @@ export const currentPage = ref<string>('/')
 
 router.beforeEach((to, from, next) => {
   isLoading.value = true
-  console.debug('beforeEach', to.fullPath)
   // @ts-ignore
   const t = window.i18n.t as (str: string) => string
-  // @ts-ignore
-  if (to.meta?.login === false || to.login === false || !settings.loginUrl || settings.whiteList.indexOf(to.path) !== -1) {
-    console.debug('不需要登录', to.fullPath)
+  if (
+    to.meta?.login === false ||
+    // @ts-ignore
+    to.login === false ||
+    !settings.loginUrl ||
+    settings.whiteList.indexOf(to.path) !== -1
+  ) {
     next()
   } else if (user.value.login) {
-    console.debug('需要认证', to.fullPath)
     if (user.value.credentialsExpired && settings.resetPwdUrl) {
-      console.debug('密码过期', to.fullPath)
       return gotoPage('resetPwdUrl', to.path)
     } else if (user.value.locked && settings.activeUrl) {
-      console.debug('账号锁定', to.fullPath)
       return gotoPage('activeUrl', to.path)
     } else if (user.value.mfa == 'UNSET' && settings.mfaSetupUrl) {
-      console.debug('MFA SETUP', to.fullPath)
       return gotoPage('mfaSetupUrl', to.path)
     } else if (user.value.mfa == 'PENDING' && settings.mfaVerifyUrl) {
-      console.debug('MFA Verify', to.fullPath)
       return gotoPage('mfaVerifyUrl', to.path)
     }
     //@ts-ignore
     if (permit(to.roles, to.authorities)) {
-      console.debug('鉴权通过', to.fullPath)
       next()
     } else {
-      console.error('鉴权失败', to.fullPath)
       notify({ title: t('network.403'), message: t('alert.error'), type: 'error' })
       next({ ...from })
     }
   } else {
-    console.error('跳到认证页', to.fullPath)
     return gotoLoginPage(to.path, next)
   }
 })
 
 router.afterEach((to, from, failure) => {
-  console.debug('afterEach', to.fullPath)
   if (!failure) {
     currentPage.value = to.path
     showSucProgress()
