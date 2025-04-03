@@ -80,6 +80,33 @@ export interface TableAction {
   roles?: string[] | string
 }
 
+export interface ToolItem {
+  label?: string
+  slot?: string
+  click?: (row: any[]) => void
+  more?: boolean
+  type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
+  plain?: boolean
+  text?: boolean
+  bg?: boolean
+  link?: boolean
+  round?: boolean
+  circle?: boolean
+  loading?: boolean
+  disabled?: boolean
+  icon?: string | Component
+  color?: string
+  divided?: boolean
+  authorities?: string[] | string
+  roles?: string[] | string
+}
+
+export interface QuickSearch {
+  field: string
+  name: string
+  enabled: boolean
+}
+
 interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   tid?: string
   auto?: boolean
@@ -94,6 +121,8 @@ interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   pageSizes?: number[]
   columns: TableColumn[]
   actions?: TableAction[]
+  tools?: ToolItem[]
+  qs?: QuickSearch[]
 }
 
 export type AzTableProps<T = unknown> = _AzTableProps<T>

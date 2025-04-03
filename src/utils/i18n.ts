@@ -45,6 +45,9 @@ export function cap(msg: string): string {
 }
 
 export function ts(message: string | string[], defaultString?: string, args?: any): string {
+  if (!message) {
+    return defaultString || ''
+  }
   const texts = toArray(message)
   const text = texts.map((msg) => t(msg, args)).join('')
 

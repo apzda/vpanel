@@ -1,11 +1,67 @@
 <template>
   <div class="h-full flex flex-col justify-stretch">
-    <div class="flex-initial w-full">
+    <div v-if="qs && qs.length > 0 && tools && tools.length > 0" class="flex-initial w-full">
       <!-- 顶部工具栏 -->
       <slot name="toolbar">
         <div class="toolbar h-full flex items-center justify-between">
-          <div>a</div>
-          <div>b</div>
+          <div>
+            <el-input
+              v-if="qs && qs.length > 0"
+              ref="searchRef"
+              v-model="q"
+              clearable
+              :placeholder="ts('search') + ' (Ctrl+G)'"
+              @change="qChange"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <Search />
+                </el-icon>
+              </template>
+              <template v-if="qs && qs.length > 1" #suffix>
+                <el-popover
+                  placement="bottom-end"
+                  :width="256"
+                  :show-arrow="false"
+                  :hide-after="50"
+                  popper-class="search-popper"
+                  trigger="click"
+                  @hide="onSearchPopoverHide"
+                >
+                  <template #reference>
+                    <el-icon class="el-input__icon cursor-pointer">
+                      <arrow-down />
+                    </el-icon>
+                  </template>
+                  <div class="flex flex-col gap-1">
+                    <div class="text-md text-gray-400">{{ ts(['search', '-', 'fields']) }}</div>
+                    <div v-for="qf in qs" :key="qf.field" class="flex items-center justify-between">
+                      <div>{{ tsc(qf.name) }}</div>
+                      <div>
+                        <el-switch v-model="qfs[qf.field]" />
+                      </div>
+                    </div>
+                  </div>
+                </el-popover>
+              </template>
+            </el-input>
+          </div>
+          <div>
+            <template v-for="(action, idx) in tools" :key="idx">
+              <template v-if="action.slot">
+                <slot :name="action.slot"></slot>
+              </template>
+              <el-button
+                v-else
+                v-bind="action"
+                :size="buttonSize"
+                :disabled="checkToolDisabled(action)"
+                @click="onToolbarClick(action)"
+              >
+                {{ tsc(action.label || '') }}
+              </el-button>
+            </template>
+          </div>
         </div>
       </slot>
     </div>
@@ -114,12 +170,13 @@
   <az-table-column-cfg-dlg ref="azTableColumnCfgDlg" :tid="tid" @ok="doLayout" />
 </template>
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, ref, useTemplateRef } from 'vue'
-import { ElTable } from 'element-plus'
-import { ArrowDown, Operation } from '@element-plus/icons-vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, reactive, useTemplateRef } from 'vue'
+import { ElTable, ElInput } from 'element-plus'
+import { ArrowDown, Operation, Search } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
 import { ts, tsc } from '@/utils/i18n.ts'
-import { AzTableHelper, type AzTableProps, type OrderStr, type TableAction, type TableColumn } from '.'
+import { permit } from '@/stores/user.ts'
+import { AzTableHelper, type AzTableProps, type OrderStr, type TableAction, type TableColumn, type ToolItem } from '.'
 import AzTableColumnCfgDlg from './widgets/AzTableColumnCfgDlg.vue'
 
 defineOptions({
@@ -157,6 +214,12 @@ const props = withDefaults(defineProps<AzTableProps>(), {
   allowDragLastColumn: true,
   actions: () => {
     return []
+  },
+  tools: () => {
+    return []
+  },
+  qs: () => {
+    return []
   }
 })
 
@@ -187,9 +250,12 @@ const tableActions: [TableAction[], TableAction[]] = [[], []]
 // refs
 const azTableIns = useTemplateRef<typeof ElTable>('azTableIns')
 const azTableColumnCfgDlg = useTemplateRef<typeof AzTableColumnCfgDlg>('azTableColumnCfgDlg')
+const searchRef = useTemplateRef<typeof ElInput>('searchRef')
 // bind
 const columns = ref<TableColumn[]>([])
 const dataSource = ref<unknown[]>([])
+const q = ref<string>('')
+const qfs = reactive<Record<string, boolean>>({})
 const pageSize = ref(props.defaultPageSize)
 const currentPage = ref(props.defaultCurrentPage)
 const total = ref(0)
@@ -206,9 +272,20 @@ const buttonSize = computed(() => {
 const tsLabel = (label?: string | string[]) => {
   return typeof label == 'string' ? tsc(label) : ts(label || '')
 }
+
 const checkDisabled = (action: TableAction) => {
-  return action.disabled || (!action.multi && selectedRows.value.length > 1) || selectedRows.value.length == 0
+  return (
+    action.disabled ||
+    !permit(action.roles, action.authorities) ||
+    (!action.multi && selectedRows.value.length > 1) ||
+    selectedRows.value.length == 0
+  )
 }
+
+const checkToolDisabled = (tool: ToolItem) => {
+  return tool.disabled || !permit(tool.roles, tool.authorities)
+}
+
 const getUrl = (): string => {
   if (isFunction(props.url)) {
     return props.url()
@@ -224,8 +301,16 @@ const getData = (data: any[]): any[] => {
   }
   return []
 }
+const focusSearch = (event: any) => {
+  if (event.ctrlKey) {
+    if (event.key === 'g' || event.key === 'G') {
+      event.preventDefault()
+      searchRef.value?.focus()
+    }
+  }
+}
 
-// event-handlers
+// event-handlers of el-table
 const eventHandlers = {
   select(selection: any[], row: any) {
     $emits('select', selection, row)
@@ -286,11 +371,25 @@ const eventHandlers = {
     $emits('scroll', scroll)
   }
 }
-
+// 动作栏事件
 const onActionClick = (action: TableAction) => {
   if (action.click) {
     action.click(selectedRows.value)
   }
+}
+// 工具栏事件
+const onToolbarClick = (action: ToolItem) => {
+  if (action.click) {
+    action.click()
+  }
+}
+// 快速搜索字段（范围）变化
+const onSearchPopoverHide = () => {
+  console.log('onSearchPopoverHide')
+}
+// 快速搜索值变化
+const qChange = (value: string | number) => {
+  console.log('qChange', value)
 }
 // 显示表头显示属性配置窗
 const showColumnConfigDialog = () => {
@@ -329,6 +428,9 @@ const reload = async () => {
 }
 
 onMounted(() => {
+  for (const f of props.qs) {
+    qfs[f.field] = f.enabled ? f.enabled : false
+  }
   helper.init(props, columns, tableActions)
   if (isArray(props.data)) {
     total.value = props.data.length
@@ -344,8 +446,11 @@ onMounted(() => {
   } else {
     throw new Error('At least one of data or url must be defined.')
   }
+  window.addEventListener('keydown', focusSearch)
 })
-
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', focusSearch)
+})
 defineExpose({
   table(cb: (table: typeof ElTable) => unknown) {
     if (azTableIns.value) {
@@ -376,11 +481,11 @@ defineExpose({
   }
 
   &.small-pager {
-    --az-pager-height: 40px;
+    --az-pager-height: 35px;
   }
 
   &.big-pager {
-    --az-pager-height: 60px;
+    --az-pager-height: 50px;
   }
 
   .az-table__wrapper {

@@ -8,6 +8,8 @@
         :border="false"
         :data="data"
         :columns="columns"
+        :tools="tools"
+        :qs="qs"
         :actions="actions"
         @selection-change="onSelectionChanged"
       >
@@ -26,7 +28,7 @@
 import { markRaw, onMounted, ref, useTemplateRef } from 'vue'
 import { Operation } from '@element-plus/icons-vue'
 import AzTable from '@/components/table/AzTable.vue'
-import type { TableAction, TableColumn } from '@/components/table'
+import type { QuickSearch, TableAction, TableColumn, ToolItem } from '@/components/table'
 
 // refs
 const azTableRef = useTemplateRef<typeof AzTable>('azTable')
@@ -56,6 +58,28 @@ const actions: TableAction[] = [
     more: true,
     divided: true,
     multi: true
+  }
+]
+// quick search
+const qs: QuickSearch[] = [
+  {
+    field: 'id',
+    name: 'Q1',
+    enabled: true
+  },
+  {
+    field: 'id2',
+    name: 'Q2',
+    enabled: true
+  }
+]
+// tools
+const tools: ToolItem[] = [
+  {
+    label: 'B1',
+    click() {
+      console.log('Toolbar B1 clicked')
+    }
   }
 ]
 // binds

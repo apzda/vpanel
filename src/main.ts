@@ -20,6 +20,7 @@ const i18n = setupI18n({
   fallbackLocale: 'en',
   silentTranslationWarn: true,
   silentFallbackWarn: true,
+  fallbackWarn: false,
   missingWarn: false
 })
 const languageLoaded = ref(false)
