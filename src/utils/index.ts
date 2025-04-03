@@ -107,15 +107,15 @@ const pad = (num: string | number) => String(num).padStart(2, '0')
 
 export const formatDate = (date: Date, format = 'yyyy-MM-dd'): string => {
   const tokens: { [format: string]: string } = {
-    'yyyy': date.getFullYear().toString(),
-    'MM': pad(date.getMonth() + 1),
-    'dd': pad(date.getDate()),
-    'HH': pad(date.getHours()),
-    'mm': pad(date.getMinutes()),
-    'ss': pad(date.getSeconds())
+    yyyy: date.getFullYear().toString(),
+    MM: pad(date.getMonth() + 1),
+    dd: pad(date.getDate()),
+    HH: pad(date.getHours()),
+    mm: pad(date.getMinutes()),
+    ss: pad(date.getSeconds())
   }
 
-  return format.replace(/yyyy|MM|dd|HH|mm|ss/g, match => tokens[match])
+  return format.replace(/yyyy|MM|dd|HH|mm|ss/g, (match) => tokens[match])
 }
 
 export const formatDatetime = (date: Date, format = 'yyyy-MM-dd HH:mm:ss'): string => {
@@ -131,7 +131,7 @@ export const fromUnixTimestamp = (timestamp: number | string, format = 'yyyy-MM-
   if (timestamp.toString().length > 12) {
     d.setTime(timestamp as number)
   } else {
-    d.setTime(timestamp as number * 1000)
+    d.setTime((timestamp as number) * 1000)
   }
 
   return formatDate(d, format)
@@ -145,7 +145,7 @@ export function deepClone(source: any, hash = new WeakMap()) {
     return hash.get(source)
   }
   const target = Array.isArray(source) ? [] : {}
-  Reflect.ownKeys(source).forEach(key => {
+  Reflect.ownKeys(source).forEach((key) => {
     const val = source[key]
     if (typeof val === 'object' && val !== null) {
       //@ts-ignore
@@ -167,10 +167,6 @@ export function encodeBase64Str(str: string): string {
     binary += String.fromCharCode(data[i])
   }
   return btoa(binary)
-}
-
-export function assets(url: string) {
-  return new URL('../assets/' + url, import.meta.url).href
 }
 
 export function pxToRem(pxValue: number, rootValue = 14) {
