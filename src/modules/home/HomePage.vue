@@ -41,8 +41,8 @@ const actions: TableAction[] = [
     type: 'primary',
     plain: true,
     icon: markRaw(Operation),
-    onClick() {
-      console.log('你点A2了')
+    click(selection: any[]) {
+      console.log('你点A2了', selection)
     }
   },
   {
@@ -54,7 +54,8 @@ const actions: TableAction[] = [
     label: 'Op4',
     icon: markRaw(Operation),
     more: true,
-    divided: true
+    divided: true,
+    multi: true
   }
 ]
 // binds

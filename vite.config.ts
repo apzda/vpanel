@@ -27,7 +27,8 @@ export default defineConfig(({ mode }) => {
           // Auto import icon components
           IconsResolver({
             prefix: 'Icon'
-          })]
+          })
+        ]
       }),
       Components({
         resolvers: [

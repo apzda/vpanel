@@ -10,6 +10,9 @@
         "html",
         ":host"
       ],
+      "exclude": [
+        "src/components/captcha/SliderVerifier.vue"
+      ],
       "replace": true,
       "mediaQuery": false,
       "minPixelValue": 0

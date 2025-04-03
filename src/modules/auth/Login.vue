@@ -22,14 +22,15 @@
             :error="formOpts.username.message"
             :validate-status="formOpts.username.status"
           >
-            <template #label="{label}">
+            <template #label="{ label }">
               <span class="font-bold text-base">{{ label }}</span>
             </template>
             <el-input
               v-model="formModel.username"
               :placeholder="formOpts.username.placeholder"
               :prefix-icon="User"
-              clearable />
+              clearable
+            />
           </el-form-item>
           <el-form-item
             :label="formOpts.password.label"
@@ -37,24 +38,25 @@
             :validate-status="formOpts.password.status"
             prop="password"
           >
-            <template #label="{label}">
+            <template #label="{ label }">
               <span class="font-bold text-base grow">{{ label }}</span>
             </template>
             <el-input
-              type="password"
               v-model="formModel.password"
+              type="password"
               :placeholder="formOpts.password.placeholder"
               :prefix-icon="Lock"
               clearable
-              show-password />
+              show-password
+            />
           </el-form-item>
           <el-form-item v-if="captchaType == 'drag'" style="margin-bottom: 0">
             <drag-verifier
               ref="dragVerifier"
               :multiple="multiline"
-              @status-change="captchaVerified"
-              :prompt="ts('auth.drag.prompt','Sliding to the right to log in.')"
+              :prompt="ts('auth.drag.prompt', 'Sliding to the right to log in.')"
               :success-text="successText"
+              @status-change="captchaVerified"
             />
           </el-form-item>
           <template v-else-if="captchaType == 'slider'">
@@ -66,13 +68,14 @@
                   </el-button>
                 </template>
                 <slider-verifier
-                  v-if="captchaType=='slider'"
+                  v-if="captchaType == 'slider'"
                   ref="sliderVerifier"
                   :captcha="captchaCode"
                   :loading="loading"
                   :prompt="ts('auth.slider.prompt')"
                   @reload="reloadCaptcha"
-                  @dropped="sliderVerified" />
+                  @dropped="sliderVerified"
+                />
               </el-popover>
             </el-form-item>
           </template>
@@ -81,32 +84,35 @@
               :label="formOpts.code.label"
               :error="formOpts.code.message"
               :validate-status="formOpts.code.status"
-              prop="code">
-              <template #label="{label}">
+              prop="code"
+            >
+              <template #label="{ label }">
                 <span class="font-bold text-base grow">{{ label }}</span>
               </template>
               <el-input
                 v-model="formModel.code"
                 :placeholder="formOpts.code.placeholder"
                 :prefix-icon="CircleCheck"
-                @blur="verifyImageCaptcha"
-                @change="captchaValid=false"
                 maxlength="4"
+                @blur="verifyImageCaptcha"
+                @change="captchaValid = false"
               >
                 <template #append>
-                  <div class="w-[110px] mx-[-18px] bg-white" @click="reloadCaptcha">
+                  <div class="w-[110px] mx-[-18px] bg-white" @click="reloadCaptcha()">
                     <img v-if="captchaCode" :src="captchaCode" alt="" />
                   </div>
                 </template>
               </el-input>
             </el-form-item>
             <el-form-item style="margin-bottom: 0">
-              <el-button :loading="loading"
-                         class="w-full"
-                         :dark="true"
-                         type="primary"
-                         :disabled="!captchaValid"
-                         @click="doLogin">
+              <el-button
+                :loading="loading"
+                class="w-full"
+                :dark="true"
+                type="primary"
+                :disabled="!captchaValid"
+                @click="doLogin"
+              >
                 {{ ts('auth.login') }}
               </el-button>
             </el-form-item>
@@ -208,50 +214,55 @@ const doLogin = async () => {
     username: formModel.username,
     password: formModel.password,
     captchaId: captchaId.value
-  }).then(({ data }) => {
-    data.login = true
-    user.value = data
-    const landing = data.landingUrl || landingUrl
-    setTimeout(() => {
-      if (user.value.credentialsExpired) {
-        gotoPage('resetPwdUrl', $route.query[fromArg] || landing)
-      } else if (user.value.mfa == 'PENDING') {
-        gotoPage('mfaVerifyUrl', $route.query[fromArg] || landing)
-      } else if (user.value.mfa == 'UNSET') {
-        gotoPage('mfaSetupUrl', $route.query[fromArg] || landing)
-      } else {
-        $router.push(($route.query[fromArg] || landing) as string)
-      }
-    }, 100)
-  }).catch(() => {
-    reloadCaptcha(() => {
-      visible.value = false
-      dragVerifier.value?.reset()
-      sliderVerifier.value?.reset()
+  })
+    .then(({ data }) => {
+      data.login = true
+      user.value = data
+      const landing = data.landingUrl || landingUrl
+      setTimeout(() => {
+        if (user.value.credentialsExpired) {
+          gotoPage('resetPwdUrl', $route.query[fromArg] || landing)
+        } else if (user.value.mfa == 'PENDING') {
+          gotoPage('mfaVerifyUrl', $route.query[fromArg] || landing)
+        } else if (user.value.mfa == 'UNSET') {
+          gotoPage('mfaSetupUrl', $route.query[fromArg] || landing)
+        } else {
+          $router.push(($route.query[fromArg] || landing) as string)
+        }
+      }, 100)
     })
-  }).finally(() => loading.value = false)
+    .catch(() => {
+      reloadCaptcha(() => {
+        visible.value = false
+        dragVerifier.value?.reset()
+        sliderVerifier.value?.reset()
+      })
+    })
+    .finally(() => (loading.value = false))
 }
 // - 加载验证码
-const reloadCaptcha = (callback?: (() => void)) => {
+const reloadCaptcha = (callback?: () => void) => {
   captchaValid.value = false
   loading.value = true
-  createCaptcha().then(({ data }) => {
-    captchaId.value = data?.id || ''
-    const type = data?.type || 'image'
-    if (type == 'drag') {
-      multiline.value = Number(data?.captcha || 0)
-    } else if (type == 'image') {
-      captchaCode.value = data?.captcha || ''
-    } else if (type == 'slider') {
-      captchaCode.value = data?.captcha || ''
-    } else {
-      throw new Error('Unknown captcha type: ' + type)
-    }
+  createCaptcha()
+    .then(({ data }) => {
+      captchaId.value = data?.id || ''
+      const type = data?.type || 'image'
+      if (type == 'drag') {
+        multiline.value = Number(data?.captcha || 0)
+      } else if (type == 'image') {
+        captchaCode.value = data?.captcha || ''
+      } else if (type == 'slider') {
+        captchaCode.value = data?.captcha || ''
+      } else {
+        throw new Error('Unknown captcha type: ' + type)
+      }
 
-    if (typeof callback == 'function') {
-      callback()
-    }
-  }).finally(() => loading.value = false)
+      if (typeof callback == 'function') {
+        callback()
+      }
+    })
+    .finally(() => (loading.value = false))
 }
 // === 事件处理器 ===
 /**
@@ -272,19 +283,24 @@ const verifyImageCaptcha = () => {
   formOpts.code.status = 'validating'
   formOpts.code.message = ''
 
-  validateCaptcha({
-    id: captchaId.value,
-    code: formModel.code
-  }, false).then(() => {
-    captchaValid.value = true
-  }).catch(err => {
-    captchaValid.value = false
-    formOpts.code.status = 'error'
-    formOpts.code.message = err.errMsg || err.message || ts('auth.captchaInvalid')
-    if (err.data?.reload === true) {
-      reloadCaptcha()
-    }
-  })
+  validateCaptcha(
+    {
+      id: captchaId.value,
+      code: formModel.code
+    },
+    false
+  )
+    .then(() => {
+      captchaValid.value = true
+    })
+    .catch((err) => {
+      captchaValid.value = false
+      formOpts.code.status = 'error'
+      formOpts.code.message = err.errMsg || err.message || ts('auth.captchaInvalid')
+      if (err.data?.reload === true) {
+        reloadCaptcha()
+      }
+    })
 }
 /**
  * 校验拖动验证码
@@ -299,15 +315,18 @@ const captchaVerified = async (verified: boolean, results: {}) => {
     validateCaptcha({
       id: captchaId.value,
       code: encodeBase64Str(JSON.stringify(results))
-    }).then(() => {
-      successText.value = ts('auth.drag.login', '...')
-      doLogin()
-    }).catch(err => {
-      dragVerifier.value?.reset()
-      if (err.data?.reload === true) {
-        reloadCaptcha()
-      }
-    }).finally(() => loading.value = false)
+    })
+      .then(() => {
+        successText.value = ts('auth.drag.login', '...')
+        doLogin()
+      })
+      .catch((err) => {
+        dragVerifier.value?.reset()
+        if (err.data?.reload === true) {
+          reloadCaptcha()
+        }
+      })
+      .finally(() => (loading.value = false))
   }
 }
 /**
@@ -322,13 +341,16 @@ const sliderVerified = async (offset: number) => {
   validateCaptcha({
     id: captchaId.value,
     code: `${offset},${chunks[2]}`
-  }).then(() => {
-    doLogin()
-  }).catch(err => {
-    if (err.data?.reload === true) {
-      reloadCaptcha()
-    }
-  }).finally(() => loading.value = false)
+  })
+    .then(() => {
+      doLogin()
+    })
+    .catch((err) => {
+      if (err.data?.reload === true) {
+        reloadCaptcha()
+      }
+    })
+    .finally(() => (loading.value = false))
 }
 // === 生命周期 ===
 onMounted(() => {

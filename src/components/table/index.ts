@@ -52,6 +52,7 @@ export interface TableColumn {
   tooltipFormatter?: (data: { row: any; column: any; cellValue: any }) => VNode | string
   hidden?: boolean
   slot?: string
+  h?: VNode
   headerSlot?: string
   filterSlot?: string
   children?: TableColumn[]
@@ -61,7 +62,7 @@ export interface TableAction {
   label?: string
   slot?: string
   multi?: boolean // 可以操作多条记录
-  onClick?: (row: any[]) => void
+  click?: (row: any[]) => void
   more?: boolean
   type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
   plain?: boolean
@@ -96,12 +97,13 @@ interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
 }
 
 export type AzTableProps<T = unknown> = _AzTableProps<T>
+export type ColumnCfg = { hidden: boolean; order: number; fixed?: boolean | 'left' | 'right' }
 
 export class AzTableHelper {
   private id?: string
   private columnsRef?: Ref<TableColumn[]>
   private columns: TableColumn[] = []
-  private defaultColumns: Record<string, { hidden: boolean; order: number; fixed?: boolean | 'left' | 'right' }> = {}
+  private defaultColumns: Record<string, ColumnCfg> = {}
 
   public init(props: AzTableProps, columnsRef: Ref<TableColumn[]>, actions: [TableAction[], TableAction[]]) {
     this.id = props.tid || ''
@@ -126,12 +128,12 @@ export class AzTableHelper {
         order = col.order
       }
       if (!col.cid) {
-        col.cid = (col.prop || '@') + '-' + String(index)
+        col.cid = (col.prop || col.property || '@') + '-' + String(index)
       }
       this.defaultColumns[col.cid] = {
         hidden: col.hidden || false,
         order: col.order,
-        fixed: col.fixed
+        fixed: col.fixed ? col.fixed : false
       }
       return col
     })
@@ -159,15 +161,7 @@ export class AzTableHelper {
     if (this.columnsRef) {
       for (const col in this.defaultColumns) {
         const cfg = this.defaultColumns[col]
-        // console.log(col, cfg)
-        for (const c in this.columns) {
-          if (this.columns[c].cid == col) {
-            this.columns[c].hidden = cfg.hidden
-            this.columns[c].order = cfg.order
-            this.columns[c].fixed = cfg.fixed
-            break
-          }
-        }
+        this.fillColumn(col, cfg)
       }
       this.columnsRef.value = this.getColumns()
     }
@@ -189,17 +183,21 @@ export class AzTableHelper {
       const cols = appCfg.tableColumns[this.id] || {}
       for (const col in cols) {
         const cfg = cols[col]
-        for (const c in this.columns) {
-          if (this.columns[c].cid == col) {
-            this.columns[c].hidden = cfg.hidden
-            this.columns[c].order = cfg.order
-            this.columns[c].fixed = cfg.fixed
-            break
-          }
-        }
+        this.fillColumn(col, cfg)
       }
     }
 
     return this.columns.filter((col) => col.hidden !== true).sort((a, b) => (a.order || 0) - (b.order || 0))
+  }
+
+  private fillColumn(cid: string, cfg: ColumnCfg) {
+    for (const c in this.columns) {
+      if (this.columns[c].cid == cid) {
+        this.columns[c].hidden = cfg.hidden
+        this.columns[c].order = cfg.order
+        this.columns[c].fixed = cfg.fixed
+        break
+      }
+    }
   }
 }

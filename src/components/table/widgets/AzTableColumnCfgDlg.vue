@@ -123,7 +123,7 @@ const confirm = () => {
   if (props.tid) {
     const { appCfg } = useAppStore()
     const cols: Record<string, { hidden: boolean; order: number; fixed?: 'left' | 'right' }> = {}
-    console.log(props.tid, lfColumns.value, nfColumns.value, rfColumns.value)
+    // console.log(props.tid, lfColumns.value, nfColumns.value, rfColumns.value)
     let order = 0
     lfColumns.value.forEach((col) => {
       //@ts-ignore

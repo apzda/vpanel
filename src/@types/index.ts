@@ -4,7 +4,7 @@ import type { AxiosRequestConfig } from 'axios'
 import type { CommonResponse, ErrorEvent } from '@/@types/request'
 
 export interface TV {
-  text: string,
+  text: string
   value: string | number
 }
 
@@ -30,7 +30,7 @@ export interface Settings {
   [index: string]: any
 
   loginUrl?: string // 登录地址
-  landing?: string// 登录成功后的落地页地址
+  landing?: string // 登录成功后的落地页地址
   activeUrl?: string // 激活地址
   resetPwdUrl?: string // 重置密码地址
   mfaSetupUrl?: string // 设置多因素认证地址
@@ -76,6 +76,7 @@ export interface MenuOption {
 export interface MenuItem {
   id?: string
   path?: string
+  name?: string
   icon?: any
   badge?: number | ((content: MenuOption) => number)
   color?: any
@@ -87,10 +88,11 @@ export interface MenuItem {
   authorities?: string[] | string
   roles?: string[] | string
   meta?: RouteMeta & {
-    login?: false,
+    login?: false
     install?: () => void
     uninstall?: () => void
   }
+  children?: MenuItem[]
 }
 
 // 错误处理器名称
@@ -100,7 +102,7 @@ export type ErrHandlerName = `on${string}`
 export interface Handlers {
   [event: ErrHandlerName]: (event: ErrorEvent) => boolean | void
 
-  transformResponse?: ((data: any) => CommonResponse)
+  transformResponse?: (data: any) => CommonResponse
 
   encrypt(data: any): string
 
@@ -112,13 +114,13 @@ export interface Handlers {
 }
 
 // 扩展选项
-export type RequestOptions = { login?: false; autoRefresh?: false; showErrMsg?: false, converter?: (data: any) => any }
+export type RequestOptions = { login?: false; autoRefresh?: false; showErrMsg?: false; converter?: (data: any) => any }
 export type RequestConfig = AxiosRequestConfig & RequestOptions
 // 路由规则
-export type Route = MenuItem &
+export type Route = Omit<MenuItem, 'children'> &
   RouteRecordRaw & {
-  children?: Route[]
-}
+    children?: Route[]
+  }
 export type MenuItemElement = Readonly<ShallowRef<HTMLDivElement | null>>
 
 // 排序
@@ -126,15 +128,15 @@ export interface Order {
   /**
    * 排序方向
    */
-  direction?: 'ASC' | 'DESC';
+  direction?: 'ASC' | 'DESC'
   /**
    * 排序字段
    */
-  field: string;
+  field: string
   /**
    * 忽略大小写
    */
-  ignoreCase?: boolean;
+  ignoreCase?: boolean
 }
 
 /**
@@ -148,19 +150,19 @@ export interface Sorter {
  * Pager
  */
 export interface Pager {
-  offset?: number;
-  pageNumber?: number;
-  pageSize?: number;
-  sort?: Sorter;
+  offset?: number
+  pageNumber?: number
+  pageSize?: number
+  sort?: Sorter
 }
 
 /**
  * PaginationQuery
  */
 export interface PaginationQuery {
-  [q: string]: any;
+  [q: string]: any
 
-  pager: Pager;
+  pager: Pager
 }
 
 export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>
@@ -187,8 +189,8 @@ export type validateStatus = '' | 'error' | 'validating' | 'success'
 // 表单选项
 export interface FormItemOpt {
   message?: string
-  status?: '' | 'error' | 'validating' | 'success',
-  placeholder?: string,
+  status?: '' | 'error' | 'validating' | 'success'
+  placeholder?: string
   label?: string
 }
 

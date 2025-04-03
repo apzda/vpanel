@@ -53,12 +53,18 @@
               <template v-if="action.slot">
                 <slot :name="action.slot"></slot>
               </template>
-              <el-button v-else v-bind="action" :size="pagerSize">
+              <el-button
+                v-else
+                v-bind="action"
+                :size="buttonSize"
+                :disabled="checkDisabled(action)"
+                @click="onActionClick(action)"
+              >
                 {{ tsc(action.label || '') }}
               </el-button>
             </template>
-            <el-dropdown v-if="tableActions[0].length > 0" :size="pagerSize" trigger="click">
-              <el-button type="primary">
+            <el-dropdown v-if="tableActions[0].length > 0" trigger="click" :size="buttonSize">
+              <el-button type="primary" :size="buttonSize">
                 {{ ts(['more', '...']) }}
                 <el-icon class="el-icon--right">
                   <arrow-down />
@@ -66,7 +72,13 @@
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item v-for="(action, idx) in tableActions[0]" :key="idx" v-bind="action">
+                  <el-dropdown-item
+                    v-for="(action, idx) in tableActions[0]"
+                    v-bind="action"
+                    :key="idx"
+                    :disabled="checkDisabled(action)"
+                    @click="onActionClick(action)"
+                  >
                     <template v-if="action.slot">
                       <slot :name="action.slot"></slot>
                     </template>
@@ -99,10 +111,10 @@
       </div>
     </div>
   </div>
-  <az-table-column-cfg-dlg ref="azTableColumnCfgDlg" :tid="tid" />
+  <az-table-column-cfg-dlg ref="azTableColumnCfgDlg" :tid="tid" @ok="doLayout" />
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, onMounted, ref, useTemplateRef } from 'vue'
 import { ElTable } from 'element-plus'
 import { ArrowDown, Operation } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
@@ -184,9 +196,18 @@ const total = ref(0)
 const selectedRows = ref<any[]>([])
 // computed
 const selectedSize = computed<number>(() => selectedRows.value.length)
+const buttonSize = computed(() => {
+  if (!props.pagerSize || props.pagerSize == 'default' || props.pagerSize == 'small') {
+    return 'small'
+  }
+  return 'default'
+})
 // methods
 const tsLabel = (label?: string | string[]) => {
   return typeof label == 'string' ? tsc(label) : ts(label || '')
+}
+const checkDisabled = (action: TableAction) => {
+  return action.disabled || (!action.multi && selectedRows.value.length > 1) || selectedRows.value.length == 0
 }
 const getUrl = (): string => {
   if (isFunction(props.url)) {
@@ -266,9 +287,22 @@ const eventHandlers = {
   }
 }
 
+const onActionClick = (action: TableAction) => {
+  if (action.click) {
+    action.click(selectedRows.value)
+  }
+}
+// 显示表头显示属性配置窗
 const showColumnConfigDialog = () => {
   azTableColumnCfgDlg.value?.config(helper)
 }
+// 表头发生变化时重新布局
+const doLayout = () => {
+  nextTick(() => {
+    azTableIns.value?.doLayout()
+  })
+}
+
 // exposes
 const load = async () => {
   if (isArray(props.data)) {
