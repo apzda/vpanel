@@ -5,8 +5,7 @@ import useAppStore from '@/stores/app.ts'
 import { permit } from '@/stores/user'
 import { isArray, isFunction } from 'lodash-es'
 import useAxios, { RequestProxy } from '@/utils/axios.ts'
-import type { CommonResponse } from '@/@types/request.ts'
-import * as querystring from 'node:querystring'
+import { buildQueryString } from '@/utils'
 
 // 排序定义
 export type OrderStr = 'ascending' | 'descending' | null
@@ -183,6 +182,8 @@ export class AzTableHelper<T> {
   ): RequestConfig => {
     if (options.method === 'POST') {
       options.data = query
+    } else {
+      options.params = buildQueryString(query)
     }
     return options
   }

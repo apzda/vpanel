@@ -208,3 +208,7 @@ export function allTrue(items: boolean[] | Record<any, boolean>): boolean {
 
   return !(items as boolean[]).some((item) => !item)
 }
+
+export function buildQueryString(params: Record<string, any>): string {
+  return ''
+}
