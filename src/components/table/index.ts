@@ -3,9 +3,12 @@ import type { TableProps } from 'element-plus'
 import type { TVS } from '@/@types'
 import useAppStore from '@/stores/app.ts'
 import { permit } from '@/stores/user'
+import { isArray } from 'lodash-es'
 
+// 排序定义
 export type OrderStr = 'ascending' | 'descending' | null
 
+// 表格列定义，参考element-plus table column属性: https://element-plus.org/zh-CN/component/table.html#table-column-%E5%B1%9E%E6%80%A7
 export interface TableColumn {
   cid?: string
   order?: number
@@ -58,12 +61,13 @@ export interface TableColumn {
   children?: TableColumn[]
 }
 
+// 表格数据操作定义，参考element-plus button属性: https://element-plus.org/zh-CN/component/button.html#button-attributes
 export interface TableAction {
   label?: string
   slot?: string
   multi?: boolean // 可以操作多条记录
   click?: (row: any[]) => void
-  more?: boolean
+  more?: boolean // 放在更多里
   type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
   plain?: boolean
   text?: boolean
@@ -78,13 +82,16 @@ export interface TableAction {
   divided?: boolean
   authorities?: string[] | string
   roles?: string[] | string
+  items?: Omit<TableAction, 'items' | 'slot' | 'more'>[]
 }
 
+export type TableActions = (TableAction | Omit<TableAction, 'items' | 'slot' | 'more'>[])[]
+
+// 表格工具栏定义，参考element-plus button属性: https://element-plus.org/zh-CN/component/button.html#button-attributes
 export interface ToolItem {
   label?: string
   slot?: string
   click?: (row: any[]) => void
-  more?: boolean
   type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
   plain?: boolean
   text?: boolean
@@ -94,19 +101,25 @@ export interface ToolItem {
   circle?: boolean
   loading?: boolean
   disabled?: boolean
+  size?: 'large' | 'default' | 'small'
   icon?: string | Component
   color?: string
   divided?: boolean
   authorities?: string[] | string
   roles?: string[] | string
+  items?: Omit<ToolItem, 'items' | 'slot'>[]
 }
 
+export type ToolItems = (ToolItem | Omit<ToolItem, 'items' | 'slot'>[])[]
+
+// 快速搜索
 export interface QuickSearch {
   field: string
   name: string
   enabled: boolean
 }
 
+// 表格属性定义，参考element-plus table属性: https://element-plus.org/zh-CN/component/table.html#table-%E5%B1%9E%E6%80%A7
 interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   tid?: string
   auto?: boolean
@@ -120,12 +133,14 @@ interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   defaultCurrentPage?: number
   pageSizes?: number[]
   columns: TableColumn[]
-  actions?: TableAction[]
-  tools?: ToolItem[]
+  actions?: TableActions
+  tools?: ToolItems
   qs?: QuickSearch[]
 }
 
 export type AzTableProps<T = unknown> = _AzTableProps<T>
+
+// 表格配置
 export type ColumnCfg = { hidden: boolean; order: number; fixed?: boolean | 'left' | 'right' }
 
 export class AzTableHelper {
@@ -134,7 +149,12 @@ export class AzTableHelper {
   private columns: TableColumn[] = []
   private defaultColumns: Record<string, ColumnCfg> = {}
 
-  public init(props: AzTableProps, columnsRef: Ref<TableColumn[]>, actions: [TableAction[], TableAction[]]) {
+  public init(
+    props: AzTableProps,
+    columnsRef: Ref<TableColumn[]>,
+    actions: [TableAction[], TableActions],
+    tools: ToolItems
+  ) {
     this.id = props.tid || ''
     let order = 500
     let index = 0
@@ -169,14 +189,40 @@ export class AzTableHelper {
     this.columnsRef = columnsRef
     this.columnsRef.value = this.getColumns()
 
-    if (props.actions) {
+    if (props.actions && props.actions.length > 0) {
       props.actions.forEach((action) => {
-        if (permit(action.roles, action.authorities)) {
-          if (action.more) {
-            actions[0].push(action)
-          } else {
-            actions[1].push(action)
+        if (isArray(action)) {
+          const gs = action.slice().filter((act) => permit(act.roles, act.authorities))
+          if (gs.length > 0) {
+            actions[1].push(gs)
           }
+        } else {
+          if (permit(action.roles, action.authorities)) {
+            if (action.more) {
+              actions[0].push(action)
+            } else {
+              if (action.items && action.items.length > 0) {
+                action.items = action.items.filter((act) => permit(act.roles, act.authorities))
+              }
+              actions[1].push(action)
+            }
+          }
+        }
+      })
+    }
+
+    if (props.tools && props.tools.length > 0) {
+      props.tools.forEach((tool) => {
+        if (isArray(tool)) {
+          const ts = tool.slice().filter((act) => permit(act.roles, act.authorities))
+          if (ts.length > 0) {
+            tools.push(ts)
+          }
+        } else if (permit(tool.roles, tool.authorities)) {
+          if (tool.items && tool.items.length > 0) {
+            tool.items = tool.items.filter((act) => permit(act.roles, act.authorities))
+          }
+          tools.push(tool)
         }
       })
     }

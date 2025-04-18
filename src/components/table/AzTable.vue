@@ -1,9 +1,10 @@
 <template>
   <div class="h-full flex flex-col justify-stretch">
-    <div v-if="qs && qs.length > 0 && tools && tools.length > 0" class="flex-initial w-full">
-      <!-- 顶部工具栏 -->
+    <!-- 顶部 -->
+    <div v-if="qs && qs.length > 0 && tableTools.length > 0" class="flex-initial w-full">
       <slot name="toolbar">
         <div class="toolbar h-full flex items-center justify-between">
+          <!-- 快速搜索 -->
           <div>
             <el-input
               v-if="qs && qs.length > 0"
@@ -46,18 +47,50 @@
               </template>
             </el-input>
           </div>
-          <div>
-            <template v-for="(action, idx) in tools" :key="idx">
-              <template v-if="action.slot">
+          <!-- 工具栏 -->
+          <div class="overflow-hidden flex items-center justify-start gap-2">
+            <template v-for="(action, idx) in tableTools" :key="idx">
+              <template v-if="isArray(action)">
+                <el-button-group :size="action[0].size" :type="action[0].type">
+                  <el-button
+                    v-for="(act, idx1) in action"
+                    v-bind="act"
+                    :key="idx1"
+                    :disabled="checkToolDisabled(act)"
+                    @click="onToolbarClick(act)"
+                    >{{ tsc(act.label || '') }}
+                  </el-button>
+                </el-button-group>
+              </template>
+              <template v-else-if="action.items && action.items.length > 0">
+                <el-dropdown
+                  split-button
+                  trigger="click"
+                  :button-props="action"
+                  :type="action.type"
+                  :disabled="checkToolDisabled(action)"
+                  :size="action.size"
+                  @click="onToolbarClick(action)"
+                >
+                  {{ tsc(action.label || '') }}
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item
+                        v-for="(act, idx2) in action.items"
+                        v-bind="act"
+                        :key="idx2"
+                        :disabled="checkToolDisabled(act)"
+                        @click="onToolbarClick(act)"
+                        >{{ ts(act.label || '') }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </template>
+              <template v-else-if="action.slot">
                 <slot :name="action.slot"></slot>
               </template>
-              <el-button
-                v-else
-                v-bind="action"
-                :size="buttonSize"
-                :disabled="checkToolDisabled(action)"
-                @click="onToolbarClick(action)"
-              >
+              <el-button v-else v-bind="action" :disabled="checkToolDisabled(action)" @click="onToolbarClick(action)">
                 {{ tsc(action.label || '') }}
               </el-button>
             </template>
@@ -65,6 +98,7 @@
         </div>
       </slot>
     </div>
+    <!-- 表格区 -->
     <div
       class="az-table flex flex-col justify-between"
       :class="{ 'no-pager': pagerSize == null, 'big-pager': pagerSize == 'large', 'small-pager': pagerSize == 'small' }"
@@ -106,7 +140,47 @@
         <div class="overflow-hidden flex items-center justify-start gap-2">
           <slot name="actionBar">
             <template v-for="(action, idx) in tableActions[1]" :key="idx">
-              <template v-if="action.slot">
+              <!-- 指定了slot的action -->
+              <template v-if="isArray(action)">
+                <el-button-group :type="action[0].type">
+                  <el-button
+                    v-for="(act, idx1) in action"
+                    v-bind="act"
+                    :key="idx1"
+                    :size="buttonSize"
+                    :disabled="checkDisabled(act)"
+                    @click="onActionClick(act)"
+                  >
+                    {{ tsc(act.label || '') }}
+                  </el-button>
+                </el-button-group>
+              </template>
+              <template v-else-if="action.items && action.items.length > 0">
+                <el-dropdown
+                  split-button
+                  trigger="click"
+                  :button-props="action"
+                  :type="action.type"
+                  :disabled="checkDisabled(action)"
+                  :size="buttonSize"
+                  @click="onActionClick(action)"
+                >
+                  {{ tsc(action.label || '') }}
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item
+                        v-for="(act, idx2) in action.items"
+                        v-bind="act"
+                        :key="idx2"
+                        :disabled="checkDisabled(act)"
+                        @click="onActionClick(act)"
+                        >{{ ts(act.label || '') }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </template>
+              <template v-else-if="action.slot">
                 <slot :name="action.slot"></slot>
               </template>
               <el-button
@@ -119,6 +193,7 @@
                 {{ tsc(action.label || '') }}
               </el-button>
             </template>
+            <!-- 更多 -->
             <el-dropdown v-if="tableActions[0].length > 0" trigger="click" :size="buttonSize">
               <el-button type="primary" :size="buttonSize">
                 {{ ts(['more', '...']) }}
@@ -134,13 +209,7 @@
                     :key="idx"
                     :disabled="checkDisabled(action)"
                     @click="onActionClick(action)"
-                  >
-                    <template v-if="action.slot">
-                      <slot :name="action.slot"></slot>
-                    </template>
-                    <template v-else>
-                      {{ ts(action.label || '') }}
-                    </template>
+                    >{{ ts(action.label || '') }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -176,7 +245,16 @@ import { ArrowDown, Operation, Search } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
 import { ts, tsc } from '@/utils/i18n.ts'
 import { permit } from '@/stores/user.ts'
-import { AzTableHelper, type AzTableProps, type OrderStr, type TableAction, type TableColumn, type ToolItem } from '.'
+import {
+  AzTableHelper,
+  type AzTableProps,
+  type OrderStr,
+  type TableAction,
+  type TableActions,
+  type TableColumn,
+  type ToolItem,
+  type ToolItems
+} from '.'
 import AzTableColumnCfgDlg from './widgets/AzTableColumnCfgDlg.vue'
 
 defineOptions({
@@ -246,7 +324,8 @@ const $emits = defineEmits<{
 }>()
 // consts
 const helper = new AzTableHelper()
-const tableActions: [TableAction[], TableAction[]] = [[], []]
+const tableActions: [TableAction[], TableActions] = [[], []]
+const tableTools: ToolItems = []
 // refs
 const azTableIns = useTemplateRef<typeof ElTable>('azTableIns')
 const azTableColumnCfgDlg = useTemplateRef<typeof AzTableColumnCfgDlg>('azTableColumnCfgDlg')
@@ -380,7 +459,7 @@ const onActionClick = (action: TableAction) => {
 // 工具栏事件
 const onToolbarClick = (action: ToolItem) => {
   if (action.click) {
-    action.click()
+    action.click(selectedRows.value)
   }
 }
 // 快速搜索字段（范围）变化
@@ -431,7 +510,7 @@ onMounted(() => {
   for (const f of props.qs) {
     qfs[f.field] = f.enabled ? f.enabled : false
   }
-  helper.init(props, columns, tableActions)
+  helper.init(props, columns, tableActions, tableTools)
   if (isArray(props.data)) {
     total.value = props.data.length
     reload()

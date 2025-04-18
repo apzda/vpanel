@@ -17,8 +17,9 @@
         <template #action>
           <el-button link type="primary" size="small"> Detail</el-button>
           <el-button link type="primary" size="small">Edit</el-button>
+          <el-button link type="warning" size="small">Del</el-button>
         </template>
-        <template #act1> a1</template>
+        <template #act1>a1</template>
       </az-table>
     </div>
   </div>
@@ -28,24 +29,44 @@
 import { markRaw, onMounted, ref, useTemplateRef } from 'vue'
 import { Operation } from '@element-plus/icons-vue'
 import AzTable from '@/components/table/AzTable.vue'
-import type { QuickSearch, TableAction, TableColumn, ToolItem } from '@/components/table'
+import type { QuickSearch, TableActions, TableColumn, ToolItems } from '@/components/table'
 
 // refs
 const azTableRef = useTemplateRef<typeof AzTable>('azTable')
 // actions
-const actions: TableAction[] = [
+const actions: TableActions = [
+  [
+    {
+      label: 'G1'
+    },
+    {
+      label: 'G2'
+    }
+  ],
   {
     label: 'A1',
     slot: 'act1'
   },
   {
-    label: 'A2',
+    label: 'A3',
     type: 'primary',
     plain: true,
     icon: markRaw(Operation),
     click(selection: any[]) {
       console.log('你点A2了', selection)
     }
+  },
+  {
+    label: '下拉',
+    items: [
+      {
+        label: 'D1'
+      },
+      {
+        label: 'D2',
+        divided: true
+      }
+    ]
   },
   {
     label: 'A3',
@@ -74,12 +95,45 @@ const qs: QuickSearch[] = [
   }
 ]
 // tools
-const tools: ToolItem[] = [
+const tools: ToolItems = [
   {
     label: 'B1',
+    size: 'small',
     click() {
       console.log('Toolbar B1 clicked')
     }
+  },
+  [
+    {
+      size: 'small',
+      type: 'primary',
+      label: 'T1',
+      icon: markRaw(Operation)
+    },
+    {
+      label: 'T2',
+      type: 'danger',
+      click() {
+        console.log('你点了T2')
+      }
+    }
+  ],
+  {
+    label: '下拉',
+    size: 'small',
+    type: 'primary',
+    click() {
+      console.log('点下拉哟')
+    },
+    items: [
+      {
+        label: 'D1'
+      },
+      {
+        label: 'D2',
+        divided: true
+      }
+    ]
   }
 ]
 // binds
@@ -150,6 +204,6 @@ const onSelectionChanged = () => {
   console.log('onSelectionChanged xxx')
 }
 onMounted(() => {
-  //azTableRef.value?.reload()
+  azTableRef.value?.reload()
 })
 </script>
