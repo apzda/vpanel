@@ -133,10 +133,6 @@ export interface Order {
    * 排序字段
    */
   field: string
-  /**
-   * 忽略大小写
-   */
-  ignoreCase?: boolean
 }
 
 /**
@@ -151,7 +147,7 @@ export interface Sorter {
  */
 export interface Pager {
   offset?: number
-  pageNumber?: number
+  pageNumber: number
   pageSize?: number
   sort?: Sorter
 }
@@ -162,7 +158,7 @@ export interface Pager {
 export interface PaginationQuery {
   [q: string]: any
 
-  pager: Pager
+  pager?: Pager
 }
 
 export const LANGUAGE_LOAD_KEY = Symbol() as InjectionKey<Ref<boolean>>

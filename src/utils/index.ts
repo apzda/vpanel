@@ -1,3 +1,5 @@
+import { isArray } from 'lodash-es'
+
 const merge = (dest: any, source: any): void => {
   for (const key in source) {
     if (key != 'children') {
@@ -171,4 +173,38 @@ export function encodeBase64Str(str: string): string {
 
 export function pxToRem(pxValue: number, rootValue = 14) {
   return `${pxValue / rootValue}rem`
+}
+
+export function keys<T>(obj: Record<string, T>): string[] {
+  const keys: string[] = []
+  for (const key in obj) {
+    keys.push(key)
+  }
+
+  return keys
+}
+
+export function values<T>(obj: Record<any, T>): T[] {
+  const values: T[] = []
+  for (const key in obj) {
+    values.push(obj[key])
+  }
+
+  return values
+}
+
+export function anyTrue(items: boolean[] | Record<any, boolean>): boolean {
+  if (isObject(items)) {
+    items = values<boolean>(items as Record<any, boolean>)
+  }
+
+  return (items as boolean[]).some((item) => item)
+}
+
+export function allTrue(items: boolean[] | Record<any, boolean>): boolean {
+  if (isObject(items)) {
+    items = values<boolean>(items as Record<any, boolean>)
+  }
+
+  return !(items as boolean[]).some((item) => !item)
 }

@@ -1,9 +1,12 @@
 import type { Component, Ref, VNode } from 'vue'
 import type { TableProps } from 'element-plus'
-import type { TVS } from '@/@types'
+import type { PaginationQuery, RequestConfig, TVS } from '@/@types'
 import useAppStore from '@/stores/app.ts'
 import { permit } from '@/stores/user'
-import { isArray } from 'lodash-es'
+import { isArray, isFunction } from 'lodash-es'
+import useAxios, { RequestProxy } from '@/utils/axios.ts'
+import type { CommonResponse } from '@/@types/request.ts'
+import * as querystring from 'node:querystring'
 
 // 排序定义
 export type OrderStr = 'ascending' | 'descending' | null
@@ -125,6 +128,10 @@ interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   auto?: boolean
   data?: T[] | (() => T[])
   url?: string | (() => string)
+  gateway?: string
+  queries?: Record<string, any>
+  config?: (query: PaginationQuery, options: RequestConfig) => RequestConfig
+  export?: string | (() => string)
   pagerSize?: 'small' | 'default' | 'large' | null
   pagerBackground?: boolean
   pagerCount?: number
@@ -136,6 +143,8 @@ interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   actions?: TableActions
   tools?: ToolItems
   qs?: QuickSearch[]
+  qsFilter?: (data: T, prop: string, value: string) => boolean
+  transformer?: (data: any) => TableData
 }
 
 export type AzTableProps<T = unknown> = _AzTableProps<T>
@@ -143,11 +152,40 @@ export type AzTableProps<T = unknown> = _AzTableProps<T>
 // 表格配置
 export type ColumnCfg = { hidden: boolean; order: number; fixed?: boolean | 'left' | 'right' }
 
-export class AzTableHelper {
+export interface TableData<T = unknown> {
+  current?: number
+  pages?: number
+  total?: number
+  size?: number
+  results: T[]
+}
+
+export class AzTableHelper<T> {
   private id?: string
   private columnsRef?: Ref<TableColumn[]>
   private columns: TableColumn[] = []
   private defaultColumns: Record<string, ColumnCfg> = {}
+  private axios?: RequestProxy
+  private method: string = 'GET'
+  private url: string = ''
+  private transformer: (data: any) => TableData = (data: any): TableData => {
+    return {
+      current: data.current || -1,
+      pages: data.pages || -1,
+      size: data.size || -1,
+      total: data.total || -1,
+      results: data.results || data.result || []
+    }
+  }
+  private config: (query: PaginationQuery, options: RequestConfig) => RequestConfig = (
+    query: PaginationQuery,
+    options: RequestConfig
+  ): RequestConfig => {
+    if (options.method === 'POST') {
+      options.data = query
+    }
+    return options
+  }
 
   public init(
     props: AzTableProps,
@@ -158,6 +196,7 @@ export class AzTableHelper {
     this.id = props.tid || ''
     let order = 500
     let index = 0
+    const url = this.getUrl(props)
     this.columns = props.columns.map((col) => {
       index++
       if (col.type == 'expand') {
@@ -176,6 +215,9 @@ export class AzTableHelper {
       } else {
         order = col.order
       }
+      if (col.sortable == true && url) {
+        col.sortable = 'custom'
+      }
       if (!col.cid) {
         col.cid = (col.prop || col.property || '@') + '-' + String(index)
       }
@@ -184,11 +226,28 @@ export class AzTableHelper {
         order: col.order,
         fixed: col.fixed ? col.fixed : false
       }
+
       return col
     })
     this.columnsRef = columnsRef
     this.columnsRef.value = this.getColumns()
-
+    if (url) {
+      if (url.startsWith('post:') || url.startsWith('POST:')) {
+        this.method = 'POST'
+        this.url = url.substring(5)
+      } else {
+        this.method = 'GET'
+        this.url = url
+      }
+      if (props.config) {
+        this.config = props.config
+      }
+      if (props.transformer) {
+        this.transformer = props.transformer
+      }
+      const gateway = props.gateway || 'default'
+      this.axios = useAxios(gateway)
+    }
     if (props.actions && props.actions.length > 0) {
       props.actions.forEach((action) => {
         if (isArray(action)) {
@@ -265,6 +324,23 @@ export class AzTableHelper {
     return this.columns.filter((col) => col.hidden !== true).sort((a, b) => (a.order || 0) - (b.order || 0))
   }
 
+  public loadRemoteData(query: PaginationQuery, options?: RequestConfig): Promise<TableData> {
+    const opts = options || {}
+    opts.method = this.method
+    return new Promise((resolve, reject) => {
+      this.axios
+        ?.request<T>(this.url, this.method, this.config(query, opts))
+        .then((res) => {
+          // 整形 => TableData
+          console.debug('original data:', this.url, res)
+          resolve(this.transformer(res.data))
+        })
+        .catch((e) => {
+          reject(e)
+        })
+    })
+  }
+
   private fillColumn(cid: string, cfg: ColumnCfg) {
     for (const c in this.columns) {
       if (this.columns[c].cid == cid) {
@@ -274,5 +350,14 @@ export class AzTableHelper {
         break
       }
     }
+  }
+
+  private getUrl(props: AzTableProps): string {
+    if (isFunction(props.url)) {
+      return props.url()
+    } else if (props.url) {
+      return props.url
+    }
+    return ''
   }
 }

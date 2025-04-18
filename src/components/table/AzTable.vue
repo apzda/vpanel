@@ -243,6 +243,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, reactive, useTempl
 import { ElTable, ElInput } from 'element-plus'
 import { ArrowDown, Operation, Search } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
+import { anyTrue, keys } from '@/utils'
 import { ts, tsc } from '@/utils/i18n.ts'
 import { permit } from '@/stores/user.ts'
 import {
@@ -256,6 +257,7 @@ import {
   type ToolItems
 } from '.'
 import AzTableColumnCfgDlg from './widgets/AzTableColumnCfgDlg.vue'
+import type { PaginationQuery, Sorter } from '@/@types'
 
 defineOptions({
   inheritAttrs: false
@@ -263,6 +265,10 @@ defineOptions({
 
 const props = withDefaults(defineProps<AzTableProps>(), {
   auto: true,
+  gateway: 'default',
+  queries: () => {
+    return {}
+  },
   pagerSize: 'default',
   pagerBackground: false,
   pagerLayout: 'total, sizes, prev, pager, next',
@@ -298,9 +304,12 @@ const props = withDefaults(defineProps<AzTableProps>(), {
   },
   qs: () => {
     return []
+  },
+  qsFilter: (data: any, field: string, value: string): boolean => {
+    return data && data[field] == value
   }
 })
-
+// 表格事件，同https://element-plus.org/zh-CN/component/table.html#table-%E4%BA%8B%E4%BB%B6
 const $emits = defineEmits<{
   (e: 'select', selection: any[], row: any): void
   (e: 'selectAll', selection: any[]): void
@@ -323,7 +332,7 @@ const $emits = defineEmits<{
   (e: 'scroll', scroll: { scrollLeft: number; scrollTop: number }): void
 }>()
 // consts
-const helper = new AzTableHelper()
+const helper = new AzTableHelper<any>()
 const tableActions: [TableAction[], TableActions] = [[], []]
 const tableTools: ToolItems = []
 // refs
@@ -338,6 +347,7 @@ const qfs = reactive<Record<string, boolean>>({})
 const pageSize = ref(props.defaultPageSize)
 const currentPage = ref(props.defaultCurrentPage)
 const total = ref(0)
+const sorter = ref<Sorter>({ order: [] })
 const selectedRows = ref<any[]>([])
 // computed
 const selectedSize = computed<number>(() => selectedRows.value.length)
@@ -351,7 +361,7 @@ const buttonSize = computed(() => {
 const tsLabel = (label?: string | string[]) => {
   return typeof label == 'string' ? tsc(label) : ts(label || '')
 }
-
+// 动作按钮禁用检测
 const checkDisabled = (action: TableAction) => {
   return (
     action.disabled ||
@@ -360,26 +370,33 @@ const checkDisabled = (action: TableAction) => {
     selectedRows.value.length == 0
   )
 }
-
+// 工具栏按钮禁用检测
 const checkToolDisabled = (tool: ToolItem) => {
   return tool.disabled || !permit(tool.roles, tool.authorities)
 }
 
-const getUrl = (): string => {
-  if (isFunction(props.url)) {
-    return props.url()
-  } else if (props.url) {
-    return props.url
-  }
-  throw new Error('url should be defined')
-}
+// 获取本地数据
 const getData = (data: any[]): any[] => {
   const offset = (currentPage.value - 1) * pageSize.value
   if (offset >= 0 && offset < data.length) {
-    return data.slice(offset, offset + pageSize.value)
+    if (q.value != '' && anyTrue(qfs)) {
+      return data
+        .filter((d) => {
+          for (const f in qfs) {
+            if (qfs[f] && props.qsFilter(d, f, q.value)) {
+              return true
+            }
+          }
+          return false
+        })
+        .slice(offset, offset + pageSize.value)
+    } else {
+      return data.slice(offset, offset + pageSize.value)
+    }
   }
   return []
 }
+// 快速搜索框聚集
 const focusSearch = (event: any) => {
   if (event.ctrlKey) {
     if (event.key === 'g' || event.key === 'G') {
@@ -432,9 +449,22 @@ const eventHandlers = {
     $emits('headerContextmenu', column, event)
   },
   sortChange(data: { column: any; prop: string; order: OrderStr }) {
-    $emits('sortChange', data)
+    const sort = { ...data }
+    $emits('sortChange', sort)
+    if (sort.order) {
+      sorter.value.order = [
+        {
+          field: sort.prop,
+          direction: sort.order == 'ascending' ? 'ASC' : 'DESC'
+        }
+      ]
+    } else {
+      sorter.value.order = []
+    }
+    reload()
   },
-  filterChange(newFilters: any) {
+  filterChange(newFilters: any, a: any) {
+    console.log(newFilters, a)
     $emits('filterChange', newFilters)
   },
   currentChange(currentRow: any, oldCurrentRow: any) {
@@ -464,11 +494,12 @@ const onToolbarClick = (action: ToolItem) => {
 }
 // 快速搜索字段（范围）变化
 const onSearchPopoverHide = () => {
-  console.log('onSearchPopoverHide')
+  reload()
 }
 // 快速搜索值变化
 const qChange = (value: string | number) => {
-  console.log('qChange', value)
+  console.debug('qs value:', value)
+  reload()
 }
 // 显示表头显示属性配置窗
 const showColumnConfigDialog = () => {
@@ -485,20 +516,45 @@ const doLayout = () => {
 const load = async () => {
   if (isArray(props.data)) {
     dataSource.value = getData(props.data)
+    total.value = dataSource.value.length
     return
   } else if (isFunction(props.data)) {
     const data = props.data()
     if (isArray(data)) {
-      total.value = data.length
       dataSource.value = getData(data)
+      total.value = dataSource.value.length
     } else {
       console.warn('data is not an array: ', data)
+      dataSource.value = []
+      total.value = 0
     }
+
     return
   }
 
-  const url = getUrl()
-  console.log('reload', url)
+  const query: PaginationQuery = { ...props.queries }
+  if (props.qs) {
+    query._qv = q.value
+    query._qf = keys(qfs)
+  }
+
+  if (props.pagerSize != null) {
+    query.pager = {
+      pageSize: pageSize.value || 30,
+      pageNumber: currentPage.value || 1
+    }
+    if (sorter.value.order.length > 0) {
+      query.pager.sort = sorter.value
+    }
+  }
+
+  helper.loadRemoteData(query, {}).then((data) => {
+    console.debug('load remote data: ', data)
+    dataSource.value = data.results || []
+    if (data.total && data.total >= 0) {
+      total.value = data.total
+    }
+  })
 }
 
 const reload = async () => {

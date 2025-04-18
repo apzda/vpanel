@@ -84,13 +84,13 @@ const actions: TableActions = [
 // quick search
 const qs: QuickSearch[] = [
   {
-    field: 'id',
-    name: 'Q1',
+    field: 'name',
+    name: '姓名',
     enabled: true
   },
   {
-    field: 'id2',
-    name: 'Q2',
+    field: 'age',
+    name: '年龄',
     enabled: true
   }
 ]
@@ -197,7 +197,7 @@ for (let i = 0; i < 100; i++) {
   data.value.push({
     name: `后加的 - ${i}`,
     date: '2019-02-10',
-    age: 18
+    age: 18 + i
   })
 }
 const onSelectionChanged = () => {
