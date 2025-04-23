@@ -67,14 +67,12 @@ const emptyHandler = (event: ErrorEvent) => {
 
 // 请求代理类
 export class RequestProxy implements IAxios {
-  private readonly gtw: string
   private readonly options: RequestConfig
   private readonly debounceMap: Set<string>
   private readonly apiBase: string
   private readonly axios: AxiosInstance
 
   constructor(gtw: string, options: GtwOptions) {
-    this.gtw = gtw
     this.options = options
     this.debounceMap = new Set<string>()
     this.apiBase = trimEnd(options.baseURL, '/') + '/'
@@ -209,7 +207,7 @@ export class RequestProxy implements IAxios {
         this.debounceMap.add(url)
       }
 
-      options = handler.beforeRequest(options)
+      // options = handler.beforeRequest(options)
       //@ts-ignore
       const config = getDefaultOptions(resolve, reject, options)
       this.axios

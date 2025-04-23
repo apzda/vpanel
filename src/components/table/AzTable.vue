@@ -106,7 +106,14 @@
       <div class="az-table__wrapper">
         <div class="absolute top-0 left-0 right-0 bottom-0 overflow-hidden">
           <!-- 表格 -->
-          <el-table ref="azTableIns" v-bind="props" :data="dataSource" height="100%" v-on="eventHandlers">
+          <el-table
+            ref="azTableIns"
+            v-loading="loading"
+            v-bind="props"
+            :data="dataSource"
+            height="100%"
+            v-on="eventHandlers"
+          >
             <template v-for="(col, idx) in columns" :key="idx">
               <el-table-column v-bind="col" :label="tsLabel(col.label)">
                 <template v-if="col.headerSlot" #header="{ column, $index }">
@@ -243,7 +250,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, reactive, useTempl
 import { ElTable, ElInput } from 'element-plus'
 import { ArrowDown, Operation, Search } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
-import { anyTrue, keys } from '@/utils'
+import { anyTrue, keys, DEFAULT_PAGE_SIZE } from '@/utils'
 import { ts, tsc } from '@/utils/i18n.ts'
 import { permit } from '@/stores/user.ts'
 import {
@@ -340,6 +347,7 @@ const azTableIns = useTemplateRef<typeof ElTable>('azTableIns')
 const azTableColumnCfgDlg = useTemplateRef<typeof AzTableColumnCfgDlg>('azTableColumnCfgDlg')
 const searchRef = useTemplateRef<typeof ElInput>('searchRef')
 // bind
+const loading = ref(false)
 const columns = ref<TableColumn[]>([])
 const dataSource = ref<unknown[]>([])
 const q = ref<string>('')
@@ -532,15 +540,16 @@ const load = async () => {
     return
   }
 
+  loading.value = true
   const query: PaginationQuery = { ...props.queries }
   if (props.qs) {
     query._qv = q.value
-    query._qf = keys(qfs)
+    query._qf = keys(qfs).join(',')
   }
 
   if (props.pagerSize != null) {
     query.pager = {
-      pageSize: pageSize.value || 30,
+      pageSize: pageSize.value || DEFAULT_PAGE_SIZE,
       pageNumber: currentPage.value || 1
     }
     if (sorter.value.order.length > 0) {
@@ -548,13 +557,17 @@ const load = async () => {
     }
   }
 
-  helper.loadRemoteData(query, {}).then((data) => {
-    console.debug('load remote data: ', data)
-    dataSource.value = data.results || []
-    if (data.total && data.total >= 0) {
-      total.value = data.total
-    }
-  })
+  helper
+    .loadRemoteData(query, {})
+    .then((data) => {
+      dataSource.value = data.results || []
+      if (data.total && data.total >= 0) {
+        total.value = data.total
+      }
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const reload = async () => {

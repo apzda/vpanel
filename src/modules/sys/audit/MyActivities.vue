@@ -5,7 +5,7 @@
         ref="azTable"
         tid="my-activities-table"
         row-key="name"
-        url="post:/audit-log/logs"
+        url="/audit-log/logs"
         :border="false"
         :columns="columns"
         :qs="qs"
@@ -19,10 +19,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import AzTable from '@/components/table/AzTable.vue'
 import type { TableColumn, QuickSearch, TableData } from '@/components/table'
 import type { PaginationQuery, RequestConfig } from '@/@types'
+import { buildPaginationQuery } from '@/utils'
 
 // binds
 const columns: TableColumn[] = [
@@ -83,7 +84,9 @@ const config = (query: PaginationQuery, options: RequestConfig): RequestConfig =
   if (query.pager) {
     query.pager.pageNumber = query.pager.pageNumber - 1
   }
-  options.data = query
+
+  options.params = buildPaginationQuery(query)
+
   return options
 }
 
@@ -93,9 +96,4 @@ const sortChange = (data: any) => {
     data.prop = 'createdAt'
   }
 }
-onMounted(() => {
-  setInterval(() => {
-    queries.value.timestamp = Date.now()
-  }, 5000)
-})
 </script>

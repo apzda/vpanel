@@ -1,4 +1,10 @@
-import { isArray } from 'lodash-es'
+import type { PaginationQuery } from '@/@types'
+
+const PAGE_SIZE_FIELD = import.meta.env.VITE_PAGE_SIZE_FIELD || 'pageSize'
+const PAGE_NUMBER_FIELD = import.meta.env.VITE_PAGE_NUMBER_FIELD || 'pageNumber'
+const PAGE_SORTS_FIELD = import.meta.env.VITE_PAGE_SORTS_FIELD || 'pageSorts'
+
+export const DEFAULT_PAGE_SIZE = import.meta.env.VITE_DEFAULT_PAGE_SIZE || 30
 
 const merge = (dest: any, source: any): void => {
   for (const key in source) {
@@ -209,6 +215,25 @@ export function allTrue(items: boolean[] | Record<any, boolean>): boolean {
   return !(items as boolean[]).some((item) => !item)
 }
 
-export function buildQueryString(params: Record<string, any>): string {
-  return ''
+export function buildPaginationQuery(params: PaginationQuery): Record<string, any> {
+  const np = deepClone(params) as Record<string, any>
+
+  if (params.pager) {
+    delete np.pager
+    np[PAGE_NUMBER_FIELD] = params.pager.pageNumber == undefined ? 1 : params.pager.pageNumber
+    np[PAGE_SIZE_FIELD] = params.pager.pageSize == undefined ? DEFAULT_PAGE_SIZE : params.pager.pageSize
+    if (params.pager.sort && params.pager.sort.order && params.pager.sort.order.length > 0) {
+      const sorts = params.pager.sort.order
+        .filter((order) => order.direction)
+        .map((order) => {
+          return order.field + '|' + order.direction
+        })
+        .join(',')
+      if (sorts) {
+        np[PAGE_SORTS_FIELD] = sorts
+      }
+    }
+  }
+
+  return np
 }

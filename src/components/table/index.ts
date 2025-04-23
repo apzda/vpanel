@@ -5,7 +5,7 @@ import useAppStore from '@/stores/app.ts'
 import { permit } from '@/stores/user'
 import { isArray, isFunction } from 'lodash-es'
 import useAxios, { RequestProxy } from '@/utils/axios.ts'
-import { buildQueryString } from '@/utils'
+import { buildPaginationQuery } from '@/utils'
 
 // 排序定义
 export type OrderStr = 'ascending' | 'descending' | null
@@ -183,7 +183,7 @@ export class AzTableHelper<T> {
     if (options.method === 'POST') {
       options.data = query
     } else {
-      options.params = buildQueryString(query)
+      options.params = buildPaginationQuery(query)
     }
     return options
   }

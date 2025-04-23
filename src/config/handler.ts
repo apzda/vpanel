@@ -15,11 +15,9 @@ const bearer = settings.tokenBearer ? settings.tokenBearer + ' ' : ''
 let refreshing = false
 let timer: any = 0
 
-const defaultReject = () => {
-}
+const defaultReject = () => {}
 
-const defaultResolve = () => {
-}
+const defaultResolve = () => {}
 
 const refreshFailed = (event: ErrorEvent) => {
   logout()
@@ -65,7 +63,10 @@ const refreshAccessToken = (event: ErrorEvent) => {
             // accessToken刷新完成, 重放请求
             const realAxios = event.axios || axios
             console.debug('重放请求[1]: ', event.url)
-            realAxios.request(event.url, options?.method || 'POST', options).then(resolveFunc).catch(rejectFunc)
+            realAxios
+              .request(event.url, options?.method || 'POST', options)
+              .then(resolveFunc)
+              .catch(rejectFunc)
           }
         } else {
           // 此时刷新还没有完成，需要等待
@@ -81,25 +82,32 @@ const refreshAccessToken = (event: ErrorEvent) => {
   } else {
     refreshing = true
     console.debug('开始刷新Token: ', event.url)
-    axios.doRequest<UserInfo>(settings.refreshTokenApi, 'POST', {
-      data: {
-        name: user.value.name,
-        accessToken: user.value.accessToken,
-        refreshToken: user.value.refreshToken
-      },
-      login: false
-    }).then(({ data }) => {
-      console.debug('Token刷新成功:', event.url)
-      if (refresh(data, event) && event.url) {
-        console.debug('重放请求[0]:', event.url)
-        const realAxios = event.axios || axios
-        realAxios.request(event.url, options?.method || 'POST', options).then(resolveFunc).catch(rejectFunc)
-      }
-    }).catch(err => {
-      refreshFailed(err)
-    }).finally(() => {
-      refreshing = false
-    })
+    axios
+      .doRequest<UserInfo>(settings.refreshTokenApi, 'POST', {
+        data: {
+          name: user.value.name,
+          accessToken: user.value.accessToken,
+          refreshToken: user.value.refreshToken
+        },
+        login: false
+      })
+      .then(({ data }) => {
+        console.debug('Token刷新成功:', event.url)
+        if (refresh(data, event) && event.url) {
+          console.debug('重放请求[0]:', event.url)
+          const realAxios = event.axios || axios
+          realAxios
+            .request(event.url, options?.method || 'POST', options)
+            .then(resolveFunc)
+            .catch(rejectFunc)
+        }
+      })
+      .catch((err) => {
+        refreshFailed(err)
+      })
+      .finally(() => {
+        refreshing = false
+      })
   }
 }
 
@@ -155,12 +163,14 @@ export default defineHandler({
 
     return options
   },
-  showTipMessage(success: boolean, type, message: string) {
+  showTipMessage(success: boolean, type: string, message: string) {
     if (type == 'none') return
     if (success) {
-      typeof msgBox[0][type] === 'function' && msgBox[0][type](message)
-    } else {
-      typeof msgBox[1][type] === 'function' && msgBox[1][type](message)
+      if (msgBox[0] && msgBox[0][type]) {
+        msgBox[0][type](message)
+      }
+    } else if (msgBox[1] && msgBox[1][type]) {
+      msgBox[1][type](message)
     }
   },
   encrypt(data: any): string {
