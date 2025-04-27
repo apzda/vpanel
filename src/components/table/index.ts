@@ -129,7 +129,7 @@ interface _AzTableProps<T> extends Omit<TableProps<T>, 'height' | 'data'> {
   url?: string | (() => string)
   gateway?: string
   queries?: Record<string, any>
-  config?: (query: PaginationQuery, options: RequestConfig) => RequestConfig
+  beforeRequest?: (query: PaginationQuery, options: RequestConfig) => RequestConfig
   export?: string | (() => string)
   pagerSize?: 'small' | 'default' | 'large' | null
   pagerBackground?: boolean
@@ -176,7 +176,7 @@ export class AzTableHelper<T> {
       results: data.results || data.result || []
     }
   }
-  private config: (query: PaginationQuery, options: RequestConfig) => RequestConfig = (
+  private beforeRequest: (query: PaginationQuery, options: RequestConfig) => RequestConfig = (
     query: PaginationQuery,
     options: RequestConfig
   ): RequestConfig => {
@@ -240,8 +240,8 @@ export class AzTableHelper<T> {
         this.method = 'GET'
         this.url = url
       }
-      if (props.config) {
-        this.config = props.config
+      if (props.beforeRequest) {
+        this.beforeRequest = props.beforeRequest
       }
       if (props.transformer) {
         this.transformer = props.transformer
@@ -330,7 +330,7 @@ export class AzTableHelper<T> {
     opts.method = this.method
     return new Promise((resolve, reject) => {
       this.axios
-        ?.request<T>(this.url, this.method, this.config(query, opts))
+        ?.request<T>(this.url, this.method, this.beforeRequest(query, opts))
         .then((res) => {
           // 整形 => TableData
           console.debug('original data:', this.url, res)

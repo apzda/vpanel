@@ -10,12 +10,12 @@
         :columns="columns"
         :qs="qs"
         :queries="queries"
-        :config="config"
+        :before-request="beforeRequest"
         :default-sort="{ prop: 'timestamp', order: 'ascending' }"
         :transformer="transformer"
         @sort-change="sortChange"
       >
-        <template #empty> hei hei~ </template>
+        <template #empty> hei hei~</template>
       </az-table>
     </div>
   </div>
@@ -82,7 +82,7 @@ const transformer = (data: any): TableData => {
   }
 }
 
-const config = (query: PaginationQuery, options: RequestConfig): RequestConfig => {
+const beforeRequest = (query: PaginationQuery, options: RequestConfig): RequestConfig => {
   if (query.pager) {
     query.pager.pageNumber = query.pager.pageNumber - 1
   }
