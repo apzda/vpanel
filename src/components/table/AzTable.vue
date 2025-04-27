@@ -111,9 +111,13 @@
             v-loading="loading"
             v-bind="props"
             :data="dataSource"
+            :empty-text="emptyText"
             height="100%"
             v-on="eventHandlers"
           >
+            <template v-if="inited" #empty>
+              <slot name="empty" />
+            </template>
             <template v-for="(col, idx) in columns" :key="idx">
               <el-table-column v-bind="col" :label="tsLabel(col.label)">
                 <template v-if="col.headerSlot" #header="{ column, $index }">
@@ -246,7 +250,7 @@
   <az-table-column-cfg-dlg ref="azTableColumnCfgDlg" :tid="tid" @ok="doLayout" />
 </template>
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, reactive, useTemplateRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onBeforeMount, ref, reactive, useTemplateRef } from 'vue'
 import { ElTable, ElInput } from 'element-plus'
 import { ArrowDown, Operation, Search } from '@element-plus/icons-vue'
 import { isArray, isFunction } from 'lodash-es'
@@ -339,6 +343,7 @@ const $emits = defineEmits<{
   (e: 'scroll', scroll: { scrollLeft: number; scrollTop: number }): void
 }>()
 // consts
+const defaultEmptyText = props.emptyText
 const helper = new AzTableHelper<any>()
 const tableActions: [TableAction[], TableActions] = [[], []]
 const tableTools: ToolItems = []
@@ -347,7 +352,9 @@ const azTableIns = useTemplateRef<typeof ElTable>('azTableIns')
 const azTableColumnCfgDlg = useTemplateRef<typeof AzTableColumnCfgDlg>('azTableColumnCfgDlg')
 const searchRef = useTemplateRef<typeof ElInput>('searchRef')
 // bind
+const inited = ref<boolean>(false)
 const loading = ref(false)
+const emptyText = ref<string | undefined>('')
 const columns = ref<TableColumn[]>([])
 const dataSource = ref<unknown[]>([])
 const q = ref<string>('')
@@ -566,6 +573,11 @@ const load = async () => {
       }
     })
     .finally(() => {
+      if (!inited.value) {
+        emptyText.value = defaultEmptyText
+        inited.value = true
+      }
+
       loading.value = false
     })
 }
@@ -575,7 +587,7 @@ const reload = async () => {
   await load()
 }
 
-onMounted(() => {
+onBeforeMount(() => {
   for (const f of props.qs) {
     qfs[f.field] = f.enabled ? f.enabled : false
   }

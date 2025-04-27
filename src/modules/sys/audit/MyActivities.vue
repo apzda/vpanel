@@ -11,9 +11,11 @@
         :qs="qs"
         :queries="queries"
         :config="config"
+        :default-sort="{ prop: 'timestamp', order: 'ascending' }"
         :transformer="transformer"
         @sort-change="sortChange"
       >
+        <template #empty> hei hei~ </template>
       </az-table>
     </div>
   </div>
