@@ -1,5 +1,12 @@
 <template>
-  <div class="h-full flex flex-col justify-stretch">
+  <div class="h-full flex flex-col justify-stretch gap-2">
+    <div class="mt-3">
+      <el-form v-model="queries">
+        <el-form-item label="级别">
+          <el-input v-model="queries.level" placeholder="请输入级别"/>
+        </el-form-item>
+      </el-form>
+    </div>
     <div class="flex-1 mt-1">
       <az-table
         ref="azTable"
