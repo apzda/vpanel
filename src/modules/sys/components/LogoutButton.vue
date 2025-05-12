@@ -28,15 +28,18 @@ import useAxios from '@/utils/axios'
 import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
 
-const props = withDefaults(defineProps<{
-  text?: string
-  width?: number,
-  height?: number
-}>(), {
-  text: '',
-  width: 24,
-  height: 24
-})
+const props = withDefaults(
+  defineProps<{
+    text?: string
+    width?: number
+    height?: number
+  }>(),
+  {
+    text: '',
+    width: 24,
+    height: 24
+  }
+)
 
 const axios = useAxios()
 const $route = useRoute()
@@ -50,30 +53,36 @@ const style = computed(() => {
 })
 const logout = () => {
   if (user.value.runAs) {
-    switchBack().then((res) => {
-      if (res.errCode == 0) {
-        notify({ title: '账户切换', message: `你已切回自己的账户！`, type: 'success' })
-        res.data.login = true
-        user.value = res.data
-        setTimeout(() => {
-          if (user.value.credentialsExpired) {
-            $router.push('/forgot-password')
-          } else {
-            $router.push(($route.query[fromArg] || '/home') as string)
-          }
-        }, 100)
-      } else {
-        doLogout()
-      }
-    }).catch(doLogout)
+    switchBack()
+      .then((res) => {
+        if (res.errCode == 0) {
+          notify({ title: '账户切换', message: `你已切回自己的账户！`, type: 'success' })
+          res.data.login = true
+          user.value = res.data
+          setTimeout(() => {
+            if (user.value.credentialsExpired) {
+              $router.push('/forgot-password')
+            } else {
+              $router.push(($route.query[fromArg] || '/home') as string)
+            }
+          }, 100)
+        } else {
+          doLogout()
+        }
+      })
+      .catch(doLogout)
 
     return
   }
   doLogout()
 }
 const doLogout = async () => {
-  if (settings.logoutApi) {
-    await axios.get(settings.logoutApi, { showErrMsg: false })
+  try {
+    if (settings.logoutApi) {
+      await axios.get(settings.logoutApi, { showErrMsg: false })
+    }
+  } catch (e) {
+    console.error(e)
   }
   userLogout()
   setTimeout(() => {
@@ -81,5 +90,3 @@ const doLogout = async () => {
   }, 100)
 }
 </script>
-
-

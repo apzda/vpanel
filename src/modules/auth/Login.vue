@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row gap-3">
+  <div class="flex flex-row gap-3 login-wrapper">
     <!-- left -->
     <left-aside class="hidden md:w-2/5 md:block" />
     <!-- right -->
@@ -244,25 +244,23 @@ const doLogin = async () => {
 const reloadCaptcha = (callback?: () => void) => {
   captchaValid.value = false
   loading.value = true
-  createCaptcha()
-    .then(({ data }) => {
-      captchaId.value = data?.id || ''
-      const type = data?.type || 'image'
-      if (type == 'drag') {
-        multiline.value = Number(data?.captcha || 0)
-      } else if (type == 'image') {
-        captchaCode.value = data?.captcha || ''
-      } else if (type == 'slider') {
-        captchaCode.value = data?.captcha || ''
-      } else {
-        throw new Error('Unknown captcha type: ' + type)
-      }
-
-      if (typeof callback == 'function') {
-        callback()
-      }
-    })
-    .finally(() => (loading.value = false))
+  createCaptcha().then(({ data }) => {
+    captchaId.value = data?.id || ''
+    const type = data?.type || 'image'
+    if (type == 'drag') {
+      multiline.value = Number(data?.captcha || 0)
+    } else if (type == 'image') {
+      captchaCode.value = data?.captcha || ''
+    } else if (type == 'slider') {
+      captchaCode.value = data?.captcha || ''
+    } else {
+      throw new Error('Unknown captcha type: ' + type)
+    }
+    loading.value = false
+    if (typeof callback == 'function') {
+      callback()
+    }
+  })
 }
 // === 事件处理器 ===
 /**
@@ -307,7 +305,7 @@ const verifyImageCaptcha = () => {
  * @param verified
  * @param results
  */
-const captchaVerified = async (verified: boolean, results: {}) => {
+const captchaVerified = async (verified: boolean, results: any) => {
   if (verified) {
     successText.value = ts('auth.drag.success', '...')
     await validateForm()
@@ -362,3 +360,8 @@ onMounted(() => {
   }
 })
 </script>
+<style scoped>
+.login-wrapper {
+  background: transparent url('../../assets/background.svg') no-repeat 50% 50%;
+}
+</style>
